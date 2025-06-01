@@ -1,10 +1,12 @@
 #!/bin/bash
+# -----------------
+# promote with rudimentary secret protection
+# -----------------
 
 if [ -z "${GEMINI_API_KEY}" ]; then
     echo "GEMINI_API_KEY is unset or empty. will not promote until it is set for checks on secret detection"  >> /dev/stderr
 	exit 1;
 fi
-
 if grep $GEMINI_API_KEY * ; then
 	echo "ERROR cannot promot found GEMINI_API_KEY in file." >> /dev/stderr
 	exit 1;

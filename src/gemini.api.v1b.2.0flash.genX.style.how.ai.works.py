@@ -7,7 +7,7 @@ gemini_api_key = os.getenv('GEMINI_API_KEY')
 
 # You can then check if it was set and use it
 if gemini_api_key is not None:
-    print("GEMINI_API_KEY found.")
+    print("GEMINI_API_KEY found.", file=sys.stderr)
     # Your code that uses the API key goes here
 else:
     print("GEMINI_API_KEY environment variable not set.",file=sys.stderr)

@@ -7,9 +7,9 @@ from PIL import Image
 
 client = my_gemini.getClient()
 
-image = Image.open("./IMG_123X.jpg")
+image = Image.open(sys.argv[1])
 response = client.models.generate_content(
     model="gemini-2.0-flash",
-    contents=[image, "Tell me about this image in detail"]
+    contents=[image, "Tell me about this image in scientific detail"]
 )
 print(response.text)

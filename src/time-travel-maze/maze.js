@@ -13,7 +13,7 @@ const maze = {
   historical: {
     description: "You find yourself in a grand hall filled with historical artifacts. A famous historian approaches you.",
     choices: {
-      castle: "Proceed to the Medieval Castle",
+      medieval_castle: "Proceed to the Medieval Castle",
       ignore: "Ignore the historian and proceed",
       curious_artifact: "Examine a curious artifact in the corner"
     }

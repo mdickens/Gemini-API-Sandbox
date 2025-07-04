@@ -22,6 +22,10 @@ const maze = {
     choices: {
       approach: "Approach the knight",
       retreat: "Retreat back to the historical hall"
+    },
+    dynamic_descriptions: {
+      approach: "The knight greets you with a stern look and demands your purpose.",
+      retreat: "You quickly retreat back to the historical hall, feeling intimidated by the knight."
     }
   },
   royal_court: {
@@ -43,6 +47,16 @@ const maze = {
     choices: {
       fight: "Fight the T-Rex",
       run: "Run away"
+    }
+  },
+  characters: {
+    knight: {
+      backstory: "Sir Reginald Strongforth is a brave and loyal knight who has sworn to protect the castle from all intruders. He is known for his unwavering dedication and his skill in combat."
+    }
+  },
+  characters: {
+    knight: {
+      backstory: "Sir Reginald Strongforth is a brave and loyal knight who has sworn to protect the castle from all intruders. He is known for his unwavering dedication and his skill in combat."
     }
   }
 };

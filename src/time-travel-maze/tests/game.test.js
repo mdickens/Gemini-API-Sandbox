@@ -34,12 +34,22 @@ function testGameStartsInStartRoom() {
     console.log("testGameStartsInStartRoom: PASSED");
 }
 
+// A test to check if the knight's backstory is displayed when the player approaches the knight
+function testKnightBackstoryIsDisplayed() {
+    currentRoom = "historical";
+    handleInput("castle");
+    handleInput("approach");
+    assert(storyOutput.innerHTML.includes("Sir Reginald Strongforth"), "Knight's backstory should be displayed");
+    console.log("testKnightBackstoryIsDisplayed: PASSED");
+}
+
 // Run all tests
 try {
     testStoryLoaded();
     testInitialRoom();
     testChoiceUpdatesCurrentRoom();
     testGameStartsInStartRoom();
+    testKnightBackstoryIsDisplayed();
     console.log("All tests passed!");
 } catch (error) {
     console.error("Test failed:", error.message);

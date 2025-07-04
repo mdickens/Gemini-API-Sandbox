@@ -1,0 +1,11 @@
+{
+  "name": "time-travel-maze",
+  "version": "1.0.0",
+  "description": "A text-based adventure game.",
+  "main": "game.js",
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -298,9 +298,12 @@ function handleInput() {
             storyOutput.innerHTML += "<p>You don't have that.</p>";
         }
     } else {
-    //     storyOutput.innerHTML += "<p>Invalid command.</p>";
+    if (room.choices && room.choices[command]) {
+        currentRoom = command;
+        displayRoom(currentRoom);
+    } else {
+        storyOutput.innerHTML += "<p>Invalid command.</p>";
     }
-    storyOutput.innerHTML += "<p>Invalid command.</p>";
 }
 
 function checkEndOfPath() {

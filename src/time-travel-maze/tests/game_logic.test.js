@@ -1,123 +1,104 @@
-import maze from '../maze.js';
+import { assert } from './assert.js';
+import {
+    handleInput,
+    checkEndOfPath,
+    currentRoom,
+    completedPaths,
+    storyOutput,
+    playerInput
+} from '../script.js';
 
-describe('Game Logic', () => {
-  let originalDisplayRoom;
-  let originalStoryOutput;
-  let originalCurrentRoom;
-
-  beforeEach(() => {
-    // Mock DOM elements and functions
-    document.body.innerHTML = `
-      <div id="story-output"></div>
-      <input type="text" id="player-input">
-      <button id="submit-button"></button>
-    `;
-    global.storyOutput = document.getElementById('story-output');
-    global.playerInput = document.getElementById('player-input');
-    global.submitButton = document.getElementById('submit-button');
-
-    // Save original functions/variables to restore later
-    originalDisplayRoom = global.displayRoom;
-    originalStoryOutput = global.storyOutput.innerHTML;
-    originalCurrentRoom = global.currentRoom;
-
-    // Reset game state for each test
-    global.currentRoom = "start";
-    global.playerInventory = [];
-    global.previousRoom = "";
-    global.completedPaths = {
-      historical: false,
-      futuristic: false,
-      prehistoric: false
-    };
-
-    // Mock displayRoom to prevent actual DOM manipulation during tests
-    global.displayRoom = (roomId, character = null) => {
-      const room = maze[roomId];
-      if (room) {
-        global.storyOutput.innerHTML = `<p><strong>${room.name || roomId}</strong></p><p>${room.description}</p>`;
-      } else {
-        global.storyOutput.innerHTML = `<p>Error: Room "${roomId}" not found.</p>`;
-      }
-    };
-  });
-
-  afterEach(() => {
-    // Restore original functions/variables
-    global.displayRoom = originalDisplayRoom;
-    global.storyOutput.innerHTML = originalStoryOutput;
-    global.currentRoom = originalCurrentRoom;
-  });
-
-  it('should transition from start to historical path', () => {
+function testTransitionToHistoricalPath() {
     playerInput.value = 'historical';
     handleInput();
-    expect(currentRoom).toBe('historical');
-    expect(storyOutput.innerHTML).toContain('grand hall filled with historical artifacts');
-  });
+    assert(currentRoom === 'historical', 'currentRoom should be historical');
+    assert(storyOutput.innerHTML.includes('grand hall filled with historical artifacts'), 'Story output should contain historical path description');
+    console.log('testTransitionToHistoricalPath: PASSED');
+}
 
-  it('should transition from historical to medieval_castle', () => {
+function testTransitionToMedievalCastle() {
     currentRoom = 'historical';
     playerInput.value = 'castle';
     handleInput();
-    expect(currentRoom).toBe('medieval_castle');
-    expect(storyOutput.innerHTML).toContain('medieval castle');
-  });
+    assert(currentRoom === 'medieval_castle', 'currentRoom should be medieval_castle');
+    assert(storyOutput.innerHTML.includes('medieval castle'), 'Story output should contain medieval castle description');
+    console.log('testTransitionToMedievalCastle: PASSED');
+}
 
-  it('should handle dynamic description for medieval_castle approach', () => {
+function testDynamicDescriptionForMedievalCastle() {
     currentRoom = 'medieval_castle';
     playerInput.value = 'approach';
     handleInput();
-    expect(storyOutput.innerHTML).toContain('The knight greets you with a stern look');
-  });
+    assert(storyOutput.innerHTML.includes('The knight greets you with a stern look'), 'Story output should contain dynamic description');
+    console.log('testDynamicDescriptionForMedievalCastle: PASSED');
+}
 
-  it('should transition from start to futuristic path', () => {
+function testTransitionToFuturisticPath() {
     playerInput.value = 'futuristic';
     handleInput();
-    expect(currentRoom).toBe('futuristic');
-    expect(storyOutput.innerHTML).toContain('towering skyscrapers and flying vehicles');
-  });
+    assert(currentRoom === 'futuristic', 'currentRoom should be futuristic');
+    assert(storyOutput.innerHTML.includes('towering skyscrapers and flying vehicles'), 'Story output should contain futuristic path description');
+    console.log('testTransitionToFuturisticPath: PASSED');
+}
 
-  it('should transition from start to prehistoric path', () => {
+function testTransitionToPrehistoricPath() {
     playerInput.value = 'prehistoric';
     handleInput();
-    expect(currentRoom).toBe('prehistoric');
-    expect(storyOutput.innerHTML).toContain('dense jungle filled with the sounds of dinosaurs');
-  });
+    assert(currentRoom === 'prehistoric', 'currentRoom should be prehistoric');
+    assert(storyOutput.innerHTML.includes('dense jungle filled with the sounds of dinosaurs'), 'Story output should contain prehistoric path description');
+    console.log('testTransitionToPrehistoricPath: PASSED');
+}
 
-  it('should mark historical path as complete after humorous_encounter', () => {
+function testHistoricalPathCompletion() {
     currentRoom = 'historical';
     playerInput.value = 'curious_artifact';
     handleInput();
-    expect(completedPaths.historical).toBe(true);
-  });
+    assert(completedPaths.historical === true, 'completedPaths.historical should be true');
+    console.log('testHistoricalPathCompletion: PASSED');
+}
 
-  it('should mark futuristic path as complete after futuristic_gadget', () => {
+function testFuturisticPathCompletion() {
     currentRoom = 'futuristic';
     playerInput.value = 'accept';
     handleInput();
-    expect(completedPaths.futuristic).toBe(true);
-  });
+    assert(completedPaths.futuristic === true, 'completedPaths.futuristic should be true');
+    console.log('testFuturisticPathCompletion: PASSED');
+}
 
-  it('should mark prehistoric path as complete after ancient_ruins', () => {
+function testPrehistoricPathCompletion() {
     currentRoom = 'prehistoric';
-    playerInput.value = 'hide'; // This leads to ancient_ruins indirectly
+    playerInput.value = 'hide';
     handleInput();
-    // Need to manually set currentRoom to ancient_ruins for this test to pass
-    // as the previous command doesn't directly lead to ancient_ruins
+    // This is a bit of a hack, but it's the only way to test this without a major refactor
     currentRoom = 'ancient_ruins';
     checkEndOfPath();
-    expect(completedPaths.prehistoric).toBe(true);
-  });
+    assert(completedPaths.prehistoric === true, 'completedPaths.prehistoric should be true');
+    console.log('testPrehistoricPathCompletion: PASSED');
+}
 
-  it('should transition to nexus_of_time when all paths are complete', () => {
+function testNexusOfTimeTransition() {
     completedPaths.historical = true;
     completedPaths.futuristic = true;
     completedPaths.prehistoric = true;
-    currentRoom = 'historical'; // Any room will do to trigger checkEndOfPath
-    playerInput.value = 'ignore'; // Any valid command to trigger handleInput and checkEndOfPath
+    currentRoom = 'historical';
+    playerInput.value = 'ignore';
     handleInput();
-    expect(currentRoom).toBe('nexus_of_time');
-    expect(storyOutput.innerHTML).toContain('Nexus of Time');
-  });
-});
+    assert(currentRoom === 'nexus_of_time', 'currentRoom should be nexus_of_time');
+    assert(storyOutput.innerHTML.includes('Nexus of Time'), 'Story output should contain Nexus of Time description');
+    console.log('testNexusOfTimeTransition: PASSED');
+}
+
+try {
+    testTransitionToHistoricalPath();
+    testTransitionToMedievalCastle();
+    testDynamicDescriptionForMedievalCastle();
+    testTransitionToFuturisticPath();
+    testTransitionToPrehistoricPath();
+    testHistoricalPathCompletion();
+    testFuturisticPathCompletion();
+    testPrehistoricPathCompletion();
+    testNexusOfTimeTransition();
+    console.log('All game logic tests passed!');
+} catch (error) {
+    console.error('Game logic test failed:', error.message);
+}

@@ -9,11 +9,11 @@
     <h1>Tests</h1>
     <div id="test-output"></div>
 
-    <!-- The order of these scripts is important -->
-    <script src="script.js" type="module"></script>
-    <script src="tests/assert.js"></script>
-    <script src="tests/game.test.js"></script>
-    <script src="tests/game_logic.test.js"></script>
-    <script src="tests/maze.test.js"></script>
+    <script type="module">
+        import './tests/assert.js';
+        import './tests/game.test.js';
+        import './tests/game_logic.test.js';
+        import './tests/maze.test.js';
+    </script>
 </body>
 </html>

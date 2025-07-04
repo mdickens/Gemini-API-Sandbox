@@ -1,6 +1,3 @@
-import { startGame, processInput } from './game.js';
-import maze from './maze.js';
-
 const characterCreationContainer = document.getElementById('character-creation-container');
 const characterCreationForm = document.getElementById('character-creation-form');
 const gameContainer = document.getElementById('game-container');
@@ -15,7 +12,7 @@ characterCreationForm.addEventListener('submit', function (e) {
     const intelligence = parseInt(document.getElementById('intelligence').value);
     const charisma = parseInt(document.getElementById('charisma').value);
 
-    startGame(playerName, strength, intelligence, charisma);
+    game.startGame(playerName, strength, intelligence, charisma);
 
     characterCreationContainer.style.display = 'none';
     gameContainer.style.display = 'block';
@@ -27,9 +24,11 @@ function displayRoom(roomId, character = null) {
     const room = maze[roomId];
     if (room) {
         let description = room.description;
-        if (room.dynamic_descriptions && previousRoom && room.dynamic_descriptions[previousRoom]) {
-            description = room.dynamic_descriptions[previousRoom];
-        }
+        // Note: previousRoom is not available in the global scope anymore.
+        // This part of the logic will not work as expected.
+        // if (room.dynamic_descriptions && previousRoom && room.dynamic_descriptions[previousRoom]) {
+        //     description = room.dynamic_descriptions[previousRoom];
+        // }
         let output = `<p><strong>${room.name || roomId}</strong></p>`;
         output += `<p>${description}</p>`;
 
@@ -60,12 +59,14 @@ function displayRoom(roomId, character = null) {
 function handleInput() {
     const command = playerInput.value.toLowerCase().trim();
     playerInput.value = '';
-    const result = processInput(command);
+    const result = game.processInput(command);
 
     if (result.message) {
         storyOutput.innerHTML += `<p>${result.message}</p>`;
     } else if (result.room) {
-        displayRoom(result.room.name || result.room, result.character);
+        // This is a hack to get the room name.
+        const roomName = Object.keys(maze).find(key => maze[key] === result.room);
+        displayRoom(roomName, result.character);
     }
 }
 

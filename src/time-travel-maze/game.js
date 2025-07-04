@@ -28,6 +28,10 @@ const game = (function() {
             currentRoom = command;
             checkEndOfPath();
             return { room: maze[currentRoom] };
+        } else if (command === "ignore" && currentRoom === "historical") {
+            return { message: "You ignore the historian and continue to explore the grand hall." };
+        } else if (command === "decline" && currentRoom === "futuristic") {
+            return { message: "You decline the gadget and the robot zips away." };
         } else if (command === "approach" && currentRoom === "medieval_castle") {
             return { room: maze[currentRoom], character: "knight" };
         } else if (command === "curious_artifact" && currentRoom === "historical") {

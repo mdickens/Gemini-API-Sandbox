@@ -14,8 +14,17 @@ const maze = {
     description: "You find yourself in a grand hall filled with historical artifacts. A famous historian approaches you.",
     choices: {
       castle: "Proceed to the Medieval Castle",
-      ignore: "Ignore the historian and proceed"
+      ignore: "Ignore the historian and proceed",
+      curious_artifact: "Examine a curious artifact in the corner"
     }
+  },
+  humorous_encounter: {
+    description: "You examine a dusty old gramophone, and suddenly it starts playing a jaunty tune from the future! A bewildered Victorian gentleman spills his tea.",
+    choices: {
+      apologize: "Apologize to the gentleman",
+      dance: "Start dancing to the music"
+    },
+    end_of_path: "historical"
   },
   medieval_castle: {
     description: "You arrive at a medieval castle. A knight stands guard at the entrance.",
@@ -32,11 +41,28 @@ const maze = {
     description: "You are now in the royal court. The King is seated on his throne.",
     choices: {
       kneel: "Kneel before the King",
-      speak: "Speak to the King"
+      speak: "Speak to the King",
+      observe: "Observe the court from a distance"
     },
     puzzle: {
       question: "What is the capital of France?",
       answer: "paris"
+    }
+  },
+  royal_dilemma: {
+    description: "The King asks you to deliver a message to a neighboring kingdom, but you overhear a plot against him. What do you do?",
+    choices: {
+      deliver_message: "Deliver the message as requested",
+      warn_king: "Warn the King about the plot",
+      explore_library: "Secretly explore the royal library"
+    }
+  },
+  suspenseful_library: {
+    description: "You sneak into the royal library. The air is thick with dust and the scent of old parchment. You hear faint whispers from the shadows.",
+    choices: {
+      investigate_whispers: "Investigate the whispers",
+      read_ancient_tome: "Read an ancient tome",
+      leave_library: "Quietly leave the library"
     }
   },
   futuristic: {

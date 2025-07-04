@@ -175,12 +175,13 @@ characterCreationForm.addEventListener('submit', function (e) {
     player.name = document.getElementById('player-name').value;
     player.strength = parseInt(document.getElementById('strength').value);
     player.intelligence = parseInt(document.getElementById('intelligence').value);
-    player.charisma = parseInt(document.getElementById('charisma').value);
+    player.charisma = parseInt(document.getElementById('charisma').value;
 
     characterCreationContainer.style.display = 'none';
     gameContainer.style.display = 'block';
 
-    displayRoom(currentRoom);
+    currentRoom = "start"; // Set currentRoom to "start"
+    displayRoom(currentRoom); // Call displayRoom with "start"
 });
 
 

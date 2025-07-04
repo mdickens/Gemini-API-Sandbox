@@ -185,15 +185,20 @@ characterCreationForm.addEventListener('submit', function (e) {
 });
 
 
-function displayRoom(roomId) {
+function displayRoom(roomId, character = null) {
     const room = maze[roomId]; // Changed to use maze object
     if (room) {
         let description = room.description;
-        if (room.dynamic_descriptions && maze[previousRoom] && room.dynamic_descriptions[previousRoom]) {
+        if (room.dynamic_descriptions && previousRoom && room.dynamic_descriptions[previousRoom]) {
             description = room.dynamic_descriptions[previousRoom];
         }
         let output = `<p><strong>${roomId}</strong></p>`; // Display room ID for now
         output += `<p>${description}</p>`;
+
+        if (character && maze.characters && maze.characters[character]) {
+            output += `<p><strong>${character.toUpperCase()}</strong></p>`;
+            output += `<p>${maze.characters[character].backstory}</p>`;
+        }
 
         if (room.choices) { // Display choices
             output += "<p><strong>Choices:</strong></p>";
@@ -313,6 +318,8 @@ function handleInput() {
         previousRoom = currentRoom;
         currentRoom = command;
         displayRoom(currentRoom);
+    } else if (command === "approach" && currentRoom === "medieval_castle") {
+        displayRoom(currentRoom, "knight"); // Display knight's backstory
     } else {
         storyOutput.innerHTML += "<p>Invalid command.</p>";
     }

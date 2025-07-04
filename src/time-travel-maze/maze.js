@@ -33,6 +33,10 @@ const maze = {
     choices: {
       kneel: "Kneel before the King",
       speak: "Speak to the King"
+    },
+    puzzle: {
+      question: "What is the capital of France?",
+      answer: "paris"
     }
   },
   futuristic: {

@@ -13,8 +13,22 @@ const maze = {
   historical: {
     description: "You find yourself in a grand hall filled with historical artifacts. A famous historian approaches you.",
     choices: {
-      talk: "Talk to the historian",
+      castle: "Proceed to the Medieval Castle",
       ignore: "Ignore the historian and proceed"
+    }
+  },
+  medieval_castle: {
+    description: "You arrive at a medieval castle. A knight stands guard at the entrance.",
+    choices: {
+      approach: "Approach the knight",
+      retreat: "Retreat back to the historical hall"
+    }
+  },
+  royal_court: {
+    description: "You are now in the royal court. The King is seated on his throne.",
+    choices: {
+      kneel: "Kneel before the King",
+      speak: "Speak to the King"
     }
   },
   futuristic: {

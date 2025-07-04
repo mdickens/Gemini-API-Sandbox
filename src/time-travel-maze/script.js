@@ -163,6 +163,7 @@ const submitButton = document.getElementById('submit-button');
 let player = {};
 let currentRoom = "start"; // Changed to "start"
 let playerInventory = [];
+let previousRoom = "";
 let completedPaths = {
     historical: false,
     futuristic: false,
@@ -186,8 +187,12 @@ characterCreationForm.addEventListener('submit', function (e) {
 function displayRoom(roomId) {
     const room = maze[roomId]; // Changed to use maze object
     if (room) {
+        let description = room.description;
+        if (room.dynamic_descriptions && maze[previousRoom] && room.dynamic_descriptions[previousRoom]) {
+            description = room.dynamic_descriptions[previousRoom];
+        }
         let output = `<p><strong>${roomId}</strong></p>`; // Display room ID for now
-        output += `<p>${room.description}</p>`;
+        output += `<p>${description}</p>`;
 
         if (room.choices) { // Display choices
             output += "<p><strong>Choices:</strong></p>";

@@ -1,4 +1,6 @@
-const story = {
+import maze from './maze.js';
+
+// const story = {
     rooms: [
         {
             id: 0,
@@ -159,7 +161,7 @@ const playerInput = document.getElementById('player-input');
 const submitButton = document.getElementById('submit-button');
 
 let player = {};
-let currentRoom = 0;
+let currentRoom = "start"; // Changed to "start"
 let playerInventory = [];
 let completedPaths = {
     historical: false,
@@ -182,26 +184,20 @@ characterCreationForm.addEventListener('submit', function (e) {
 
 
 function displayRoom(roomId) {
-    const room = story.rooms.find(r => r.id === roomId);
+    const room = maze[roomId]; // Changed to use maze object
     if (room) {
-        let output = `<p><strong>${room.name}</strong></p>`;
+        let output = `<p><strong>${roomId}</strong></p>`; // Display room ID for now
         output += `<p>${room.description}</p>`;
 
-        if (room.items && room.items.length > 0) {
-            output += "<p><strong>You see the following items:</strong></p>";
+        if (room.choices) { // Display choices
+            output += "<p><strong>Choices:</strong></p>";
             output += "<ul>";
-            room.items.forEach(item => {
-                output += `<li><strong>${item.name}:</strong> ${item.description}</li>`;
-            });
+            for (const choice in room.choices) {
+                output += `<li><strong>${choice}:</strong> ${room.choices[choice]}</li>`;
+            }
             output += "</ul>";
         }
 
-        output += "<p><strong>Exits:</strong></p>";
-        output += "<ul>";
-        room.exits.forEach(exit => {
-            output += `<li><strong>${exit.direction}:</strong> ${exit.description}</li>`;
-        });
-        output += "</ul>";
         storyOutput.innerHTML = output;
     }
 }
@@ -302,8 +298,9 @@ function handleInput() {
             storyOutput.innerHTML += "<p>You don't have that.</p>";
         }
     } else {
-        storyOutput.innerHTML += "<p>Invalid command.</p>";
+    //     storyOutput.innerHTML += "<p>Invalid command.</p>";
     }
+    storyOutput.innerHTML += "<p>Invalid command.</p>";
 }
 
 function checkEndOfPath() {

@@ -9,7 +9,7 @@ console.log("Running tests...");
 
 // A simple test to check if the story object is loaded.
 function testStoryLoaded() {
-    assert(story !== null, "Story should be loaded");
+    assert(maze !== null, "Story should be loaded");
     console.log("testStoryLoaded: PASSED");
 }
 
@@ -27,11 +27,19 @@ function testChoiceUpdatesCurrentRoom() {
     console.log("testChoiceUpdatesCurrentRoom: PASSED");
 }
 
+// A test to check if the game starts in the start room after character creation
+function testGameStartsInStartRoom() {
+    characterCreationForm.dispatchEvent(new Event('submit')); // Simulate character creation
+    assert(currentRoom === "start", "Game should start in the start room");
+    console.log("testGameStartsInStartRoom: PASSED");
+}
+
 // Run all tests
 try {
     testStoryLoaded();
     testInitialRoom();
     testChoiceUpdatesCurrentRoom();
+    testGameStartsInStartRoom();
     console.log("All tests passed!");
 } catch (error) {
     console.error("Test failed:", error.message);

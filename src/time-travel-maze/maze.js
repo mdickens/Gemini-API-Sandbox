@@ -30,7 +30,7 @@ const maze = {
     description: "You arrive at a medieval castle. A knight stands guard at the entrance.",
     choices: {
       approach: "Approach the knight",
-      retreat: "Retreat back to the historical hall"
+      historical: "Retreat back to the historical hall"
     },
     dynamic_descriptions: {
       approach: "The knight greets you with a stern look and demands your purpose.",

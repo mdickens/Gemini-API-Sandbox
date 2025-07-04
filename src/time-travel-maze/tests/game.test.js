@@ -15,14 +15,23 @@ function testStoryLoaded() {
 
 // A simple test to check the initial room.
 function testInitialRoom() {
-    assert(currentRoom === 0, "Initial room should be 0");
+    assert(currentRoom === "start", "Initial room should be start");
     console.log("testInitialRoom: PASSED");
+}
+
+// A test to check if the currentRoom is updated correctly after a choice
+function testChoiceUpdatesCurrentRoom() {
+    currentRoom = "start"; // Reset currentRoom to start
+    handleInput("historical"); // Simulate player choosing "historical"
+    assert(currentRoom === "historical", "currentRoom should be updated to historical");
+    console.log("testChoiceUpdatesCurrentRoom: PASSED");
 }
 
 // Run all tests
 try {
     testStoryLoaded();
     testInitialRoom();
+    testChoiceUpdatesCurrentRoom();
     console.log("All tests passed!");
 } catch (error) {
     console.error("Test failed:", error.message);

@@ -1,0 +1,98 @@
+import maze from './maze.js';
+
+export let player = {};
+export let currentRoom = "start";
+export let playerInventory = [];
+export let previousRoom = "";
+export let completedPaths = {
+    historical: false,
+    futuristic: false,
+    prehistoric: false
+};
+
+export function startGame(name, strength, intelligence, charisma) {
+    player.name = name;
+    player.strength = strength;
+    player.intelligence = intelligence;
+    player.charisma = charisma;
+    currentRoom = "start";
+}
+
+export function processInput(command) {
+    const room = maze[currentRoom];
+
+    if (room.puzzle && command === room.puzzle.answer) {
+        delete room.puzzle;
+        return { message: "Correct! You solved the puzzle." };
+    } else if (room.choices && room.choices[command]) {
+        previousRoom = currentRoom;
+        currentRoom = command;
+        checkEndOfPath();
+        return { room: maze[currentRoom] };
+    } else if (command === "approach" && currentRoom === "medieval_castle") {
+        return { room: maze[currentRoom], character: "knight" };
+    } else if (command === "curious_artifact" && currentRoom === "historical") {
+        currentRoom = "humorous_encounter";
+        checkEndOfPath();
+        return { room: maze[currentRoom] };
+    } else if (command === "explore_library" && currentRoom === "royal_dilemma") {
+        currentRoom = "suspenseful_library";
+        checkEndOfPath();
+        return { room: maze[currentRoom] };
+    } else if (command === "accept" && currentRoom === "futuristic") {
+        currentRoom = "futuristic_gadget";
+        checkEndOfPath();
+        return { room: maze[currentRoom] };
+    } else if (command === "explore_market" && currentRoom === "futuristic") {
+        currentRoom = "robot_dilemma";
+        return { room: maze[currentRoom] };
+    } else if (command === "try_to_fix" && currentRoom === "futuristic_gadget") {
+        checkEndOfPath();
+        return { message: "You tinker with the gadget, and it starts translating everything into interpretive dance moves. The robot looks confused." };
+    } else if (command === "ignore_gadget" && currentRoom === "futuristic_gadget") {
+        checkEndOfPath();
+        return { message: "You decide the gadget is more trouble than it's worth and move on." };
+    } else if (command === "prioritize_efficiency" && currentRoom === "robot_dilemma") {
+        checkEndOfPath();
+        return { message: "The robots nod in agreement and immediately begin optimizing their processes, ignoring all creative pursuits." };
+    } else if (command === "prioritize_creativity" && currentRoom === "robot_dilemma") {
+        checkEndOfPath();
+        return { message: "The robots light up with new ideas, and begin composing symphonies and painting abstract art." };
+    } else if (command === "ask_more_questions" && currentRoom === "robot_dilemma") {
+        checkEndOfPath();
+        return { message: "The robots engage in a deep philosophical discussion with you, revealing the complexities of their society." };
+    } else if (command === "fight" && currentRoom === "prehistoric") {
+        currentRoom = "dinosaur_confrontation";
+        return { room: maze[currentRoom] };
+    } else if (command === "run" && currentRoom === "prehistoric") {
+        checkEndOfPath();
+        return { message: "You run as fast as you can, narrowly escaping the T-Rex." };
+    } else if (command === "hide" && currentRoom === "prehistoric") {
+        checkEndOfPath();
+        return { message: "You hide in the dense foliage, and the T-Rex lumbers past, unaware of your presence." };
+    } else if (command === "climb_tree" && currentRoom === "dinosaur_confrontation") {
+        checkEndOfPath();
+        return { message: "You scramble up a tree just as the T-Rex snaps its jaws where you were standing. You are safe for now." };
+    } else if (command === "distract_trex" && currentRoom === "dinosaur_confrontation") {
+        checkEndOfPath();
+        return { message: "You throw a rock, distracting the T-Rex. It turns its attention to the sound, allowing you to slip away." };
+    } else if (command === "examine_symbols" && currentRoom === "ancient_ruins") {
+        checkEndOfPath();
+        return { message: "The symbols glow faintly as you touch them, and you feel a surge of ancient power." };
+    } else if (command === "enter_temple" && currentRoom === "ancient_ruins") {
+        checkEndOfPath();
+        return { message: "You enter the crumbling temple, and the air grows heavy with an unknown energy." };
+    } else {
+        return { message: "Invalid command." };
+    }
+}
+
+function checkEndOfPath() {
+    const room = maze[currentRoom];
+    if (room && room.end_of_path) {
+        completedPaths[room.end_of_path] = true;
+        if (completedPaths.historical && completedPaths.futuristic && completedPaths.prehistoric) {
+            currentRoom = "nexus_of_time";
+        }
+    }
+}

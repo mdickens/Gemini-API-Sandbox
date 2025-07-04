@@ -88,6 +88,49 @@ function handleInput() {
         currentRoom = "suspenseful_library";
         displayRoom(currentRoom);
         checkEndOfPath();
+    } else if (command === "accept" && currentRoom === "futuristic") {
+        currentRoom = "futuristic_gadget";
+        displayRoom(currentRoom);
+        checkEndOfPath();
+    } else if (command === "explore_market" && currentRoom === "futuristic") {
+        currentRoom = "robot_dilemma";
+        displayRoom(currentRoom);
+    } else if (command === "try_to_fix" && currentRoom === "futuristic_gadget") {
+        storyOutput.innerHTML += "<p>You tinker with the gadget, and it starts translating everything into interpretive dance moves. The robot looks confused.</p>";
+        checkEndOfPath();
+    } else if (command === "ignore_gadget" && currentRoom === "futuristic_gadget") {
+        storyOutput.innerHTML += "<p>You decide the gadget is more trouble than it's worth and move on.</p>";
+        checkEndOfPath();
+    } else if (command === "prioritize_efficiency" && currentRoom === "robot_dilemma") {
+        storyOutput.innerHTML += "<p>The robots nod in agreement and immediately begin optimizing their processes, ignoring all creative pursuits.</p>";
+        checkEndOfPath();
+    } else if (command === "prioritize_creativity" && currentRoom === "robot_dilemma") {
+        storyOutput.innerHTML += "<p>The robots light up with new ideas, and begin composing symphonies and painting abstract art.</p>";
+        checkEndOfPath();
+    } else if (command === "ask_more_questions" && currentRoom === "robot_dilemma") {
+        storyOutput.innerHTML += "<p>The robots engage in a deep philosophical discussion with you, revealing the complexities of their society.</p>";
+        checkEndOfPath();
+    } else if (command === "fight" && currentRoom === "prehistoric") {
+        currentRoom = "dinosaur_confrontation";
+        displayRoom(currentRoom);
+    } else if (command === "run" && currentRoom === "prehistoric") {
+        storyOutput.innerHTML += "<p>You run as fast as you can, narrowly escaping the T-Rex.</p>";
+        checkEndOfPath();
+    } else if (command === "hide" && currentRoom === "prehistoric") {
+        storyOutput.innerHTML += "<p>You hide in the dense foliage, and the T-Rex lumbers past, unaware of your presence.</p>";
+        checkEndOfPath();
+    } else if (command === "climb_tree" && currentRoom === "dinosaur_confrontation") {
+        storyOutput.innerHTML += "<p>You scramble up a tree just as the T-Rex snaps its jaws where you were standing. You are safe for now.</p>";
+        checkEndOfPath();
+    } else if (command === "distract_trex" && currentRoom === "dinosaur_confrontation") {
+        storyOutput.innerHTML += "<p>You throw a rock, distracting the T-Rex. It turns its attention to the sound, allowing you to slip away.</p>";
+        checkEndOfPath();
+    } else if (command === "examine_symbols" && currentRoom === "ancient_ruins") {
+        storyOutput.innerHTML += "<p>The symbols glow faintly as you touch them, and you feel a surge of ancient power.</p>";
+        checkEndOfPath();
+    } else if (command === "enter_temple" && currentRoom === "ancient_ruins") {
+        storyOutput.innerHTML += "<p>You enter the crumbling temple, and the air grows heavy with an unknown energy.</p>";
+        checkEndOfPath();
     } else {
         storyOutput.innerHTML += "<p>Invalid command.</p>";
     }
@@ -98,10 +141,8 @@ function checkEndOfPath() {
     if (room && room.end_of_path) {
         completedPaths[room.end_of_path] = true;
         if (completedPaths.historical && completedPaths.futuristic && completedPaths.prehistoric) {
-            // Unlock the final room - assuming 'nexus_of_time' is the final room
-            // This part needs to be carefully designed based on how the final room is integrated.
-            // For now, let's just display a message.
-            storyOutput.innerHTML += "<p>You have completed all paths and unlocked the Nexus of Time!</p>";
+            currentRoom = "nexus_of_time";
+            displayRoom(currentRoom);
         }
     }
 }

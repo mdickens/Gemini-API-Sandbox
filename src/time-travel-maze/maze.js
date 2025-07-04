@@ -69,24 +69,59 @@ const maze = {
     description: "You are surrounded by towering skyscrapers and flying vehicles. A quirky robot offers you a strange gadget.",
     choices: {
       accept: "Accept the gadget",
-      decline: "Decline the gadget"
+      decline: "Decline the gadget",
+      explore_market: "Explore the futuristic market"
+    }
+  },
+  futuristic_gadget: {
+    description: "The robot's gadget hums in your hand. It seems to be a universal translator, but it's malfunctioning, translating everything into opera lyrics.",
+    choices: {
+      try_to_fix: "Try to fix the gadget",
+      ignore_gadget: "Ignore the gadget and move on"
+    },
+    end_of_path: "futuristic"
+  },
+  robot_dilemma: {
+    description: "You encounter a group of robots debating a complex ethical problem: should they prioritize efficiency or creativity? They ask for your input.",
+    choices: {
+      prioritize_efficiency: "Advise them to prioritize efficiency",
+      prioritize_creativity: "Advise them to prioritize creativity",
+      ask_more_questions: "Ask more questions about their society"
     }
   },
   prehistoric: {
     description: "You are in a dense jungle filled with the sounds of dinosaurs. A towering T-Rex blocks your path.",
     choices: {
       fight: "Fight the T-Rex",
-      run: "Run away"
+      run: "Run away",
+      hide: "Hide in the dense foliage"
     }
+  },
+  dinosaur_confrontation: {
+    description: "The T-Rex roars and charges! You must act fast.",
+    choices: {
+      climb_tree: "Climb a nearby tree",
+      distract_trex: "Distract the T-Rex with a loud noise"
+    }
+  },
+  ancient_ruins: {
+    description: "You stumble upon ancient ruins, overgrown with vines. Strange symbols are carved into the stone.",
+    choices: {
+      examine_symbols: "Examine the symbols",
+      enter_temple: "Enter the crumbling temple"
+    },
+    end_of_path: "prehistoric"
   },
   characters: {
     knight: {
       backstory: "Sir Reginald Strongforth is a brave and loyal knight who has sworn to protect the castle from all intruders. He is known for his unwavering dedication and his skill in combat."
     }
   },
-  characters: {
-    knight: {
-      backstory: "Sir Reginald Strongforth is a brave and loyal knight who has sworn to protect the castle from all intruders. He is known for his unwavering dedication and his skill in combat."
+  nexus_of_time: {
+    description: "You have conquered the maze and reached the Nexus of Time. The past, present, and future are all laid out before you. You have the power to reshape reality. What will you do?",
+    choices: {
+      reshape_reality: "Attempt to reshape reality",
+      return_home: "Return to your own time"
     }
   }
 };

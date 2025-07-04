@@ -151,10 +151,14 @@ const story = {
     ]
 };
 
+const characterCreationContainer = document.getElementById('character-creation-container');
+const characterCreationForm = document.getElementById('character-creation-form');
+const gameContainer = document.getElementById('game-container');
 const storyOutput = document.getElementById('story-output');
 const playerInput = document.getElementById('player-input');
 const submitButton = document.getElementById('submit-button');
 
+let player = {};
 let currentRoom = 0;
 let playerInventory = [];
 let completedPaths = {
@@ -162,6 +166,20 @@ let completedPaths = {
     futuristic: false,
     prehistoric: false
 };
+
+characterCreationForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    player.name = document.getElementById('player-name').value;
+    player.strength = parseInt(document.getElementById('strength').value);
+    player.intelligence = parseInt(document.getElementById('intelligence').value);
+    player.charisma = parseInt(document.getElementById('charisma').value);
+
+    characterCreationContainer.style.display = 'none';
+    gameContainer.style.display = 'block';
+
+    displayRoom(currentRoom);
+});
+
 
 function displayRoom(roomId) {
     const room = story.rooms.find(r => r.id === roomId);
@@ -308,5 +326,3 @@ playerInput.addEventListener('keypress', function (e) {
         handleInput();
     }
 });
-
-displayRoom(currentRoom);

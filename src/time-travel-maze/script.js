@@ -19,16 +19,22 @@ let completedPaths = {
 
 characterCreationForm.addEventListener('submit', function (e) {
     e.preventDefault();
+    console.log("Start Game button clicked!");
     player.name = document.getElementById('player-name').value;
     player.strength = parseInt(document.getElementById('strength').value);
     player.intelligence = parseInt(document.getElementById('intelligence').value);
     player.charisma = parseInt(document.getElementById('charisma').value);
 
+    console.log("Player stats:", player);
+
     characterCreationContainer.style.display = 'none';
     gameContainer.style.display = 'block';
+    console.log("Display properties changed.");
 
     currentRoom = "start";
+    console.log("Current room set to:", currentRoom);
     displayRoom(currentRoom);
+    console.log("displayRoom function called.");
 });
 
 function displayRoom(roomId, character = null) {

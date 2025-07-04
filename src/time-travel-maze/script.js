@@ -1,43 +1,45 @@
 import maze from './maze.js';
 
-const characterCreationContainer = document.getElementById('character-creation-container');
-const characterCreationForm = document.getElementById('character-creation-form');
-const gameContainer = document.getElementById('game-container');
-const storyOutput = document.getElementById('story-output');
-const playerInput = document.getElementById('player-input');
-const submitButton = document.getElementById('submit-button');
+export const characterCreationContainer = document.getElementById('character-creation-container');
+export const characterCreationForm = document.getElementById('character-creation-form');
+export const gameContainer = document.getElementById('game-container');
+export const storyOutput = document.getElementById('story-output');
+export const playerInput = document.getElementById('player-input');
+export const submitButton = document.getElementById('submit-button');
 
-let player = {};
-let currentRoom = "start";
-let playerInventory = [];
-let previousRoom = "";
-let completedPaths = {
+export let player = {};
+export let currentRoom = "start";
+export let playerInventory = [];
+export let previousRoom = "";
+export let completedPaths = {
     historical: false,
     futuristic: false,
     prehistoric: false
 };
 
-characterCreationForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    console.log("Start Game button clicked!");
-    player.name = document.getElementById('player-name').value;
-    player.strength = parseInt(document.getElementById('strength').value);
-    player.intelligence = parseInt(document.getElementById('intelligence').value);
-    player.charisma = parseInt(document.getElementById('charisma').value);
+if(characterCreationForm) {
+    characterCreationForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        console.log("Start Game button clicked!");
+        player.name = document.getElementById('player-name').value;
+        player.strength = parseInt(document.getElementById('strength').value);
+        player.intelligence = parseInt(document.getElementById('intelligence').value);
+        player.charisma = parseInt(document.getElementById('charisma').value);
 
-    console.log("Player stats:", player);
+        console.log("Player stats:", player);
 
-    characterCreationContainer.style.display = 'none';
-    gameContainer.style.display = 'block';
-    console.log("Display properties changed.");
+        characterCreationContainer.style.display = 'none';
+        gameContainer.style.display = 'block';
+        console.log("Display properties changed.");
 
-    currentRoom = "start";
-    console.log("Current room set to:", currentRoom);
-    displayRoom(currentRoom);
-    console.log("displayRoom function called.");
-});
+        currentRoom = "start";
+        console.log("Current room set to:", currentRoom);
+        displayRoom(currentRoom);
+        console.log("displayRoom function called.");
+    });
+}
 
-function displayRoom(roomId, character = null) {
+export function displayRoom(roomId, character = null) {
     const room = maze[roomId];
     if (room) {
         let description = room.description;
@@ -71,7 +73,7 @@ function displayRoom(roomId, character = null) {
     }
 }
 
-function handleInput() {
+export function handleInput() {
     const command = playerInput.value.toLowerCase().trim();
     playerInput.value = '';
     const room = maze[currentRoom];
@@ -142,7 +144,7 @@ function handleInput() {
     }
 }
 
-function checkEndOfPath() {
+export function checkEndOfPath() {
     const room = maze[currentRoom];
     if (room && room.end_of_path) {
         completedPaths[room.end_of_path] = true;
@@ -153,9 +155,13 @@ function checkEndOfPath() {
     }
 }
 
-submitButton.addEventListener('click', handleInput);
-playerInput.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        handleInput();
-    }
-});
+if(submitButton) {
+    submitButton.addEventListener('click', handleInput);
+}
+if(playerInput) {
+    playerInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            handleInput();
+        }
+    });
+}

@@ -20,6 +20,8 @@ characterCreationForm.addEventListener('submit', function (e) {
     displayRoom("start");
 });
 
+let currentChoices = [];
+
 function displayRoom(roomId, character = null) {
     const room = maze[roomId];
     if (room) {
@@ -44,9 +46,10 @@ function displayRoom(roomId, character = null) {
         if (room.choices) {
             output += "<p><strong>Choices:</strong></p>";
             output += "<ul>";
-            for (const choice in room.choices) {
-                output += `<li><strong>${choice}:</strong> ${room.choices[choice]}</li>`;
-            }
+            currentChoices = Object.keys(room.choices);
+            currentChoices.forEach((choice, index) => {
+                output += `<li><strong>${index + 1}:</strong> ${room.choices[choice]}</li>`;
+            });
             output += "</ul>";
         }
 
@@ -59,7 +62,13 @@ function displayRoom(roomId, character = null) {
 function handleInput() {
     const command = playerInput.value.toLowerCase().trim();
     playerInput.value = '';
-    const result = game.processInput(command);
+    const choiceIndex = parseInt(command) - 1;
+    let result;
+    if (!isNaN(choiceIndex) && choiceIndex >= 0 && choiceIndex < currentChoices.length) {
+        result = game.processInput(currentChoices[choiceIndex]);
+    } else {
+        result = game.processInput(command);
+    }
 
     if (result.message) {
         storyOutput.innerHTML += `<p>${result.message}</p>`;

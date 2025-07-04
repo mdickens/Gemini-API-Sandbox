@@ -55,6 +55,30 @@ const game = (function() {
         } else if (command === "ignore_gadget" && currentRoom === "futuristic_gadget") {
             checkEndOfPath();
             return { message: "You decide the gadget is more trouble than it's worth and move on." };
+        } else if (command === "apologize" && currentRoom === "humorous_encounter") {
+            return { message: "You apologize, and the gentleman graciously accepts, offering you a cup of tea." };
+        } else if (command === "dance" && currentRoom === "humorous_encounter") {
+            return { message: "You start dancing. The gentleman, after a moment of shock, joins in!" };
+        } else if (command === "kneel" && currentRoom === "royal_court") {
+            return { message: "You kneel before the King. He nods in approval." };
+        } else if (command === "speak" && currentRoom === "royal_court") {
+            return { message: "You speak to the King. He listens intently." };
+        } else if (command === "observe" && currentRoom === "royal_court") {
+            return { message: "You observe the court from a distance, taking in the scene." };
+        } else if (command === "deliver_message" && currentRoom === "royal_dilemma") {
+            return { message: "You choose to deliver the message as requested." };
+        } else if (command === "warn_king" && currentRoom === "royal_dilemma") {
+            return { message: "You warn the King of the plot. He is grateful for your loyalty." };
+        } else if (command === "investigate_whispers" && currentRoom === "suspenseful_library") {
+            return { message: "You investigate the whispers and find a hidden passage." };
+        } else if (command === "read_ancient_tome" && currentRoom === "suspenseful_library") {
+            return { message: "You read from an ancient tome and learn a forgotten secret." };
+        } else if (command === "leave_library" && currentRoom === "suspenseful_library") {
+            return { message: "You quietly leave the library." };
+        } else if (command === "reshape_reality" && currentRoom === "nexus_of_time") {
+            return { message: "You attempt to reshape reality, but the power is too great. You are returned to the Nexus." };
+        } else if (command === "return_home" && currentRoom === "nexus_of_time") {
+            return { message: "You choose to return to your own time, the adventure forever a part of you." };
         } else if (command === "prioritize_efficiency" && currentRoom === "robot_dilemma") {
             checkEndOfPath();
             return { message: "The robots nod in agreement and immediately begin optimizing their processes, ignoring all creative pursuits." };

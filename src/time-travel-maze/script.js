@@ -303,12 +303,19 @@ function handleInput() {
             storyOutput.innerHTML += "<p>You don't have that.</p>";
         }
     } else {
+    function handleInput() {
+    const command = playerInput.value.toLowerCase().trim();
+    playerInput.value = '';
+    const room = maze[currentRoom];
+
     if (room.choices && room.choices[command]) {
+        previousRoom = currentRoom;
         currentRoom = command;
         displayRoom(currentRoom);
     } else {
         storyOutput.innerHTML += "<p>Invalid command.</p>";
     }
+}
 }
 
 function checkEndOfPath() {

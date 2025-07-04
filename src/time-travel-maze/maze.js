@@ -125,5 +125,3 @@ const maze = {
     }
   }
 };
-
-export default maze;

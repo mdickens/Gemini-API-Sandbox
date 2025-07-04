@@ -65,4 +65,4 @@ const maze = {
   }
 };
 
-module.exports = maze;
+export default maze;

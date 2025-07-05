@@ -61,12 +61,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pieceType === 'r') {
             return isValidRookMove(startRow, startCol, endRow, endCol);
         }
+        if (pieceType === 'n') {
+            return isValidKnightMove(startRow, startCol, endRow, endCol);
+        }
         // TODO: Add other piece move validations
         return true; // Placeholder for other pieces
     }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();
+    }
+
+    function isValidKnightMove(startRow, startCol, endRow, endCol) {
+        const rowDiff = Math.abs(startRow - endRow);
+        const colDiff = Math.abs(startCol - endCol);
+        return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
     }
 
     function isValidRookMove(startRow, startCol, endRow, endCol) {

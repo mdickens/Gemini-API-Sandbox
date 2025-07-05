@@ -58,12 +58,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pieceType === 'p') {
             return isValidPawnMove(startRow, startCol, endRow, endCol, piece);
         }
+        if (pieceType === 'r') {
+            return isValidRookMove(startRow, startCol, endRow, endCol);
+        }
         // TODO: Add other piece move validations
         return true; // Placeholder for other pieces
     }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();
+    }
+
+    function isValidRookMove(startRow, startCol, endRow, endCol) {
+        if (startRow !== endRow && startCol !== endCol) {
+            return false; // Not a straight line
+        }
+
+        const rowStep = Math.sign(endRow - startRow);
+        const colStep = Math.sign(endCol - startCol);
+
+        let currentRow = startRow + rowStep;
+        let currentCol = startCol + colStep;
+
+        while (currentRow !== endRow || currentCol !== endCol) {
+            if (board[currentRow][currentCol] !== '') {
+                return false; // Path is blocked
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+
+        return true;
     }
 
     function isValidPawnMove(startRow, startCol, endRow, endCol, piece) {

@@ -451,4 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.style.display = 'none';
         }
     }
+
+    const newGameButton = document.getElementById('new-game-button');
+    newGameButton.addEventListener('click', () => {
+        location.reload();
+    });
 });

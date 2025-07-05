@@ -67,12 +67,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pieceType === 'b') {
             return isValidBishopMove(startRow, startCol, endRow, endCol);
         }
+        if (pieceType === 'q') {
+            return isValidQueenMove(startRow, startCol, endRow, endCol);
+        }
         // TODO: Add other piece move validations
         return true; // Placeholder for other pieces
     }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();
+    }
+
+    function isValidQueenMove(startRow, startCol, endRow, endCol) {
+        return isValidRookMove(startRow, startCol, endRow, endCol) || isValidBishopMove(startRow, startCol, endRow, endCol);
     }
 
     function isValidBishopMove(startRow, startCol, endRow, endCol) {

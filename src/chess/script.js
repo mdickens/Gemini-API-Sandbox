@@ -46,4 +46,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     createBoard();
+
+    chessboard.addEventListener('click', (event) => {
+        const square = event.target.closest('.square');
+        if (!square) return;
+
+        if (selectedPiece) {
+            // Move piece
+            const targetRow = parseInt(square.dataset.row);
+            const targetCol = parseInt(square.dataset.col);
+
+            const piece = selectedPiece.dataset.piece;
+            board[selectedSquare.dataset.row][selectedSquare.dataset.col] = '';
+            board[targetRow][targetCol] = piece;
+
+            createBoard(); // Redraw board
+
+            // Switch turns
+            whiteTurn = !whiteTurn;
+            statusDisplay.textContent = whiteTurn ? "White's turn" : "Black's turn";
+
+            selectedPiece = null;
+            selectedSquare = null;
+        } else {
+            // Select piece
+            const pieceElement = square.querySelector('.piece');
+            if (pieceElement) {
+                const piece = pieceElement.dataset.piece;
+                const isWhitePiece = piece === piece.toUpperCase();
+
+                if ((whiteTurn && isWhitePiece) || (!whiteTurn && !isWhitePiece)) {
+                    selectedPiece = pieceElement;
+                    selectedSquare = square;
+                }
+            }
+        }
+    });
 });

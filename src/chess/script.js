@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedSquare = null;
     let whiteTurn = true;
 
+    let whiteCaptured = [];
+    let blackCaptured = [];
+
     function createBoard() {
         chessboard.innerHTML = '';
         for (let row = 0; row < 8; row++) {
@@ -52,6 +55,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 kingSquare.classList.add('check');
             }
         }
+
+        updateCapturedPanels();
+    }
+
+    function updateCapturedPanels() {
+        const whiteCapturedPanel = document.getElementById('white-captured');
+        const blackCapturedPanel = document.getElementById('black-captured');
+        whiteCapturedPanel.innerHTML = '';
+        blackCapturedPanel.innerHTML = '';
+
+        whiteCaptured.forEach(piece => {
+            const pieceElement = document.createElement('span');
+            pieceElement.classList.add('piece');
+            pieceElement.textContent = pieceUnicode[piece];
+            whiteCapturedPanel.appendChild(pieceElement);
+        });
+
+        blackCaptured.forEach(piece => {
+            const pieceElement = document.createElement('span');
+            pieceElement.classList.add('piece');
+            pieceElement.textContent = pieceUnicode[piece];
+            blackCapturedPanel.appendChild(pieceElement);
+        });
     }
 
     function isValidMove(startRow, startCol, endRow, endCol) {
@@ -241,6 +267,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isValidMove(startRow, startCol, row, col)) {
                 const piece = selectedPiece.dataset.piece;
+                const capturedPiece = board[row][col];
+
+                if (capturedPiece) {
+                    if (isWhite(capturedPiece)) {
+                        blackCaptured.push(capturedPiece);
+                    } else {
+                        whiteCaptured.push(capturedPiece);
+                    }
+                }
 
                 // Handle castling
                 if (piece.toLowerCase() === 'k' && Math.abs(startCol - col) === 2) {

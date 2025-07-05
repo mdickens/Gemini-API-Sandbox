@@ -302,11 +302,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Pawn Promotion
                 if (piece.toLowerCase() === 'p' && (row === 0 || row === 7)) {
-                    const newPiece = prompt("Promote to (q, r, b, n):", "q");
-                    board[row][col] = whiteTurn ? newPiece.toUpperCase() : newPiece.toLowerCase();
-                }
+                    const promotionModal = document.getElementById('promotion-modal');
+                    promotionModal.style.display = 'block';
 
-                createBoard();
+                    const promotionChoices = document.getElementById('promotion-choices');
+                    promotionChoices.onclick = (event) => {
+                        const newPiece = event.target.dataset.piece;
+                        board[row][col] = whiteTurn ? newPiece.toUpperCase() : newPiece.toLowerCase();
+                        promotionModal.style.display = 'none';
+                        createBoard();
+                    }
+                } else {
+                    createBoard();
+                }
 
                 whiteTurn = !whiteTurn;
                 let status = whiteTurn ? "White's turn" : "Black's turn";

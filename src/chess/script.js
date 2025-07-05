@@ -70,12 +70,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pieceType === 'q') {
             return isValidQueenMove(startRow, startCol, endRow, endCol);
         }
-        // TODO: Add other piece move validations
-        return true; // Placeholder for other pieces
+        if (pieceType === 'k') {
+            return isValidKingMove(startRow, startCol, endRow, endCol);
+        }
+        return false;
     }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();
+    }
+
+    function isValidKingMove(startRow, startCol, endRow, endCol) {
+        const rowDiff = Math.abs(startRow - endRow);
+        const colDiff = Math.abs(startCol - endCol);
+        return rowDiff <= 1 && colDiff <= 1;
     }
 
     function isValidQueenMove(startRow, startCol, endRow, endCol) {

@@ -179,6 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 board[startRow][startCol] = '';
                 board[row][col] = piece;
 
+                // Pawn Promotion
+                if (piece.toLowerCase() === 'p' && (row === 0 || row === 7)) {
+                    const newPiece = prompt("Promote to (q, r, b, n):", "q");
+                    board[row][col] = whiteTurn ? newPiece.toUpperCase() : newPiece.toLowerCase();
+                }
+
                 createBoard();
 
                 whiteTurn = !whiteTurn;

@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return false;
     }
+    }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();

@@ -58,6 +58,11 @@ body {
     background-color: #ff7f7f;
 }
 
+.valid-move {
+    background-color: #a5c9a5;
+    opacity: 0.5;
+}
+
 .modal {
     position: fixed;
     z-index: 1;

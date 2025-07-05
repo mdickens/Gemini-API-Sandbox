@@ -287,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedPiece.parentElement.classList.remove('selected');
             selectedPiece = null;
             selectedSquare = null;
+            clearHighlights();
 
         } else {
             const pieceElement = square.querySelector('.piece');
@@ -296,9 +297,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
                     selectedPiece.parentElement.classList.add('selected');
+                    highlightValidMoves(row, col);
                 }
             }
         }
+    }
+
+    function highlightValidMoves(startRow, startCol) {
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                if (isValidMove(startRow, startCol, row, col)) {
+                    const square = chessboard.querySelector(`[data-row='${row}'][data-col='${col}']`);
+                    if (square) {
+                        square.classList.add('valid-move');
+                    }
+                }
+            }
+        }
+    }
+
+    function clearHighlights() {
+        const highlightedSquares = document.querySelectorAll('.valid-move');
+        highlightedSquares.forEach(square => square.classList.remove('valid-move'));
     }
 
     function getPieces(isWhitePlayer) {

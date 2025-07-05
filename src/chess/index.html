@@ -11,8 +11,31 @@
         <div id="chessboard"></div>
         <div id="status-panel">
             <p>Status: <span id="status">White's turn</span></p>
+            <button id="help-button">Help</button>
         </div>
     </div>
+
+    <div id="help-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>How to Play</h2>
+            <p>This is a standard game of chess. The goal is to checkmate your opponent's king.</p>
+            <h3>Moving Pieces</h3>
+            <p>1. Click on a piece to select it.</p>
+            <p>2. The square of the selected piece will be highlighted.</p>
+            <p>3. Click on a valid destination square to move the piece.</p>
+            <h3>Rules</h3>
+            <ul>
+                <li><strong>White</strong> moves first.</li>
+                <li>Players take turns moving one piece at a time.</li>
+                <li>You can only move your own pieces.</li>
+                <li>If your King is under attack (in "check"), you must make a move to get it out of check.</li>
+                <li><strong>Checkmate:</strong> If your King is in check and you have no legal moves to get out of check, you lose the game.</li>
+                <li><strong>Stalemate:</strong> If it's your turn to move, your King is NOT in check, but you have no legal moves, the game is a draw.</li>
+            </ul>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

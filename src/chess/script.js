@@ -378,4 +378,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createBoard();
     chessboard.addEventListener('click', handleSquareClick);
+
+    const helpButton = document.getElementById('help-button');
+    const modal = document.getElementById('help-modal');
+    const closeButton = document.getElementsByClassName('close-button')[0];
+
+    helpButton.onclick = function() {
+        modal.style.display = 'block';
+    }
+
+    closeButton.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
 });

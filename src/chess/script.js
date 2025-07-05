@@ -198,10 +198,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 whiteTurn = !whiteTurn;
                 let status = whiteTurn ? "White's turn" : "Black's turn";
-                if (isKingInCheck(whiteTurn)) {
-                    status += " (Check)";
-                }
                 statusDisplay.textContent = status;
+
+                if (isCheckmate(whiteTurn)) {
+                    statusDisplay.textContent = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
+                    chessboard.removeEventListener('click', handleSquareClick);
+                } else if (isStalemate(whiteTurn)) {
+                    statusDisplay.textContent = "Stalemate! It's a draw.";
+                    chessboard.removeEventListener('click', handleSquareClick);
+                }
             }
 
             selectedPiece.parentElement.classList.remove('selected');
@@ -219,6 +224,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    }
+
+    function getPieces(isWhitePlayer) {
+        const pieces = [];
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = board[row][col];
+                if (piece && isWhite(piece) === isWhitePlayer) {
+                    pieces.push({ piece, row, col });
+                }
+            }
+        }
+        return pieces;
+    }
+
+    function hasValidMoves(isWhitePlayer) {
+        const pieces = getPieces(isWhitePlayer);
+        for (const piece of pieces) {
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (isValidMove(piece.row, piece.col, row, col)) {
+                        // Simulate move
+                        const originalPiece = board[row][col];
+                        board[row][col] = piece.piece;
+                        board[piece.row][piece.col] = '';
+                        if (!isKingInCheck(isWhitePlayer)) {
+                            board[piece.row][piece.col] = piece.piece;
+                            board[row][col] = originalPiece;
+                            return true;
+                        }
+                        board[piece.row][piece.col] = piece.piece;
+                        board[row][col] = originalPiece;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    function isCheckmate(isWhitePlayer) {
+        return isKingInCheck(isWhitePlayer) && !hasValidMoves(isWhitePlayer);
+    }
+
+    function isStalemate(isWhitePlayer) {
+        return !isKingInCheck(isWhitePlayer) && !hasValidMoves(isWhitePlayer);
     }
 
     function findKing(isWhiteKing) {

@@ -275,6 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         whiteCaptured.push(capturedPiece);
                     }
+                    document.getElementById('capture-sound').play();
+                } else {
+                    document.getElementById('move-sound').play();
                 }
 
                 // Handle castling
@@ -285,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     board[row][rookCol] = '';
                     board[row][newRookCol] = rook;
                 }
-
                 board[startRow][startCol] = '';
                 board[row][col] = piece;
 
@@ -312,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isCheckmate(whiteTurn)) {
                     statusDisplay.textContent = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
+                    document.getElementById('win-sound').play();
                     chessboard.removeEventListener('click', handleSquareClick);
                 } else if (isStalemate(whiteTurn)) {
                     statusDisplay.textContent = "Stalemate! It's a draw.";

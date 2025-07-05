@@ -90,10 +90,67 @@ document.addEventListener('DOMContentLoaded', () => {
         return piece === piece.toUpperCase();
     }
 
+    let whiteKingMoved = false;
+    let blackKingMoved = false;
+    let whiteRooksMoved = [false, false];
+    let blackRooksMoved = [false, false];
+
     function isValidKingMove(startRow, startCol, endRow, endCol) {
         const rowDiff = Math.abs(startRow - endRow);
         const colDiff = Math.abs(startCol - endCol);
-        return rowDiff <= 1 && colDiff <= 1;
+
+        if (rowDiff <= 1 && colDiff <= 1) {
+            return true;
+        }
+
+        return isValidCastling(startRow, startCol, endRow, endCol);
+    }
+
+    function isValidCastling(startRow, startCol, endRow, endCol) {
+        if (isKingInCheck(whiteTurn)) {
+            return false;
+        }
+
+        const isWhite = whiteTurn;
+        const kingMoved = isWhite ? whiteKingMoved : blackKingMoved;
+        if (kingMoved) {
+            return false;
+        }
+
+        const row = isWhite ? 7 : 0;
+        if (startRow !== row || startCol !== 4 || endRow !== row) {
+            return false;
+        }
+
+        // Queenside
+        if (endCol === 2) {
+            const rookMoved = isWhite ? whiteRooksMoved[0] : blackRooksMoved[0];
+            if (rookMoved || board[row][1] || board[row][2] || board[row][3]) {
+                return false;
+            }
+            return !isSquareAttacked(row, 3, !isWhite) && !isSquareAttacked(row, 4, !isWhite);
+        }
+
+        // Kingside
+        if (endCol === 6) {
+            const rookMoved = isWhite ? whiteRooksMoved[1] : blackRooksMoved[1];
+            if (rookMoved || board[row][5] || board[row][6]) {
+                return false;
+            }
+            return !isSquareAttacked(row, 5, !isWhite) && !isSquareAttacked(row, 4, !isWhite);
+        }
+
+        return false;
+    }
+
+    function isSquareAttacked(row, col, byWhite) {
+        const opponentPieces = getPieces(!byWhite);
+        for (const piece of opponentPieces) {
+            if (isValidMove(piece.row, piece.col, row, col)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function isValidQueenMove(startRow, startCol, endRow, endCol) {
@@ -185,8 +242,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isValidMove(startRow, startCol, row, col)) {
                 const piece = selectedPiece.dataset.piece;
+
+                // Handle castling
+                if (piece.toLowerCase() === 'k' && Math.abs(startCol - col) === 2) {
+                    const rookCol = col === 2 ? 0 : 7;
+                    const newRookCol = col === 2 ? 3 : 5;
+                    const rook = board[row][rookCol];
+                    board[row][rookCol] = '';
+                    board[row][newRookCol] = rook;
+                }
+
                 board[startRow][startCol] = '';
                 board[row][col] = piece;
+
+                // Update moved flags
+                if (piece === 'K') whiteKingMoved = true;
+                if (piece === 'k') blackKingMoved = true;
+                if (piece === 'R' && startCol === 0) whiteRooksMoved[0] = true;
+                if (piece === 'R' && startCol === 7) whiteRooksMoved[1] = true;
+                if (piece === 'r' && startCol === 0) blackRooksMoved[0] = true;
+                if (piece === 'r' && startCol === 7) blackRooksMoved[1] = true;
+
 
                 // Pawn Promotion
                 if (piece.toLowerCase() === 'p' && (row === 0 || row === 7)) {

@@ -43,6 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 chessboard.appendChild(square);
             }
         }
+
+        const kingInCheck = isKingInCheck(whiteTurn);
+        if (kingInCheck) {
+            const kingPosition = findKing(whiteTurn);
+            const kingSquare = chessboard.querySelector(`[data-row='${kingPosition.row}'][data-col='${kingPosition.col}']`);
+            if (kingSquare) {
+                kingSquare.classList.add('check');
+            }
+        }
     }
 
     function isValidMove(startRow, startCol, endRow, endCol) {
@@ -188,7 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 createBoard();
 
                 whiteTurn = !whiteTurn;
-                statusDisplay.textContent = whiteTurn ? "White's turn" : "Black's turn";
+                let status = whiteTurn ? "White's turn" : "Black's turn";
+                if (isKingInCheck(whiteTurn)) {
+                    status += " (Check)";
+                }
+                statusDisplay.textContent = status;
             }
 
             selectedPiece.parentElement.classList.remove('selected');
@@ -206,6 +219,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    }
+
+    function findKing(isWhiteKing) {
+        const king = isWhiteKing ? 'K' : 'k';
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                if (board[row][col] === king) {
+                    return { row, col };
+                }
+            }
+        }
+        return null;
+    }
+
+    function isKingInCheck(isWhiteKing) {
+        const kingPosition = findKing(isWhiteKing);
+        if (!kingPosition) return false;
+
+        const opponentColor = isWhiteKing ? 'black' : 'white';
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = board[row][col];
+                if (piece && (isWhite(piece) !== isWhiteKing)) {
+                    if (isValidMove(row, col, kingPosition.row, kingPosition.col)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     createBoard();

@@ -49,3 +49,7 @@ body {
     margin-top: 20px;
     font-size: 1.2em;
 }
+
+.selected {
+    background-color: #a5c9a5;
+}

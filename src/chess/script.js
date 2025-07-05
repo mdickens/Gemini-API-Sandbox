@@ -45,41 +45,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    createBoard();
+    function isValidMove(startRow, startCol, endRow, endCol) {
+        const piece = board[startRow][startCol];
+        const targetPiece = board[endRow][endCol];
 
-    chessboard.addEventListener('click', (event) => {
+        // General validation
+        if (targetPiece && (isWhite(piece) === isWhite(targetPiece))) {
+            return false; // Can't capture same color piece
+        }
+
+        const pieceType = piece.toLowerCase();
+        if (pieceType === 'p') {
+            return isValidPawnMove(startRow, startCol, endRow, endCol, piece);
+        }
+        // TODO: Add other piece move validations
+        return true; // Placeholder for other pieces
+    }
+
+    function isWhite(piece) {
+        return piece === piece.toUpperCase();
+    }
+
+    function isValidPawnMove(startRow, startCol, endRow, endCol, piece) {
+        const direction = isWhite(piece) ? -1 : 1;
+        const startRank = isWhite(piece) ? 6 : 1;
+
+        // Standard one-square move
+        if (startCol === endCol && board[endRow][endCol] === '' && endRow === startRow + direction) {
+            return true;
+        }
+
+        // Initial two-square move
+        if (startCol === endCol && board[endRow][endCol] === '' && startRow === startRank && endRow === startRow + 2 * direction) {
+            return true;
+        }
+
+        // Capture move
+        if (Math.abs(startCol - endCol) === 1 && endRow === startRow + direction && board[endRow][endCol] !== '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleSquareClick(event) {
         const square = event.target.closest('.square');
         if (!square) return;
 
+        const row = parseInt(square.dataset.row);
+        const col = parseInt(square.dataset.col);
+
         if (selectedPiece) {
-            // Move piece
-            const targetRow = parseInt(square.dataset.row);
-            const targetCol = parseInt(square.dataset.col);
+            const startRow = parseInt(selectedSquare.dataset.row);
+            const startCol = parseInt(selectedSquare.dataset.col);
 
-            const piece = selectedPiece.dataset.piece;
-            board[selectedSquare.dataset.row][selectedSquare.dataset.col] = '';
-            board[targetRow][targetCol] = piece;
+            if (isValidMove(startRow, startCol, row, col)) {
+                const piece = selectedPiece.dataset.piece;
+                board[startRow][startCol] = '';
+                board[row][col] = piece;
 
-            createBoard(); // Redraw board
+                createBoard();
 
-            // Switch turns
-            whiteTurn = !whiteTurn;
-            statusDisplay.textContent = whiteTurn ? "White's turn" : "Black's turn";
+                whiteTurn = !whiteTurn;
+                statusDisplay.textContent = whiteTurn ? "White's turn" : "Black's turn";
+            }
 
+            selectedPiece.parentElement.classList.remove('selected');
             selectedPiece = null;
             selectedSquare = null;
+
         } else {
-            // Select piece
             const pieceElement = square.querySelector('.piece');
             if (pieceElement) {
                 const piece = pieceElement.dataset.piece;
-                const isWhitePiece = piece === piece.toUpperCase();
-
-                if ((whiteTurn && isWhitePiece) || (!whiteTurn && !isWhitePiece)) {
+                if ((whiteTurn && isWhite(piece)) || (!whiteTurn && !isWhite(piece))) {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
+                    selectedPiece.parentElement.classList.add('selected');
                 }
             }
         }
-    });
+    }
+
+    createBoard();
+    chessboard.addEventListener('click', handleSquareClick);
 });

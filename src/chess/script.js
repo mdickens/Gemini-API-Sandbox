@@ -64,12 +64,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pieceType === 'n') {
             return isValidKnightMove(startRow, startCol, endRow, endCol);
         }
+        if (pieceType === 'b') {
+            return isValidBishopMove(startRow, startCol, endRow, endCol);
+        }
         // TODO: Add other piece move validations
         return true; // Placeholder for other pieces
     }
 
     function isWhite(piece) {
         return piece === piece.toUpperCase();
+    }
+
+    function isValidBishopMove(startRow, startCol, endRow, endCol) {
+        if (Math.abs(startRow - endRow) !== Math.abs(startCol - endCol)) {
+            return false; // Not a diagonal line
+        }
+
+        const rowStep = Math.sign(endRow - startRow);
+        const colStep = Math.sign(endCol - startCol);
+
+        let currentRow = startRow + rowStep;
+        let currentCol = startCol + colStep;
+
+        while (currentRow !== endRow || currentCol !== endCol) {
+            if (board[currentRow][currentCol] !== '') {
+                return false; // Path is blocked
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+
+        return true;
     }
 
     function isValidKnightMove(startRow, startCol, endRow, endCol) {

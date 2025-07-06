@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chessboard = document.getElementById('chessboard');
     const statusDisplay = document.getElementById('status');
 
-    const board = [
+    let board = [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
         ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
         ['', '', '', '', '', '', '', ''],
@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let whiteCaptured = [];
     let blackCaptured = [];
+    let moveHistory = [];
 
     function createBoard() {
         chessboard.innerHTML = '';
@@ -274,6 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const piece = selectedPiece.dataset.piece;
                 const capturedPiece = board[row][col];
 
+                moveHistory.push(JSON.parse(JSON.stringify(board)));
+
                 if (capturedPiece) {
                     if (isWhite(capturedPiece)) {
                         blackCaptured.push(capturedPiece);
@@ -467,5 +470,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const newGameButton = document.getElementById('new-game-button');
     newGameButton.addEventListener('click', () => {
         location.reload();
+    });
+
+    const takebackButton = document.getElementById('takeback-button');
+    takebackButton.addEventListener('click', () => {
+        if (moveHistory.length > 0) {
+            board = moveHistory.pop();
+            whiteTurn = !whiteTurn;
+            createBoard();
+        }
     });
 });

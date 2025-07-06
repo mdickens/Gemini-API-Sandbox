@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const chessboard = document.getElementById('chessboard');
     const statusDisplay = document.getElementById('status');
+    const whiteTimerDisplay = document.getElementById('white-timer');
+    const blackTimerDisplay = document.getElementById('black-timer');
 
     let board = [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
@@ -25,6 +27,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let whiteCaptured = [];
     let blackCaptured = [];
     let moveHistory = [];
+
+    let whiteTime = 600; // 10 minutes in seconds
+    let blackTime = 600;
+    let timerInterval;
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    function updateTimers() {
+        whiteTimerDisplay.textContent = formatTime(whiteTime);
+        blackTimerDisplay.textContent = formatTime(blackTime);
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if (whiteTurn) {
+                whiteTime--;
+            } else {
+                blackTime--;
+            }
+            updateTimers();
+            if (whiteTime === 0 || blackTime === 0) {
+                clearInterval(timerInterval);
+                const winner = whiteTime === 0 ? "Black" : "White";
+                statusDisplay.textContent = `Time's up! ${winner} wins.`;
+                chessboard.removeEventListener('click', handleSquareClick);
+            }
+        }, 1000);
+    }
 
     function createBoard() {
         chessboard.innerHTML = '';
@@ -448,6 +482,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     createBoard();
     chessboard.addEventListener('click', handleSquareClick);
+    startTimer();
+    updateTimers();
 
     const helpButton = document.getElementById('help-button');
     const modal = document.getElementById('help-modal');

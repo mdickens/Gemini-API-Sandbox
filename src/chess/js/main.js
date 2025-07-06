@@ -176,4 +176,11 @@ document.addEventListener('DOMContentLoaded', () => {
             createBoard(chessboard);
         }
     });
+
+    const resignButton = document.getElementById('resign-button');
+    resignButton.addEventListener('click', () => {
+        const winner = whiteTurn ? "Black" : "White";
+        statusDisplay.textContent = `${winner} wins by resignation.`;
+        chessboard.removeEventListener('click', handleSquareClick);
+    });
 });

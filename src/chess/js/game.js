@@ -8,6 +8,11 @@ export let blackRooksMoved = [false, false];
 export let moveHistory = [];
 export let whiteCaptured = [];
 export let blackCaptured = [];
+export let lastMove = null;
+
+export function setLastMove(move) {
+    lastMove = move;
+}
 
 export function isValidMove(startRow, startCol, endRow, endCol, checkingKing = false) {
     const piece = board[startRow][startCol];
@@ -177,6 +182,20 @@ function isValidPawnMove(startRow, startCol, endRow, endCol, piece) {
 
     // Capture move
     if (Math.abs(startCol - endCol) === 1 && endRow === startRow + direction && board[endRow][endCol] !== '') {
+        return true;
+    }
+
+    // En passant
+    if (
+        Math.abs(startCol - endCol) === 1 &&
+        endRow === startRow + direction &&
+        board[endRow][endCol] === '' &&
+        lastMove &&
+        lastMove.piece.toLowerCase() === 'p' &&
+        Math.abs(lastMove.startRow - lastMove.endRow) === 2 &&
+        lastMove.endRow === startRow &&
+        lastMove.endCol === endCol
+    ) {
         return true;
     }
 

@@ -275,9 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         whiteCaptured.push(capturedPiece);
                     }
-                    document.getElementById('capture-sound').play();
-                } else {
-                    document.getElementById('move-sound').play();
                 }
 
                 // Handle castling

@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function isValidMove(startRow, startCol, endRow, endCol) {
+    function isValidMove(startRow, startCol, endRow, endCol, checkingKing = false) {
         const piece = board[startRow][startCol];
         const targetPiece = board[endRow][endCol];
 
@@ -106,6 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return isValidQueenMove(startRow, startCol, endRow, endCol);
         }
         if (pieceType === 'k') {
+            if(checkingKing) {
+                const rowDiff = Math.abs(startRow - endRow);
+                const colDiff = Math.abs(startCol - endCol);
+                return rowDiff <= 1 && colDiff <= 1;
+            }
             return isValidKingMove(startRow, startCol, endRow, endCol);
         }
         return false;
@@ -171,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function isSquareAttacked(row, col, byWhite) {
         const opponentPieces = getPieces(!byWhite);
         for (const piece of opponentPieces) {
-            if (isValidMove(piece.row, piece.col, row, col)) {
+            if (isValidMove(piece.row, piece.col, row, col, true)) {
                 return true;
             }
         }
@@ -319,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isCheckmate(whiteTurn)) {
                     statusDisplay.textContent = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
-                    document.getElementById('win-sound').play();
                     chessboard.removeEventListener('click', handleSquareClick);
                 } else if (isStalemate(whiteTurn)) {
                     statusDisplay.textContent = "Stalemate! It's a draw.";
@@ -430,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let col = 0; col < 8; col++) {
                 const piece = board[row][col];
                 if (piece && (isWhite(piece) !== isWhiteKing)) {
-                    if (isValidMove(row, col, kingPosition.row, kingPosition.col)) {
+                    if (isValidMove(row, col, kingPosition.row, kingPosition.col, true)) {
                         return true;
                     }
                 }

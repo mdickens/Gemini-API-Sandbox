@@ -134,29 +134,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const pieceType = piece.toLowerCase();
         if (pieceType === 'p') {
-            return isValidPawnMove(startRow, startCol, endRow, endCol, piece);
-        }
-        if (pieceType === 'r') {
-            return isValidRookMove(startRow, startCol, endRow, endCol);
-        }
-        if (pieceType === 'n') {
-            return isValidKnightMove(startRow, startCol, endRow, endCol);
-        }
-        if (pieceType === 'b') {
-            return isValidBishopMove(startRow, startCol, endRow, endCol);
-        }
-        if (pieceType === 'q') {
-            return isValidQueenMove(startRow, startCol, endRow, endCol);
-        }
-        if (pieceType === 'k') {
+            if (!isValidPawnMove(startRow, startCol, endRow, endCol, piece)) return false;
+        } else if (pieceType === 'r') {
+            if (!isValidRookMove(startRow, startCol, endRow, endCol)) return false;
+        } else if (pieceType === 'n') {
+            if (!isValidKnightMove(startRow, startCol, endRow, endCol)) return false;
+        } else if (pieceType === 'b') {
+            if (!isValidBishopMove(startRow, startCol, endRow, endCol)) return false;
+        } else if (pieceType === 'q') {
+            if (!isValidQueenMove(startRow, startCol, endRow, endCol)) return false;
+        } else if (pieceType === 'k') {
             if(checkingKing) {
                 const rowDiff = Math.abs(startRow - endRow);
                 const colDiff = Math.abs(startCol - endCol);
                 return rowDiff <= 1 && colDiff <= 1;
             }
-            return isValidKingMove(startRow, startCol, endRow, endCol);
+            if (!isValidKingMove(startRow, startCol, endRow, endCol)) return false;
         }
-        return false;
+
+        // Simulate the move
+        const originalPiece = board[endRow][endCol];
+        board[endRow][endCol] = piece;
+        board[startRow][startCol] = '';
+
+        const kingInCheck = isKingInCheck(isWhite(piece));
+
+        // Revert the move
+        board[startRow][startCol] = piece;
+        board[endRow][endCol] = originalPiece;
+
+        return !kingInCheck;
     }
 
     function isWhite(piece) {

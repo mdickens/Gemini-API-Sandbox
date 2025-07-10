@@ -1,0 +1,109 @@
+const testResults = document.getElementById('test-results');
+
+function runTest(name, testFunction) {
+    try {
+        testFunction();
+        testResults.innerHTML += `<p style="color: green;">[PASS] ${name}</p>`;
+    } catch (error) {
+        testResults.innerHTML += `<p style="color: red;">[FAIL] ${name}: ${error.message}</p>`;
+        console.error(error);
+    }
+}
+
+function assert(condition, message) {
+    if (!condition) {
+        throw new Error(message || "Assertion failed");
+    }
+}
+
+// --- Pawn Movement Tests ---
+
+runTest("Pawn can move one square forward", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['P', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(6, 0, 5, 0) === true, "White pawn should move one square forward");
+});
+
+runTest("Pawn can move two squares forward on first move", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['P', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(6, 0, 4, 0) === true, "White pawn should move two squares forward on first move");
+});
+
+runTest("Pawn cannot move two squares forward after first move", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['P', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(5, 0, 3, 0) === false, "White pawn should not move two squares forward after first move");
+});
+
+runTest("Pawn can capture diagonally", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'p', '', '', '', '', ''],
+        ['', 'P', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(5, 1, 4, 2) === true, "White pawn should capture diagonally");
+});
+
+runTest("Pawn cannot move forward if blocked", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['P', '', '', '', '', '', '', ''],
+        ['p', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(6, 0, 5, 0) === false, "White pawn should not move forward if blocked");
+});

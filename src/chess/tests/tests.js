@@ -163,3 +163,41 @@ runTest("Rook cannot move through pieces", () => {
     // Test
     assert(isValidMove(2, 1, 2, 3) === false, "Rook should not move through pieces");
 });
+
+// --- Bishop Movement Tests ---
+
+runTest("Bishop can move diagonally", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'B', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 2, 5, 5) === true, "Bishop should move diagonally");
+});
+
+runTest("Bishop cannot move through pieces", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'B', '', '', '', '', ''],
+        ['', '', '', 'p', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 2, 5, 5) === false, "Bishop should not move through pieces");
+});

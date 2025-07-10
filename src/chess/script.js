@@ -335,6 +335,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (isValidMove(startRow, startCol, row, col)) {
+                const piece = selectedPiece.dataset.piece;
+                // If in check, only allow moves that resolve the check
+                if (isKingInCheck(whiteTurn)) {
+                    const tempBoard = JSON.parse(JSON.stringify(board));
+                    const tempPiece = tempBoard[startRow][startCol];
+                    tempBoard[endRow][endCol] = tempPiece;
+                    tempBoard[startRow][startCol] = '';
+                    if (isKingInCheck(whiteTurn, tempBoard)) {
+                        return;
+                    }
+                }
                 movePiece(startRow, startCol, row, col);
             }
 
@@ -526,11 +537,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return !isKingInCheck(isWhitePlayer) && !hasValidMoves(isWhitePlayer);
     }
 
-    function findKing(isWhiteKing) {
+    function findKing(isWhiteKing, currentBoard = board) {
         const king = isWhiteKing ? 'K' : 'k';
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
-                if (board[row][col] === king) {
+                if (currentBoard[row][col] === king) {
                     return { row, col };
                 }
             }
@@ -538,14 +549,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function isKingInCheck(isWhiteKing) {
-        const kingPosition = findKing(isWhiteKing);
+    function isKingInCheck(isWhiteKing, currentBoard = board) {
+        const kingPosition = findKing(isWhiteKing, currentBoard);
         if (!kingPosition) return false;
 
         const opponentColor = isWhiteKing ? 'black' : 'white';
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
-                const piece = board[row][col];
+                const piece = currentBoard[row][col];
                 if (piece && (isWhite(piece) !== isWhiteKing)) {
                     if (isValidMove(row, col, kingPosition.row, kingPosition.col, true)) {
                         return true;

@@ -10,7 +10,9 @@ import {
     whiteRooksMoved,
     blackRooksMoved,
     whiteCaptured,
-    blackCaptured
+    blackCaptured,
+    setLastMove,
+    lastMove
 } from './js/game.js';
 import {
     updateCapturedPanels,
@@ -72,6 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // Handle en passant
+                if (piece.toLowerCase() === 'p' && !capturedPiece && Math.abs(startCol - col) === 1) {
+                    const capturedPawnRow = whiteTurn ? row + 1 : row - 1;
+                    board[capturedPawnRow][col] = '';
+                }
+
                 // Handle castling
                 if (piece.toLowerCase() === 'k' && Math.abs(startCol - col) === 2) {
                     const rookCol = col === 2 ? 0 : 7;
@@ -82,6 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 board[startRow][startCol] = '';
                 board[row][col] = piece;
+
+                setLastMove({ piece, startRow, startCol, endRow: row, endCol: col });
+
 
                 // Update moved flags
                 if (piece === 'K') whiteKingMoved = true;

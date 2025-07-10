@@ -239,3 +239,77 @@ runTest("Knight can jump over pieces", () => {
     // Test
     assert(isValidMove(3, 2, 5, 3) === true, "Knight should jump over pieces");
 });
+
+// --- Queen Movement Tests ---
+
+runTest("Queen can move horizontally", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'Q', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(4, 1, 4, 5) === true, "Queen should move horizontally");
+});
+
+runTest("Queen can move vertically", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'Q', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 1, 6, 1) === true, "Queen should move vertically");
+});
+
+runTest("Queen can move diagonally", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'Q', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 2, 5, 5) === true, "Queen should move diagonally");
+});
+
+runTest("Queen cannot move through pieces", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'Q', '', '', '', '', ''],
+        ['', '', '', 'p', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 2, 5, 5) === false, "Queen should not move through pieces");
+});

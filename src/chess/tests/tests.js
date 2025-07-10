@@ -201,3 +201,41 @@ runTest("Bishop cannot move through pieces", () => {
     // Test
     assert(isValidMove(2, 2, 5, 5) === false, "Bishop should not move through pieces");
 });
+
+// --- Knight Movement Tests ---
+
+runTest("Knight can move in an L-shape", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', 'N', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 2, 4, 3) === true, "Knight should move in an L-shape");
+});
+
+runTest("Knight can jump over pieces", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'p', 'p', 'p', '', '', '', ''],
+        ['', 'p', 'N', 'p', '', '', '', ''],
+        ['', 'p', 'p', 'p', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(3, 2, 5, 3) === true, "Knight should jump over pieces");
+});

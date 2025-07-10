@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let whiteCaptured = [];
     let blackCaptured = [];
     let moveHistory = [];
+    let boardHistory = [];
+    let fiftyMoveRuleCounter = 0;
     let lastMove = null;
 
     let whiteTime = 600; // 10 minutes in seconds
@@ -353,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const capturedPiece = board[endRow][endCol];
 
         moveHistory.push(JSON.parse(JSON.stringify(board)));
+        boardHistory.push(JSON.stringify(board));
         updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece);
 
 
@@ -362,6 +365,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 whiteCaptured.push(capturedPiece);
             }
+            fiftyMoveRuleCounter = 0;
+        } else if (piece.toLowerCase() === 'p') {
+            fiftyMoveRuleCounter = 0;
+        } else {
+            fiftyMoveRuleCounter++;
         }
 
         // Handle en passant
@@ -419,7 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (isStalemate(whiteTurn)) {
             statusDisplay.textContent = "Stalemate! It's a draw.";
             chessboard.removeEventListener('click', handleSquareClick);
+        } else if (isThreefoldRepetition()) {
+            statusDisplay.textContent = "Draw by threefold repetition.";
+            chessboard.removeEventListener('click', handleSquareClick);
+        } else if (fiftyMoveRuleCounter >= 100) {
+            statusDisplay.textContent = "Draw by fifty-move rule.";
+            chessboard.removeEventListener('click', handleSquareClick);
         }
+    }
+
+    function isThreefoldRepetition() {
+        const lastBoard = boardHistory[boardHistory.length - 1];
+        const repetitions = boardHistory.filter(b => b === lastBoard).length;
+        return repetitions >= 3;
     }
 
     function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece) {

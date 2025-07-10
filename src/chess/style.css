@@ -73,6 +73,14 @@ body {
     align-content: flex-start;
 }
 
+.move-history-panel {
+    width: 200px;
+    height: 400px;
+    border: 1px solid #333;
+    margin: 0 20px;
+    overflow-y: scroll;
+}
+
 #promotion-choices {
     display: flex;
     justify-content: space-around;

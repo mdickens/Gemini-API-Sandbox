@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusDisplay = document.getElementById('status');
     const whiteTimerDisplay = document.getElementById('white-timer');
     const blackTimerDisplay = document.getElementById('black-timer');
+    const moveHistoryPanel = document.getElementById('move-history');
 
     let board = [
         ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
@@ -352,6 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const capturedPiece = board[endRow][endCol];
 
         moveHistory.push(JSON.parse(JSON.stringify(board)));
+        updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece);
+
 
         if (capturedPiece) {
             if (isWhite(capturedPiece)) {
@@ -417,6 +420,20 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDisplay.textContent = "Stalemate! It's a draw.";
             chessboard.removeEventListener('click', handleSquareClick);
         }
+    }
+
+    function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece) {
+        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        const pieceSymbol = piece.toUpperCase() === 'P' ? '' : piece.toUpperCase();
+        const captureSymbol = capturedPiece ? 'x' : '';
+        return `${pieceSymbol}${files[startCol]}${8-startRow}${captureSymbol}${files[endCol]}${8-endRow}`;
+    }
+
+    function updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece) {
+        const move = toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece);
+        const moveElement = document.createElement('div');
+        moveElement.textContent = move;
+        moveHistoryPanel.appendChild(moveElement);
     }
 
     function highlightValidMoves(startRow, startCol) {

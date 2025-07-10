@@ -107,3 +107,59 @@ runTest("Pawn cannot move forward if blocked", () => {
     // Test
     assert(isValidMove(6, 0, 5, 0) === false, "White pawn should not move forward if blocked");
 });
+
+// --- Rook Movement Tests ---
+
+runTest("Rook can move horizontally", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'R', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(4, 1, 4, 5) === true, "Rook should move horizontally");
+});
+
+runTest("Rook can move vertically", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'R', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 1, 6, 1) === true, "Rook should move vertically");
+});
+
+runTest("Rook cannot move through pieces", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', 'R', 'p', 'R', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(2, 1, 2, 3) === false, "Rook should not move through pieces");
+});

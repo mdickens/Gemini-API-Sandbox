@@ -313,3 +313,28 @@ runTest("Queen cannot move through pieces", () => {
     // Test
     assert(isValidMove(2, 2, 5, 5) === false, "Queen should not move through pieces");
 });
+
+// --- King Movement Tests ---
+
+runTest("King can move one square in any direction", () => {
+    // Setup
+    board = [
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', 'K', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+    ];
+    whiteTurn = true;
+
+    // Test
+    assert(isValidMove(3, 3, 2, 2) === true, "King should move one square diagonally");
+    assert(isValidMove(3, 3, 4, 4) === true, "King should move one square diagonally");
+    assert(isValidMove(3, 3, 2, 3) === true, "King should move one square vertically");
+    assert(isValidMove(3, 3, 4, 3) === true, "King should move one square vertically");
+    assert(isValidMove(3, 3, 3, 2) === true, "King should move one square horizontally");
+    assert(isValidMove(3, 3, 3, 4) === true, "King should move one square horizontally");
+});

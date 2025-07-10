@@ -57,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const winner = whiteTime === 0 ? "Black" : "White";
                 statusDisplay.textContent = `Time's up! ${winner} wins.`;
                 chessboard.removeEventListener('click', handleSquareClick);
+                chessboard.removeEventListener('dragstart', handleDragStart);
+                chessboard.removeEventListener('dragover', handleDragOver);
+                chessboard.removeEventListener('drop', handleDrop);
             }
         }, 1000);
     }
@@ -77,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     pieceElement.classList.add('piece');
                     pieceElement.textContent = pieceUnicode[piece];
                     pieceElement.dataset.piece = piece;
+                    pieceElement.draggable = true;
                     square.appendChild(pieceElement);
                 }
                 chessboard.appendChild(square);
@@ -321,75 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (isValidMove(startRow, startCol, row, col)) {
-                const piece = selectedPiece.dataset.piece;
-                const capturedPiece = board[row][col];
-
-                moveHistory.push(JSON.parse(JSON.stringify(board)));
-
-                if (capturedPiece) {
-                    if (isWhite(capturedPiece)) {
-                        blackCaptured.push(capturedPiece);
-                    } else {
-                        whiteCaptured.push(capturedPiece);
-                    }
-                }
-
-                // Handle en passant
-                if (piece.toLowerCase() === 'p' && !capturedPiece && Math.abs(startCol - col) === 1) {
-                    const capturedPawnRow = whiteTurn ? row + 1 : row - 1;
-                    board[capturedPawnRow][col] = '';
-                }
-
-                // Handle castling
-                if (piece.toLowerCase() === 'k' && Math.abs(startCol - col) === 2) {
-                    const rookCol = col === 2 ? 0 : 7;
-                    const newRookCol = col === 2 ? 3 : 5;
-                    const rook = board[row][rookCol];
-                    board[row][rookCol] = '';
-                    board[row][newRookCol] = rook;
-                }
-                board[startRow][startCol] = '';
-                board[row][col] = piece;
-
-                lastMove = { piece, startRow, startCol, endRow: row, endCol: col };
-
-
-                // Update moved flags
-                if (piece === 'K') whiteKingMoved = true;
-                if (piece === 'k') blackKingMoved = true;
-                if (piece === 'R' && startCol === 0) whiteRooksMoved[0] = true;
-                if (piece === 'R' && startCol === 7) whiteRooksMoved[1] = true;
-                if (piece === 'r' && startCol === 0) blackRooksMoved[0] = true;
-                if (piece === 'r' && startCol === 7) blackRooksMoved[1] = true;
-
-
-                // Pawn Promotion
-                if (piece.toLowerCase() === 'p' && (row === 0 || row === 7)) {
-                    const promotionModal = document.getElementById('promotion-modal');
-                    promotionModal.style.display = 'block';
-
-                    const promotionChoices = document.getElementById('promotion-choices');
-                    promotionChoices.onclick = (event) => {
-                        const newPiece = event.target.dataset.piece;
-                        board[row][col] = whiteTurn ? newPiece.toUpperCase() : newPiece.toLowerCase();
-                        promotionModal.style.display = 'none';
-                        createBoard();
-                    }
-                } else {
-                    createBoard();
-                }
-
-                whiteTurn = !whiteTurn;
-                let status = whiteTurn ? "White's turn" : "Black's turn";
-                statusDisplay.textContent = status;
-
-                if (isCheckmate(whiteTurn)) {
-                    statusDisplay.textContent = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
-                    chessboard.removeEventListener('click', handleSquareClick);
-                } else if (isStalemate(whiteTurn)) {
-                    statusDisplay.textContent = "Stalemate! It's a draw.";
-                    chessboard.removeEventListener('click', handleSquareClick);
-                }
+                movePiece(startRow, startCol, row, col);
             }
 
             selectedPiece.parentElement.classList.remove('selected');
@@ -408,6 +344,78 @@ document.addEventListener('DOMContentLoaded', () => {
                     highlightValidMoves(row, col);
                 }
             }
+        }
+    }
+
+    function movePiece(startRow, startCol, endRow, endCol) {
+        const piece = board[startRow][startCol];
+        const capturedPiece = board[endRow][endCol];
+
+        moveHistory.push(JSON.parse(JSON.stringify(board)));
+
+        if (capturedPiece) {
+            if (isWhite(capturedPiece)) {
+                blackCaptured.push(capturedPiece);
+            } else {
+                whiteCaptured.push(capturedPiece);
+            }
+        }
+
+        // Handle en passant
+        if (piece.toLowerCase() === 'p' && !capturedPiece && Math.abs(startCol - endCol) === 1) {
+            const capturedPawnRow = whiteTurn ? endRow + 1 : endRow - 1;
+            board[capturedPawnRow][endCol] = '';
+        }
+
+        // Handle castling
+        if (piece.toLowerCase() === 'k' && Math.abs(startCol - endCol) === 2) {
+            const rookCol = endCol === 2 ? 0 : 7;
+            const newRookCol = endCol === 2 ? 3 : 5;
+            const rook = board[endRow][rookCol];
+            board[endRow][rookCol] = '';
+            board[endRow][newRookCol] = rook;
+        }
+        board[startRow][startCol] = '';
+        board[endRow][endCol] = piece;
+
+        lastMove = { piece, startRow, startCol, endRow, endCol };
+
+
+        // Update moved flags
+        if (piece === 'K') whiteKingMoved = true;
+        if (piece === 'k') blackKingMoved = true;
+        if (piece === 'R' && startCol === 0) whiteRooksMoved[0] = true;
+        if (piece === 'R' && startCol === 7) whiteRooksMoved[1] = true;
+        if (piece === 'r' && startCol === 0) blackRooksMoved[0] = true;
+        if (piece === 'r' && startCol === 7) blackRooksMoved[1] = true;
+
+
+        // Pawn Promotion
+        if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
+            const promotionModal = document.getElementById('promotion-modal');
+            promotionModal.style.display = 'block';
+
+            const promotionChoices = document.getElementById('promotion-choices');
+            promotionChoices.onclick = (event) => {
+                const newPiece = event.target.dataset.piece;
+                board[endRow][endCol] = whiteTurn ? newPiece.toUpperCase() : newPiece.toLowerCase();
+                promotionModal.style.display = 'none';
+                createBoard();
+            }
+        } else {
+            createBoard();
+        }
+
+        whiteTurn = !whiteTurn;
+        let status = whiteTurn ? "White's turn" : "Black's turn";
+        statusDisplay.textContent = status;
+
+        if (isCheckmate(whiteTurn)) {
+            statusDisplay.textContent = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
+            chessboard.removeEventListener('click', handleSquareClick);
+        } else if (isStalemate(whiteTurn)) {
+            statusDisplay.textContent = "Stalemate! It's a draw.";
+            chessboard.removeEventListener('click', handleSquareClick);
         }
     }
 
@@ -504,8 +512,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
+    let draggedPiece = null;
+
+    function handleDragStart(event) {
+        draggedPiece = event.target;
+        event.dataTransfer.setData('text/plain', event.target.dataset.piece);
+    }
+
+    function handleDragOver(event) {
+        event.preventDefault();
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        const targetSquare = event.target.closest('.square');
+        if (!targetSquare) return;
+
+        const startRow = parseInt(draggedPiece.parentElement.dataset.row);
+        const startCol = parseInt(draggedPiece.parentElement.dataset.col);
+        const endRow = parseInt(targetSquare.dataset.row);
+        const endCol = parseInt(targetSquare.dataset.col);
+
+        if (isValidMove(startRow, startCol, endRow, endCol)) {
+            movePiece(startRow, startCol, endRow, endCol);
+        }
+    }
+
     createBoard();
     chessboard.addEventListener('click', handleSquareClick);
+    chessboard.addEventListener('dragstart', handleDragStart);
+    chessboard.addEventListener('dragover', handleDragOver);
+    chessboard.addEventListener('drop', handleDrop);
     startTimer();
     updateTimers();
 

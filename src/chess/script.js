@@ -152,6 +152,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isValidKingMove(startRow, startCol, endRow, endCol)) return false;
         }
 
+        // Check for castling
+        if (piece.toLowerCase() === 'k' && canCastle(startRow, startCol, endRow, endCol)) {
+            return true;
+        }
+
         // Simulate the move
         const originalPiece = board[endRow][endCol];
         board[endRow][endCol] = piece;
@@ -183,44 +188,50 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
 
-        return isValidCastling(startRow, startCol, endRow, endCol);
+        return canCastle(startRow, startCol, endRow, endCol) !== null;
     }
 
-    function isValidCastling(startRow, startCol, endRow, endCol) {
+    function canCastle(startRow, startCol, endRow, endCol) {
         if (isKingInCheck(whiteTurn)) {
-            return false;
+            return null;
         }
 
         const isWhite = whiteTurn;
         const kingMoved = isWhite ? whiteKingMoved : blackKingMoved;
         if (kingMoved) {
-            return false;
+            return null;
         }
 
         const row = isWhite ? 7 : 0;
         if (startRow !== row || startCol !== 4 || endRow !== row) {
-            return false;
+            return null;
         }
 
         // Queenside
         if (endCol === 2) {
             const rookMoved = isWhite ? whiteRooksMoved[0] : blackRooksMoved[0];
             if (rookMoved || board[row][1] || board[row][2] || board[row][3]) {
-                return false;
+                return null;
             }
-            return !isSquareAttacked(row, 3, !isWhite) && !isSquareAttacked(row, 4, !isWhite);
+            if (isSquareAttacked(row, 2, !isWhite) || isSquareAttacked(row, 3, !isWhite) || isSquareAttacked(row, 4, !isWhite)) {
+                return null;
+            }
+            return 'queenside';
         }
 
         // Kingside
         if (endCol === 6) {
             const rookMoved = isWhite ? whiteRooksMoved[1] : blackRooksMoved[1];
             if (rookMoved || board[row][5] || board[row][6]) {
-                return false;
+                return null;
             }
-            return !isSquareAttacked(row, 5, !isWhite) && !isSquareAttacked(row, 4, !isWhite);
+            if (isSquareAttacked(row, 4, !isWhite) || isSquareAttacked(row, 5, !isWhite) || isSquareAttacked(row, 6, !isWhite)) {
+                return null;
+            }
+            return 'kingside';
         }
 
-        return false;
+        return null;
     }
 
     function isSquareAttacked(row, col, byWhite) {
@@ -397,12 +408,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Handle castling
-        if (piece.toLowerCase() === 'k' && Math.abs(startCol - endCol) === 2) {
-            const rookCol = endCol === 2 ? 0 : 7;
-            const newRookCol = endCol === 2 ? 3 : 5;
-            const rook = board[endRow][rookCol];
-            board[endRow][rookCol] = '';
-            board[endRow][newRookCol] = rook;
+        const castlingType = canCastle(startRow, startCol, endRow, endCol);
+        if (piece.toLowerCase() === 'k' && castlingType) {
+            if (castlingType === 'queenside') {
+                const rook = board[startRow][0];
+                board[startRow][0] = '';
+                board[startRow][3] = rook;
+            } else if (castlingType === 'kingside') {
+                const rook = board[startRow][7];
+                board[startRow][7] = '';
+                board[startRow][5] = rook;
+            }
         }
         board[startRow][startCol] = '';
         board[endRow][endCol] = piece;

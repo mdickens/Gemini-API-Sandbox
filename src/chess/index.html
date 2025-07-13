@@ -17,7 +17,34 @@
             <button id="help-button">Help</button>
         </div>
         <div id="white-captured" class="captured-panel"></div>
-...
+        <div id="board-container">
+            <div id="chessboard"></div>
+        </div>
+        <div id="game-container">
+            <div id="status-panel">
+                <div id="status">White's turn</div>
+                <div id="timers">
+                    <div id="white-timer-box" class="timer-box">White: <span id="white-timer">10:00</span></div>
+                    <div id="black-timer-box" class="timer-box">Black: <span id="black-timer">10:00</span></div>
+                </div>
+            </div>
+        </div>
+        <div id="black-captured" class="captured-panel"></div>
+        <div id="move-history" class="move-history-panel"></div>
+    </div>
+
+    <div id="promotion-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Promote Pawn</h2>
+            <div id="promotion-choices">
+                <span class="promotion-choice" data-piece="q">♕</span>
+                <span class="promotion-choice" data-piece="r">♖</span>
+                <span class="promotion-choice" data-piece="b">♗</span>
+                <span class="promotion-choice" data-piece="n">♘</span>
+            </div>
+        </div>
+    </div>
+
     <div id="help-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -46,6 +73,8 @@
     <audio id="capture-sound" src="../../remove.mp3"></audio>
     <audio id="check-sound" src="../../draw.mp3"></audio>
 
-    <script src="script.js"></script>
+    <script src="modules/game.js"></script>
+    <script src="modules/ui.js"></script>
+    <script src="modules/main.js"></script>
 </body>
 </html>

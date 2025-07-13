@@ -143,32 +143,48 @@ body {
     background-color: #3a5a78;
 }
 
+#buttons button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
 .modal-buttons {
     text-align: center;
-    margin-top: 20px;
-}
-
-.modal-buttons button {
-    background-color: #4a7399;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin: 0 10px;
-}
-
-.modal-buttons button:hover {
-    background-color: #3a5a78;
-}
-
-#chessboard.flipped {
-    transform: rotate(180deg);
-}
-
+...
 #chessboard.flipped .piece {
     transform: rotate(180deg);
+}
+
+.check {
+    animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        background-color: #f0d9b5; /* light square */
+    }
+    50% {
+        background-color: #ff7f7f;
+    }
+    100% {
+        background-color: #f0d9b5; /* light square */
+    }
+}
+
+.dark.check {
+    animation-name: pulse-red-dark;
+}
+
+@keyframes pulse-red-dark {
+    0% {
+        background-color: #b58863; /* dark square */
+    }
+    50% {
+        background-color: #ff7f7f;
+    }
+    100% {
+        background-color: #b58863; /* dark square */
+    }
 }
 
 #promotion-choices {

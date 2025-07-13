@@ -442,6 +442,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (piece === 'r' && startCol === 0) blackRooksMoved[0] = true;
         if (piece === 'r' && startCol === 7) blackRooksMoved[1] = true;
 
+        whiteTurn = !whiteTurn;
+        let status = whiteTurn ? "White's turn" : "Black's turn";
+        let isGameOver = false;
+
+        if (isCheckmate(whiteTurn)) {
+            status = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
+            isGameOver = true;
+        } else if (isStalemate(whiteTurn)) {
+            status = "Stalemate! It's a draw.";
+            isGameOver = true;
+        } else if (isInsufficientMaterial()) {
+            status = "Draw by insufficient material.";
+            isGameOver = true;
+        } else if (isKingInCheck(whiteTurn)) {
+            status = (whiteTurn ? "White" : "Black") + " is in check.";
+            checkSound.play();
+        } else if (isThreefoldRepetition()) {
+            status = "Draw by threefold repetition.";
+            isGameOver = true;
+        } else if (fiftyMoveRuleCounter >= 100) {
+            document.getElementById('claim-draw-button').disabled = false;
+        }
+        statusDisplay.textContent = status;
+        updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece, isGameOver);
+
+
         if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
             const promotionModal = document.getElementById('promotion-modal');
             promotionModal.style.display = 'block';
@@ -457,47 +483,97 @@ document.addEventListener('DOMContentLoaded', () => {
             createBoard();
         }
 
-        whiteTurn = !whiteTurn;
-        let status = whiteTurn ? "White's turn" : "Black's turn";
-
-        if (isCheckmate(whiteTurn)) {
-            status = "Checkmate! " + (whiteTurn ? "Black" : "White") + " wins.";
-            chessboard.removeEventListener('click', handleSquareClick);
-        } else if (isStalemate(whiteTurn)) {
-            status = "Stalemate! It's a draw.";
-            chessboard.removeEventListener('click', handleSquareClick);
-        } else if (isKingInCheck(whiteTurn)) {
-            status = (whiteTurn ? "White" : "Black") + " is in check.";
-            checkSound.play();
-        } else if (isThreefoldRepetition()) {
-            status = "Draw by threefold repetition.";
-            chessboard.removeEventListener('click', handleSquareClick);
-        } else if (fiftyMoveRuleCounter >= 100) {
-            status = "Draw by fifty-move rule.";
+        if (isGameOver) {
             chessboard.removeEventListener('click', handleSquareClick);
         }
-        statusDisplay.textContent = status;
+    }
+
+    function isInsufficientMaterial() {
+        const pieces = [];
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                if (board[r][c]) {
+                    pieces.push(board[r][c]);
+                }
+            }
+        }
+
+        if (pieces.length <= 3) {
+            // K vs K, K vs KB, K vs KN
+            const hasMajorPiece = pieces.some(p => p.toLowerCase() === 'q' || p.toLowerCase() === 'r' || p.toLowerCase() === 'p');
+            if (!hasMajorPiece) {
+                return true;
+            }
+        }
+        // K+B vs K+B (bishops on same color)
+        const bishops = pieces.filter(p => p.toLowerCase() === 'b');
+        if (pieces.length === 4 && bishops.length === 2) {
+            let bishop1Pos, bishop2Pos;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (board[r][c].toLowerCase() === 'b') {
+                        if (!bishop1Pos) bishop1Pos = { r, c };
+                        else bishop2Pos = { r, c };
+                    }
+                }
+            }
+            if ((bishop1Pos.r + bishop1Pos.c) % 2 === (bishop2Pos.r + bishop2Pos.c) % 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function isThreefoldRepetition() {
-        const lastBoard = boardHistory[boardHistory.length - 1];
+        const lastBoard = JSON.stringify(board);
         const repetitions = boardHistory.filter(b => b === lastBoard).length;
-        return repetitions >= 3;
+        return repetitions >= 2; // Current position + 2 previous = 3 times
     }
 
-    function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece) {
-        // Handle castling notation
+    function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isGameOver) {
+        let notation;
         if (piece.toLowerCase() === 'k' && Math.abs(startCol - endCol) === 2) {
-            return endCol === 6 ? 'O-O' : 'O-O-O';
+            notation = endCol === 6 ? 'O-O' : 'O-O-O';
+        } else {
+            const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            const pieceSymbol = piece.toUpperCase() === 'P' ? '' : piece.toUpperCase();
+            const captureSymbol = capturedPiece ? 'x' : '';
+            notation = `${pieceSymbol}${files[startCol]}${8-startRow}${captureSymbol}${files[endCol]}${8-endRow}`;
         }
 
-        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-        const pieceSymbol = piece.toUpperCase() === 'P' ? '' : piece.toUpperCase();
-        const captureSymbol = capturedPiece ? 'x' : '';
-        return `${pieceSymbol}${files[startCol]}${8-startRow}${captureSymbol}${files[endCol]}${8-endRow}`;
+        if (isGameOver && isCheckmate(whiteTurn)) {
+            notation += '#';
+        } else if (isKingInCheck(whiteTurn)) {
+            notation += '+';
+        }
+        return notation;
     }
 
+    function updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece, isGameOver) {
+        const move = toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isGameOver);
+        const moveElement = document.createElement('div');
+        moveElement.textContent = move;
+        moveHistoryPanel.appendChild(moveElement);
+    }
 ...
+    const claimDrawButton = document.getElementById('claim-draw-button');
+
+    claimDrawButton.addEventListener('click', () => {
+        if (fiftyMoveRuleCounter >= 100) {
+            statusDisplay.textContent = "Draw by fifty-move rule.";
+            chessboard.removeEventListener('click', handleSquareClick);
+        }
+    });
+
+    const resignButton = document.getElementById('resign-button');
+    resignButton.addEventListener('click', () => {
+        showConfirmation('Are you sure you want to resign?', () => {
+            const winner = whiteTurn ? "Black" : "White";
+            statusDisplay.textContent = `${winner} wins by resignation.`;
+            chessboard.removeEventListener('click', handleSquareClick);
+            hideConfirmation();
+        });
+    });
 
     const newGameButton = document.getElementById('new-game-button');
     const resignButton = document.getElementById('resign-button');

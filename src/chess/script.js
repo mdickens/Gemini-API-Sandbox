@@ -230,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function isSquareAttacked(row, col, byWhite) {
-        const opponentPieces = getPieces(!byWhite);
-        for (const piece of opponentPieces) {
+        const attackerPieces = getPieces(byWhite);
+        for (const piece of attackerPieces) {
             if (isValidMove(piece.row, piece.col, row, col, true)) {
                 return true;
             }

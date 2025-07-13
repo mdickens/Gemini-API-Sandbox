@@ -10,39 +10,13 @@
     <div id="main-layout">
         <div id="buttons">
             <button id="new-game-button">New Game</button>
+            <button id="flip-board-button">Flip Board</button>
             <button id="takeback-button">Takeback</button>
             <button id="resign-button">Resign</button>
             <button id="help-button">Help</button>
         </div>
         <div id="white-captured" class="captured-panel"></div>
-        <div id="board-container">
-            <div id="chessboard"></div>
-        </div>
-        <div id="game-container">
-            <div id="status-panel">
-                <div id="status">White's turn</div>
-                <div id="timers">
-                    <span>White: <span id="white-timer">10:00</span></span>
-                    <span>Black: <span id="black-timer">10:00</span></span>
-                </div>
-            </div>
-        </div>
-        <div id="black-captured" class="captured-panel"></div>
-        <div id="move-history" class="move-history-panel"></div>
-    </div>
-
-    <div id="promotion-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Promote Pawn</h2>
-            <div id="promotion-choices">
-                <span class="promotion-choice" data-piece="q">♕</span>
-                <span class="promotion-choice" data-piece="r">♖</span>
-                <span class="promotion-choice" data-piece="b">♗</span>
-                <span class="promotion-choice" data-piece="n">♘</span>
-            </div>
-        </div>
-    </div>
-
+...
     <div id="help-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -54,6 +28,16 @@
                 <li>Alternatively, you can drag and drop pieces to their destination.</li>
                 <li>Use the buttons below the board to start a new game, take back a move, resign, or get help.</li>
             </ul>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="confirmation-message">Are you sure?</h2>
+            <div class="modal-buttons">
+                <button id="confirm-yes">Yes</button>
+                <button id="confirm-no">No</button>
+            </div>
         </div>
     </div>
 

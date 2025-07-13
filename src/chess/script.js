@@ -486,196 +486,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece) {
+        // Handle castling notation
+        if (piece.toLowerCase() === 'k' && Math.abs(startCol - endCol) === 2) {
+            return endCol === 6 ? 'O-O' : 'O-O-O';
+        }
+
         const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const pieceSymbol = piece.toUpperCase() === 'P' ? '' : piece.toUpperCase();
         const captureSymbol = capturedPiece ? 'x' : '';
         return `${pieceSymbol}${files[startCol]}${8-startRow}${captureSymbol}${files[endCol]}${8-endRow}`;
     }
 
-    function updateMoveHistory(piece, startRow, startCol, endRow, endCol, capturedPiece) {
-        const move = toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece);
-        const moveElement = document.createElement('div');
-        moveElement.textContent = move;
-        moveHistoryPanel.appendChild(moveElement);
-    }
-
-    function highlightValidMoves(startRow, startCol) {
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
-                if (isValidMove(startRow, startCol, row, col)) {
-                    const square = chessboard.querySelector(`[data-row='${row}'][data-col='${col}']`);
-                    if (square) {
-                        square.classList.add('valid-move');
-                    }
-                }
-            }
-        }
-    }
-
-    function clearHighlights() {
-        const highlightedSquares = document.querySelectorAll('.valid-move');
-        highlightedSquares.forEach(square => square.classList.remove('valid-move'));
-    }
-
-    function getPieces(isWhitePlayer) {
-        const pieces = [];
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
-                const piece = board[row][col];
-                if (piece && isWhite(piece) === isWhitePlayer) {
-                    pieces.push({ piece, row, col });
-                }
-            }
-        }
-        return pieces;
-    }
-
-    function hasValidMoves(isWhitePlayer) {
-        const pieces = getPieces(isWhitePlayer);
-        for (const piece of pieces) {
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    if (isValidMove(piece.row, piece.col, row, col)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    function isCheckmate(isWhitePlayer) {
-        return isKingInCheck(isWhitePlayer) && !hasValidMoves(isWhitePlayer);
-    }
-
-    function isStalemate(isWhitePlayer) {
-        return !isKingInCheck(isWhitePlayer) && !hasValidMoves(isWhitePlayer);
-    }
-
-    function findKing(isWhiteKing, currentBoard = board) {
-        const king = isWhiteKing ? 'K' : 'k';
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
-                if (currentBoard[row][col] === king) {
-                    return { row, col };
-                }
-            }
-        }
-        return null;
-    }
-
-    function isKingInCheck(isWhiteKing, currentBoard = board) {
-        const kingPosition = findKing(isWhiteKing, currentBoard);
-        if (!kingPosition) return false;
-
-        const opponentPieces = getPieces(!isWhiteKing);
-        for (const piece of opponentPieces) {
-            if (isValidMove(piece.row, piece.col, kingPosition.row, kingPosition.col, true)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    let draggedPiece = null;
-
-    function handleDragStart(event) {
-        draggedPiece = event.target;
-        event.dataTransfer.setData('text/plain', event.target.dataset.piece);
-        setTimeout(() => {
-            event.target.style.display = 'none';
-        }, 0);
-    }
-
-    function handleDragOver(event) {
-        event.preventDefault();
-    }
-
-    function handleDrop(event) {
-        event.preventDefault();
-        const targetSquare = event.target.closest('.square');
-        if (!targetSquare) {
-            draggedPiece.style.display = 'block';
-            draggedPiece = null;
-            return;
-        };
-
-        const startRow = parseInt(draggedPiece.parentElement.dataset.row);
-        const startCol = parseInt(draggedPiece.parentElement.dataset.col);
-        const endRow = parseInt(targetSquare.dataset.row);
-        const endCol = parseInt(targetSquare.dataset.col);
-
-        if (isValidMove(startRow, startCol, endRow, endCol)) {
-            movePiece(startRow, startCol, endRow, endCol);
-        } else {
-            draggedPiece.style.display = 'block';
-        }
-        draggedPiece = null;
-    }
-
-    function animateMove(startRow, startCol, endRow, endCol, callback) {
-        const startSquare = chessboard.querySelector(`[data-row='${startRow}'][data-col='${startCol}']`);
-        const endSquare = chessboard.querySelector(`[data-row='${endRow}'][data-col='${endCol}']`);
-        const pieceElement = startSquare.querySelector('.piece');
-
-        if (!pieceElement) return;
-
-        const startRect = startSquare.getBoundingClientRect();
-        const endRect = endSquare.getBoundingClientRect();
-        const chessboardRect = chessboard.getBoundingClientRect();
-
-        const clone = pieceElement.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = `${startRect.left - chessboardRect.left}px`;
-        clone.style.top = `${startRect.top - chessboardRect.top}px`;
-        clone.style.zIndex = 1000;
-        chessboard.appendChild(clone);
-
-        pieceElement.style.opacity = 0;
-
-        requestAnimationFrame(() => {
-            const offsetX = endRect.left - startRect.left;
-            const offsetY = endRect.top - startRect.top;
-            clone.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-            clone.style.transition = 'transform 0.3s ease';
-        });
-
-        clone.addEventListener('transitionend', function handler() {
-            clone.removeEventListener('transitionend', handler);
-            clone.remove();
-            callback();
-        });
-    }
-
-    createBoard();
-    chessboard.addEventListener('click', handleSquareClick);
-    chessboard.addEventListener('dragstart', handleDragStart);
-    chessboard.addEventListener('dragover', handleDragOver);
-    chessboard.addEventListener('drop', handleDrop);
-    startTimer();
-    updateTimers();
-
-    const helpButton = document.getElementById('help-button');
-    const modal = document.getElementById('help-modal');
-    const closeButton = document.getElementsByClassName('close-button')[0];
-
-    helpButton.onclick = function() {
-        modal.style.display = 'block';
-    }
-
-    closeButton.onclick = function() {
-        modal.style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
-    }
+...
 
     const newGameButton = document.getElementById('new-game-button');
+    const resignButton = document.getElementById('resign-button');
+    const flipBoardButton = document.getElementById('flip-board-button');
+    const confirmationModal = document.getElementById('confirmation-modal');
+    const confirmationMessage = document.getElementById('confirmation-message');
+    const confirmYesButton = document.getElementById('confirm-yes');
+    const confirmNoButton = document.getElementById('confirm-no');
+
+    let confirmAction = null;
+
+    function showConfirmation(message, action) {
+        confirmationMessage.textContent = message;
+        confirmAction = action;
+        confirmationModal.style.display = 'block';
+    }
+
+    function hideConfirmation() {
+        confirmationModal.style.display = 'none';
+        confirmAction = null;
+    }
+
     newGameButton.addEventListener('click', () => {
-        location.reload();
+        showConfirmation('Are you sure you want to start a new game?', () => {
+            location.reload();
+        });
+    });
+
+    resignButton.addEventListener('click', () => {
+        showConfirmation('Are you sure you want to resign?', () => {
+            const winner = whiteTurn ? "Black" : "White";
+            statusDisplay.textContent = `${winner} wins by resignation.`;
+            chessboard.removeEventListener('click', handleSquareClick);
+            hideConfirmation();
+        });
+    });
+
+    confirmYesButton.addEventListener('click', () => {
+        if (confirmAction) {
+            confirmAction();
+        }
+    });
+
+    confirmNoButton.addEventListener('click', () => {
+        hideConfirmation();
+    });
+
+    flipBoardButton.addEventListener('click', () => {
+        chessboard.classList.toggle('flipped');
     });
 
     const takebackButton = document.getElementById('takeback-button');
@@ -685,12 +556,5 @@ document.addEventListener('DOMContentLoaded', () => {
             whiteTurn = !whiteTurn;
             createBoard();
         }
-    });
-
-    const resignButton = document.getElementById('resign-button');
-    resignButton.addEventListener('click', () => {
-        const winner = whiteTurn ? "Black" : "White";
-        statusDisplay.textContent = `${winner} wins by resignation.`;
-        chessboard.removeEventListener('click', handleSquareClick);
     });
 });

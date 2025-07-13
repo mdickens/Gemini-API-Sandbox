@@ -99,6 +99,11 @@ body {
     overflow-y: scroll;
 }
 
+#buttons {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 #promotion-choices {
     display: flex;
     justify-content: space-around;

@@ -7,22 +7,39 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
+    <div id="main-layout">
         <div id="white-captured" class="captured-panel"></div>
-        <div id="chessboard"></div>
+        <div id="game-container">
+            <div id="chessboard"></div>
+            <div id="status-panel">
+                <div id="status">White's turn</div>
+                <div id="timers">
+                    <span>White: <span id="white-timer">10:00</span></span>
+                    <span>Black: <span id="black-timer">10:00</span></span>
+                </div>
+            </div>
+        </div>
         <div id="black-captured" class="captured-panel"></div>
         <div id="move-history" class="move-history-panel"></div>
-        <div id="status-panel">
-            <div id="timers">
-                <div>White: <span id="white-timer">10:00</span></div>
-                <div>Black: <span id="black-timer">10:00</span></div>
+    </div>
+
+    <div id="promotion-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Promote Pawn</h2>
+            <div id="promotion-choices">
+                <span class="promotion-choice" data-piece="q">♕</span>
+                <span class="promotion-choice" data-piece="r">♖</span>
+                <span class="promotion-choice" data-piece="b">♗</span>
+                <span class="promotion-choice" data-piece="n">♘</span>
             </div>
-            <p>Status: <span id="status">White's turn</span></p>
-            <button id="new-game-button">New Game</button>
-            <button id="takeback-button">Takeback</button>
-            <button id="resign-button">Resign</button>
-            <button id="help-button">Help</button>
         </div>
+    </div>
+
+    <div id="buttons">
+        <button id="new-game-button">New Game</button>
+        <button id="takeback-button">Takeback</button>
+        <button id="resign-button">Resign</button>
+        <button id="help-button">Help</button>
     </div>
 
     <div id="help-modal" class="modal" style="display: none;">
@@ -30,31 +47,12 @@
             <span class="close-button">&times;</span>
             <h2>How to Play</h2>
             <p>This is a standard game of chess. The goal is to checkmate your opponent's king.</p>
-            <h3>Moving Pieces</h3>
-            <p>1. Click on a piece to select it.</p>
-            <p>2. The square of the selected piece will be highlighted.</p>
-            <p>3. Click on a valid destination square to move the piece.</p>
-            <h3>Rules</h3>
+            <h3>Controls:</h3>
             <ul>
-                <li><strong>White</strong> moves first.</li>
-                <li>Players take turns moving one piece at a time.</li>
-                <li>You can only move your own pieces.</li>
-                <li>If your King is under attack (in "check"), you must make a move to get it out of check.</li>
-                <li><strong>Checkmate:</strong> If your King is in check and you have no legal moves to get out of check, you lose the game.</li>
-                <li><strong>Stalemate:</strong> If it's your turn to move, your King is NOT in check, but you have no legal moves, the game is a draw.</li>
+                <li>Click on a piece to select it, then click on a valid square to move it.</li>
+                <li>Alternatively, you can drag and drop pieces to their destination.</li>
+                <li>Use the buttons below the board to start a new game, take back a move, resign, or get help.</li>
             </ul>
-        </div>
-    </div>
-
-    <div id="promotion-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Promote Pawn</h2>
-            <div id="promotion-choices">
-                <div class="promotion-choice" data-piece="q">♛</div>
-                <div class="promotion-choice" data-piece="r">♜</div>
-                <div class="promotion-choice" data-piece="b">♝</div>
-                <div class="promotion-choice" data-piece="n">♞</div>
-            </div>
         </div>
     </div>
 

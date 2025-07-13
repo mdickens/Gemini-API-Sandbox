@@ -8,6 +8,12 @@ body {
     background-color: #f0f0f0;
 }
 
+#main-layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
 #game-container {
     display: flex;
     flex-direction: column;

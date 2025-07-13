@@ -144,17 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (pieceType === 'q') {
             if (!isValidQueenMove(startRow, startCol, endRow, endCol)) return false;
         } else if (pieceType === 'k') {
-            if(checkingKing) {
-                const rowDiff = Math.abs(startRow - endRow);
-                const colDiff = Math.abs(startCol - endCol);
-                return rowDiff <= 1 && colDiff <= 1;
+            if (checkingKing) {
+                return isValidKingMove(startRow, startCol, endRow, endCol);
             }
-            if (!isValidKingMove(startRow, startCol, endRow, endCol)) return false;
-        }
-
-        // Check for castling
-        if (piece.toLowerCase() === 'k' && canCastle(startRow, startCol, endRow, endCol)) {
-            return true;
+            // For regular moves, check castling first as a special case
+            if (canCastle(startRow, startCol, endRow, endCol)) {
+                return true; // Skips simulation, which is correct for castling
+            }
+            if (!isValidKingMove(startRow, startCol, endRow, endCol)) {
+                return false;
+            }
         }
 
         // Simulate the move
@@ -184,11 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rowDiff = Math.abs(startRow - endRow);
         const colDiff = Math.abs(startCol - endCol);
 
-        if (rowDiff <= 1 && colDiff <= 1) {
-            return true;
-        }
-
-        return canCastle(startRow, startCol, endRow, endCol) !== null;
+        return rowDiff <= 1 && colDiff <= 1;
     }
 
     function canCastle(startRow, startCol, endRow, endCol) {

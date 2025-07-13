@@ -341,17 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (isValidMove(startRow, startCol, row, col)) {
-                const piece = selectedPiece.dataset.piece;
-                // If in check, only allow moves that resolve the check
-                if (isKingInCheck(whiteTurn)) {
-                    const tempBoard = JSON.parse(JSON.stringify(board));
-                    const tempPiece = tempBoard[startRow][startCol];
-                    tempBoard[endRow][endCol] = tempPiece;
-                    tempBoard[startRow][startCol] = '';
-                    if (isKingInCheck(whiteTurn, tempBoard)) {
-                        return;
-                    }
-                }
                 movePiece(startRow, startCol, row, col);
             }
 

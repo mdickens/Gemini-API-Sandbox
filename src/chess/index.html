@@ -15,8 +15,10 @@
             <button id="help-button">Help</button>
         </div>
         <div id="white-captured" class="captured-panel"></div>
-        <div id="game-container">
+        <div id="board-container">
             <div id="chessboard"></div>
+        </div>
+        <div id="game-container">
             <div id="status-panel">
                 <div id="status">White's turn</div>
                 <div id="timers">
@@ -54,6 +56,10 @@
             </ul>
         </div>
     </div>
+
+    <audio id="move-sound" src="../../place.mp3"></audio>
+    <audio id="capture-sound" src="../../remove.mp3"></audio>
+    <audio id="check-sound" src="../../draw.mp3"></audio>
 
     <script src="script.js"></script>
 </body>

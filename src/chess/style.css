@@ -18,10 +18,8 @@ body {
     width: 100%;
 }
 
-#game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#board-container {
+    position: relative;
     margin: 10px 0;
 }
 
@@ -34,6 +32,28 @@ body {
     max-width: 600px;
     max-height: 600px;
     border: 5px solid #333;
+    position: relative;
+}
+
+.coordinate {
+    position: absolute;
+    font-size: clamp(12px, 2vw, 16px);
+    color: #333;
+    user-select: none;
+}
+
+.file {
+    bottom: -25px;
+    width: 12.5%;
+    text-align: center;
+}
+
+.rank {
+    left: -25px;
+    height: 12.5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .square {
@@ -44,6 +64,11 @@ body {
     align-items: center;
     font-size: clamp(16px, 4vw, 36px);
     user-select: none; /* Prevents text selection on pieces */
+    position: relative;
+}
+
+.last-move-highlight {
+    background-color: rgba(255, 255, 0, 0.5);
 }
 
 .light {
@@ -56,6 +81,9 @@ body {
 
 .piece {
     cursor: pointer;
+    position: relative;
+    transition: top 0.3s ease, left 0.3s ease;
+    z-index: 10;
 }
 
 #status-panel {

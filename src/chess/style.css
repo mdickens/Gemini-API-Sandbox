@@ -3,24 +3,26 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
+    padding: 20px 0;
+    box-sizing: border-box;
 }
 
 #main-layout {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     width: 100%;
-    padding-left: 20px;
-    box-sizing: border-box;
 }
 
 #game-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 10px 0;
 }
 
 #chessboard {
@@ -76,20 +78,24 @@ body {
 }
 
 .captured-panel {
-    width: 100px;
-    min-height: 400px;
+    width: 80%;
+    max-width: 600px;
+    min-height: 40px;
     border: 1px solid #333;
-    margin: 0 20px;
+    margin: 10px 0;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 .move-history-panel {
-    width: 200px;
-    height: 400px;
+    width: 80%;
+    max-width: 600px;
+    height: 150px;
     border: 1px solid #333;
-    margin: 0 20px;
+    margin: 10px 0;
     overflow-y: scroll;
 }
 
@@ -138,22 +144,16 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    #main-layout {
-        flex-direction: column;
-        align-items: center;
+    body {
+        padding: 10px 0;
     }
 
-    .captured-panel {
-        width: 80%;
-        min-height: auto;
-        height: auto;
-        margin: 10px 0;
-        flex-direction: row;
+    .captured-panel, .move-history-panel {
+        width: 90%;
+        margin: 5px 0;
     }
 
     .move-history-panel {
-        width: 80%;
-        height: 150px;
-        margin: 10px 0;
+        height: 100px;
     }
 }

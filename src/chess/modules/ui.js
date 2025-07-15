@@ -13,9 +13,6 @@ const UI = (() => {
     const moveSound = document.getElementById('move-sound');
     const captureSound = document.getElementById('capture-sound');
     const checkSound = document.getElementById('check-sound');
-    const moveSound = document.getElementById('move-sound');
-    const captureSound = document.getElementById('capture-sound');
-    const checkSound = document.getElementById('check-sound');
 
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);

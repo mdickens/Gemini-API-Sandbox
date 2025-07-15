@@ -7,7 +7,29 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="main-layout">
+    <div id="game-setup-modal" class="modal" style="display: flex;">
+        <div class="modal-content">
+            <h2>New Game</h2>
+            <div id="game-mode-selection">
+                <h3>Choose Game Mode</h3>
+                <button class="game-mode-button" data-mode="pvp">Player vs. Player</button>
+                <button class="game-mode-button" data-mode="pva">Player vs. AI</button>
+            </div>
+            <div id="ai-difficulty-selection" style="display: none;">
+                <h3>Choose AI Difficulty</h3>
+                <select id="ai-difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button id="start-game-button">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-layout" style="display: none;">
         <div id="buttons">
             <button id="new-game-button">New Game</button>
             <button id="flip-board-button">Flip Board</button>
@@ -31,6 +53,7 @@
         </div>
         <div id="black-captured" class="captured-panel"></div>
         <div id="move-history" class="move-history-panel"></div>
+        <div id="ai-thinking-indicator" style="display: none;">AI is thinking...</div>
     </div>
 
     <div id="promotion-modal" class="modal" style="display: none;">
@@ -74,6 +97,7 @@
     <audio id="check-sound" src="../../draw.mp3"></audio>
 
     <script src="modules/game.js"></script>
+    <script src="modules/ai.js"></script>
     <script src="modules/ui.js"></script>
     <script src="modules/main.js"></script>
 </body>

@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
                     square.classList.add('selected');
-                    UI.highlightValidMoves(startRow, startCol);
+                    UI.highlightValidMoves(row, col);
                 }
             }
         }

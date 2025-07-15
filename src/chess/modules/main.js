@@ -193,4 +193,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('flip-board-button').addEventListener('click', () => {
         chessboard.classList.toggle('flipped');
     });
+
+    document.getElementById('hint-button').addEventListener('click', () => {
+        const hintMove = AI.getBestMove(Game.getState(), 'hard'); // Use best AI for hints
+        if (hintMove) {
+            const startSquare = chessboard.querySelector(`[data-row='${hintMove.startRow}'][data-col='${hintMove.startCol}']`);
+            const endSquare = chessboard.querySelector(`[data-row='${hintMove.endRow}'][data-col='${hintMove.endCol}']`);
+            
+            startSquare.classList.add('hint-highlight');
+            endSquare.classList.add('hint-highlight');
+
+            setTimeout(() => {
+                startSquare.classList.remove('hint-highlight');
+                endSquare.classList.remove('hint-highlight');
+            }, 1000); // Highlight for 1 second
+        }
+    });
 });

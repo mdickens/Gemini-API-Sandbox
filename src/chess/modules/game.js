@@ -168,7 +168,9 @@ const Game = (() => {
         else if (pieceType === 'b') isValidGeometry = isValidBishopMove(startRow, startCol, endRow, endCol);
         else if (pieceType === 'q') isValidGeometry = isValidQueenMove(startRow, startCol, endRow, endCol);
         else if (pieceType === 'k') {
-            if (canCastle(startRow, startCol, endRow, endCol)) return !isKingInCheck(isWhite(piece));
+            if (!checkingKing && canCastle(startRow, startCol, endRow, endCol)) {
+                return true;
+            }
             isValidGeometry = isValidKingMove(startRow, startCol, endRow, endCol);
         }
 

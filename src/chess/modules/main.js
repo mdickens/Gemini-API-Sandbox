@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const targetSquare = event.target.closest('.square');
         if (!targetSquare) {
-            draggedPiece.style.display = 'block';
+            draggedPiece.style.display = ''; // Revert display style
             draggedPiece = null;
             return;
         };
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
             handleMove(startRow, startCol, endRow, endCol);
         } else {
-            draggedPiece.style.display = 'block';
+            draggedPiece.style.display = ''; // Revert display style
         }
         draggedPiece = null;
     }

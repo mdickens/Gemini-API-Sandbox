@@ -20,7 +20,7 @@ body {
 
 #board-container {
     position: relative;
-    margin: 10px 0;
+    margin: 35px 0; /* Increased margin for player info */
 }
 
 #chessboard {
@@ -120,6 +120,57 @@ body {
     align-content: flex-start;
     padding: 5px;
     box-sizing: border-box;
+    position: relative;
+}
+
+.player-info {
+    position: absolute;
+    top: -30px;
+    left: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.player-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 8px;
+    border: 2px solid #555;
+}
+
+#promotion-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    z-index: 2000;
+}
+
+#promotion-choices {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #333;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.promotion-choice {
+    cursor: pointer;
+    font-size: clamp(24px, 5vw, 48px);
+    padding: 5px;
+    transition: background-color 0.2s;
+}
+
+.promotion-choice:hover {
+    background-color: #a5c9a5;
 }
 
 .move-history-panel {
@@ -154,7 +205,24 @@ body {
 
 .modal-buttons {
     text-align: center;
-...
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    background-color: #4a7399;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 0 10px;
+}
+
+.modal-buttons button:hover {
+    background-color: #3a5a78;
+}
+
 #timers {
     display: flex;
     justify-content: space-between;
@@ -223,16 +291,6 @@ body {
     100% {
         background-color: #b58863; /* dark square */
     }
-}
-
-#promotion-choices {
-    display: flex;
-    justify-content: space-around;
-    font-size: 36px;
-}
-
-.promotion-choice {
-    cursor: pointer;
 }
 
 .modal {

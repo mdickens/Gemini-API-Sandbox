@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmationMessage = document.getElementById('confirmation-message');
     const confirmYesButton = document.getElementById('confirm-yes');
     const confirmNoButton = document.getElementById('confirm-no');
+    const gameOverModal = document.getElementById('game-over-modal');
+    const gameOverMessage = document.getElementById('game-over-message');
+    const newGameOverButton = document.getElementById('new-game-over-button');
 
     let selectedPiece = null;
     let selectedSquare = null;
@@ -55,20 +58,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const bestMove = AI.getBestMove(Game.getState(), aiDifficulty);
             if (bestMove) {
                 const { startRow, startCol, endRow, endCol } = bestMove;
-                const piece = Game.getState().board[startRow][startCol];
-                const capturedPiece = Game.getState().board[endRow][endCol];
-
-                UI.animateMove(startRow, startCol, endRow, endCol, () => {
-                    Game.movePiece(startRow, startCol, endRow, endCol);
-                    if (capturedPiece) UI.playSound('capture');
-                    else UI.playSound('move');
-                    updateGameStatus();
-                    UI.createBoard(Game.getState());
-                    saveGame();
-                });
+                handleMove(startRow, startCol, endRow, endCol);
             }
             aiThinkingIndicator.style.display = 'none';
         }, 500); // Simulate thinking time
+    }
+
+    function handleMove(startRow, startCol, endRow, endCol) {
+        const capturedPiece = Game.getState().board[endRow][endCol];
+        
+        UI.animateMove(startRow, startCol, endRow, endCol, () => {
+            Game.movePiece(startRow, startCol, endRow, endCol);
+            
+            if (capturedPiece) UI.playSound('capture');
+            else UI.playSound('move');
+
+            const piece = Game.getState().board[endRow][endCol];
+            if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
+                const isWhite = Game.isWhite(piece);
+                UI.showPromotionChoices(endRow, endCol, isWhite, (newPiece) => {
+                    Game.promotePawn(endRow, endCol, newPiece);
+                    updateGameStatus();
+                    UI.createBoard(Game.getState());
+                    saveGame();
+                    checkAIMove();
+                });
+            } else {
+                updateGameStatus();
+                UI.createBoard(Game.getState());
+                saveGame();
+                checkAIMove();
+            }
+        });
+    }
+
+    function checkAIMove() {
+        if (gameMode === 'pva' && !Game.getState().whiteTurn === !playerIsWhite) {
+            makeAIMove();
+        }
     }
 
     function handleSquareClick(event) {
@@ -88,23 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (Game.isValidMove(startRow, startCol, row, col)) {
-                const piece = Game.getState().board[startRow][startCol];
-                const capturedPiece = Game.getState().board[row][col];
-                
-                UI.animateMove(startRow, startCol, row, col, () => {
-                    Game.movePiece(startRow, startCol, row, col);
-                    
-                    if (capturedPiece) UI.playSound('capture');
-                    else UI.playSound('move');
-
-                    updateGameStatus();
-                    UI.createBoard(Game.getState());
-                    saveGame();
-
-                    if (gameMode === 'pva' && !Game.getState().whiteTurn === !playerIsWhite) {
-                        makeAIMove();
-                    }
-                });
+                handleMove(startRow, startCol, row, col);
             }
             UI.clearHighlights();
             selectedPiece = null;
@@ -151,17 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const endCol = parseInt(targetSquare.dataset.col);
 
         if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
-            const piece = Game.getState().board[startRow][startCol];
-            const capturedPiece = Game.getState().board[endRow][endCol];
-            Game.movePiece(startRow, startCol, endRow, endCol);
-            if (capturedPiece) UI.playSound('capture');
-            else UI.playSound('move');
-            updateGameStatus();
-            UI.createBoard(Game.getState());
-            saveGame();
-            if (gameMode === 'pva' && !Game.getState().whiteTurn === !playerIsWhite) {
-                makeAIMove();
-            }
+            handleMove(startRow, startCol, endRow, endCol);
         } else {
             draggedPiece.style.display = 'block';
         }
@@ -195,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isGameOver) {
             clearInterval(timerInterval);
+            gameOverMessage.textContent = status;
+            gameOverModal.style.display = 'flex';
             chessboard.removeEventListener('click', handleSquareClick);
             chessboard.removeEventListener('dragstart', handleDragStart);
             chessboard.removeEventListener('dragover', handleDragOver);
@@ -212,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(timerInterval);
                 const winner = whiteTime === 0 ? "Black" : "White";
                 UI.updateStatus(`Time's up! ${winner} wins.`);
-                chessboard.removeEventListener('click', handleSquareClick);
+                updateGameStatus();
             }
         }, 1000);
     }
@@ -255,6 +258,11 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.clear();
             location.reload();
         });
+    });
+    
+    newGameOverButton.addEventListener('click', () => {
+        localStorage.clear();
+        location.reload();
     });
 
     document.getElementById('flip-board-button').addEventListener('click', () => {

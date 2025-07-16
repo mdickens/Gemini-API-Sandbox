@@ -8,7 +8,7 @@ const UI = (() => {
     const moveHistoryPanel = document.getElementById('move-history');
     const whiteCapturedPanel = document.getElementById('white-captured');
     const blackCapturedPanel = document.getElementById('black-captured');
-    const promotionModal = document.getElementById('promotion-modal');
+    const promotionOverlay = document.getElementById('promotion-overlay');
     const promotionChoices = document.getElementById('promotion-choices');
     const moveSound = document.getElementById('move-sound');
     const captureSound = document.getElementById('capture-sound');
@@ -82,6 +82,22 @@ const UI = (() => {
             }
         }
         updateCapturedPanels(state.whiteCaptured, state.blackCaptured);
+        updatePlayerInfo();
+    }
+    
+    function updatePlayerInfo() {
+        // Clear existing player info
+        document.querySelectorAll('.player-info').forEach(info => info.remove());
+
+        const whitePlayerInfo = document.createElement('div');
+        whitePlayerInfo.className = 'player-info';
+        whitePlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 1 (White)`;
+        whiteCapturedPanel.appendChild(whitePlayerInfo);
+
+        const blackPlayerInfo = document.createElement('div');
+        blackPlayerInfo.className = 'player-info';
+        blackPlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 2 (Black)`;
+        blackCapturedPanel.appendChild(blackPlayerInfo);
     }
 
     function updateCapturedPanels(whiteCaptured, blackCaptured) {
@@ -113,8 +129,8 @@ const UI = (() => {
     }
 
     function clearHighlights() {
-        const highlightedSquares = document.querySelectorAll('.valid-move, .selected');
-        highlightedSquares.forEach(square => square.classList.remove('valid-move', 'selected'));
+        const highlightedSquares = document.querySelectorAll('.valid-move, .selected, .hint-highlight');
+        highlightedSquares.forEach(square => square.classList.remove('valid-move', 'selected', 'hint-highlight'));
     }
 
     function updateStatus(status) {
@@ -159,6 +175,29 @@ const UI = (() => {
         });
     }
 
+    function showPromotionChoices(endRow, endCol, isWhite, callback) {
+        const square = chessboard.querySelector(`[data-row='${endRow}'][data-col='${endCol}']`);
+        const rect = square.getBoundingClientRect();
+        promotionOverlay.style.display = 'block';
+        promotionChoices.innerHTML = '';
+
+        const pieces = ['q', 'r', 'b', 'n'];
+        pieces.forEach(piece => {
+            const choice = document.createElement('span');
+            choice.className = 'promotion-choice';
+            choice.dataset.piece = piece;
+            choice.textContent = Game.pieceUnicode[isWhite ? piece.toUpperCase() : piece];
+            choice.onclick = () => {
+                callback(piece);
+                promotionOverlay.style.display = 'none';
+            };
+            promotionChoices.appendChild(choice);
+        });
+
+        promotionChoices.style.left = `${rect.left}px`;
+        promotionChoices.style.top = `${rect.top}px`;
+    }
+
     function playSound(type) {
         if (type === 'capture') captureSound.play();
         else if (type === 'check') checkSound.play();
@@ -174,7 +213,6 @@ const UI = (() => {
         updateMoveHistory,
         animateMove,
         playSound,
-        promotionModal,
-        promotionChoices
+        showPromotionChoices
     };
 })();

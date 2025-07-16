@@ -228,6 +228,11 @@ const Game = (() => {
 
         whiteTurn = !whiteTurn;
     }
+    
+    function promotePawn(row, col, newPiece) {
+        const piece = board[row][col];
+        board[row][col] = isWhite(piece) ? newPiece.toUpperCase() : newPiece.toLowerCase();
+    }
 
     function getPieces(isWhitePlayer) {
         const pieces = [];
@@ -340,6 +345,7 @@ const Game = (() => {
         isWhite,
         isValidMove,
         movePiece,
+        promotePawn,
         isCheckmate,
         isStalemate,
         isInsufficientMaterial,

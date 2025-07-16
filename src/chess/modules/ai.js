@@ -62,21 +62,15 @@ const AI = (() => {
     const kingTable = [
         [-30,-40,-40,-50,-50,-40,-40,-30],
         [-30,-40,-40,-50,-50,-40,-40,-30],
-...
-        const table = {
-            'p': pawnTable,
-            'n': knightTable,
-            'b': bishopTable,
-            'r': rookTable,
-            'q': queenTable,
-            'k': kingTable
-        }[pieceType];
+        [-30,-40,-40,-50,-50,-40,-40,-30],
+        [-30,-40,-40,-50,-50,-40,-40,-30],
+        [-20,-30,-30,-40,-40,-30,-30,-20],
+        [-10,-20,-20,-20,-20,-20,-20,-10],
+        [ 20, 20,  0,  0,  0,  0, 20, 20],
+        [ 20, 30, 10,  0,  0, 10, 30, 20]
+    ];
 
-        if (!table) return 0;
-        return Game.isWhite(piece) ? table[row][col] : table[7 - row][col];
-    }
-
-    function getAllLegalMoves(gameState) {
+    function getBestMove(gameState, difficulty) {
         const { whiteTurn } = gameState;
         const legalMoves = [];
         const pieces = Game.getPieces(whiteTurn);

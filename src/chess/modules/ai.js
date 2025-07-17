@@ -71,6 +71,98 @@ const AI = (() => {
     ];
 
     function getBestMove(gameState, difficulty) {
+        const depth = { 'easy': 1, 'medium': 2, 'hard': 3 }[difficulty];
+        const legalMoves = getAllLegalMoves(gameState);
+        if (legalMoves.length === 0) return null;
+
+        let bestMove = legalMoves[0];
+        const isWhitePlayer = gameState.whiteTurn;
+        let bestValue = isWhitePlayer ? -Infinity : Infinity;
+
+        for (const move of legalMoves) {
+            const tempState = simulateMove(gameState, move);
+            const boardValue = minimax(tempState, depth - 1, -Infinity, Infinity, !isWhitePlayer);
+
+            if (isWhitePlayer) {
+                if (boardValue > bestValue) {
+                    bestValue = boardValue;
+                    bestMove = move;
+                }
+            } else { // Black's turn (minimizing player)
+                if (boardValue < bestValue) {
+                    bestValue = boardValue;
+                    bestMove = move;
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    function minimax(gameState, depth, alpha, beta, isMaximizingPlayer) {
+        if (depth === 0) {
+            return evaluateBoard(gameState.board);
+        }
+
+        const legalMoves = getAllLegalMoves(gameState);
+        if (legalMoves.length === 0) {
+            if (Game.isCheckmate(gameState.whiteTurn)) return isMaximizingPlayer ? -Infinity : Infinity;
+            return 0; // Stalemate
+        }
+
+        if (isMaximizingPlayer) {
+            let maxEval = -Infinity;
+            for (const move of legalMoves) {
+                const tempState = simulateMove(gameState, move);
+                const evaluation = minimax(tempState, depth - 1, alpha, beta, false);
+                maxEval = Math.max(maxEval, evaluation);
+                alpha = Math.max(alpha, evaluation);
+                if (beta <= alpha) break;
+            }
+            return maxEval;
+        } else {
+            let minEval = Infinity;
+            for (const move of legalMoves) {
+                const tempState = simulateMove(gameState, move);
+                const evaluation = minimax(tempState, depth - 1, alpha, beta, true);
+                minEval = Math.min(minEval, evaluation);
+                beta = Math.min(beta, evaluation);
+                if (beta <= alpha) break;
+            }
+            return minEval;
+        }
+    }
+
+    function evaluateBoard(board) {
+        let totalEvaluation = 0;
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = board[row][col];
+                if (piece) {
+                    const value = pieceValues[piece.toLowerCase()];
+                    const positionalValue = getPositionalValue(piece, row, col);
+                    totalEvaluation += Game.isWhite(piece) ? (value + positionalValue) : -(value + positionalValue);
+                }
+            }
+        }
+        return totalEvaluation;
+    }
+
+    function getPositionalValue(piece, row, col) {
+        const pieceType = piece.toLowerCase();
+        const table = {
+            'p': pawnTable,
+            'n': knightTable,
+            'b': bishopTable,
+            'r': rookTable,
+            'q': queenTable,
+            'k': kingTable
+        }[pieceType];
+
+        if (!table) return 0;
+        return Game.isWhite(piece) ? table[row][col] : table[7 - row][col];
+    }
+
+    function getAllLegalMoves(gameState) {
         const { whiteTurn } = gameState;
         const legalMoves = [];
         const pieces = Game.getPieces(whiteTurn);

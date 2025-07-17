@@ -58,15 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
-    function makeAIMove() {
+    async function makeAIMove() {
         aiThinkingIndicator.style.display = 'block';
-        setTimeout(() => {
-            const bestMove = AI.getBestMove(Game.getState(), aiDifficulty);
-            if (bestMove) {
-                handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
-            }
-            aiThinkingIndicator.style.display = 'none';
-        }, 500);
+        const bestMove = await AI.getBestMove(Game.getState(), aiDifficulty);
+        aiThinkingIndicator.style.display = 'none';
+        if (bestMove) {
+            handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
+        }
     }
 
     function handleMove(startRow, startCol, endRow, endCol) {
@@ -248,11 +246,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!playerIsWhite) {
                 chessboard.classList.add('flipped');
             }
+            AI.init(); // Initialize the AI worker
             UI.createBoard(Game.getState());
             UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
             updateGameStatus();
             startTimer();
-            checkAIMove(); // Check if AI should make the first move
+            checkAIMove();
         }
     }
 

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let aiDifficulty = 'easy';
     let playerIsWhite = true;
     let confirmAction = null;
+    let moveNumber = 1;
 
     function showConfirmation(message, action) {
         confirmationMessage.textContent = message;
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveGame() {
         const gameState = Game.getState();
-        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite };
+        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite, moveNumber };
         localStorage.setItem('chessGameState', JSON.stringify(gameState));
         localStorage.setItem('chessSessionState', JSON.stringify(sessionState));
     }
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameMode = session.gameMode;
             aiDifficulty = session.aiDifficulty;
             playerIsWhite = session.playerIsWhite;
+            moveNumber = session.moveNumber;
             return true;
         }
         return false;
@@ -66,12 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bestMove) {
                 handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
             }
-        }, 50); // Short delay for UI update
+        }, 50);
     }
 
     function handleMove(startRow, startCol, endRow, endCol) {
         const piece = Game.getState().board[startRow][startCol];
         const capturedPiece = Game.getState().board[endRow][endCol];
+        const wasWhiteTurn = Game.getState().whiteTurn;
 
         UI.animateMove(startRow, startCol, endRow, endCol, () => {
             Game.movePiece(startRow, startCol, endRow, endCol);
@@ -83,7 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCheck = Game.isKingInCheck(state.whiteTurn);
             const isCheckmate = Game.isCheckmate(state.whiteTurn);
             const moveNotation = Game.toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isCheck, isCheckmate);
-            UI.updateMoveHistory(moveNotation);
+            
+            UI.updateMoveHistory(moveNumber, moveNotation, wasWhiteTurn);
+            if (!wasWhiteTurn) {
+                moveNumber++;
+            }
 
             if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
                 const isWhite = Game.isWhite(piece);
@@ -197,15 +204,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Game.isCheckmate(state.whiteTurn)) {
             status = "Checkmate! " + (state.whiteTurn ? "Black" : "White") + " wins.";
             isGameOver = true;
-        } else if (Game.isStalemate(state.whiteTurn)) {
-            status = "Stalemate! It's a draw.";
+            UI.playSound('game-end');
+        } else if (Game.isStalemate(state.whiteTurn) || Game.isInsufficientMaterial() || Game.isThreefoldRepetition()) {
+            status = "Draw.";
             isGameOver = true;
-        } else if (Game.isInsufficientMaterial()) {
-            status = "Draw by insufficient material.";
-            isGameOver = true;
-        } else if (Game.isThreefoldRepetition()) {
-            status = "Draw by threefold repetition.";
-            isGameOver = true;
+            UI.playSound('draw');
         } else if (Game.isKingInCheck(state.whiteTurn)) {
             status = (state.whiteTurn ? "White" : "Black") + " is in check.";
             UI.playSound('check');

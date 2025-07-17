@@ -177,6 +177,27 @@ body {
     background-color: #a5c9a5;
 }
 
+.move-entry {
+    padding: 2px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.move-number {
+    display: inline-block;
+    width: 25px;
+    color: #777;
+}
+
+.move-white {
+    display: inline-block;
+    width: 70px;
+}
+
+.move-black {
+    display: inline-block;
+    width: 70px;
+}
+
 .move-history-panel {
     width: 80%;
     max-width: 600px;

@@ -13,6 +13,8 @@ const UI = (() => {
     const moveSound = document.getElementById('move-sound');
     const captureSound = document.getElementById('capture-sound');
     const checkSound = document.getElementById('check-sound');
+    const gameEndSound = document.getElementById('game-end-sound');
+    const drawSound = document.getElementById('draw-sound');
 
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
@@ -86,14 +88,11 @@ const UI = (() => {
     }
     
     function updatePlayerInfo() {
-        // Clear existing player info
         document.querySelectorAll('.player-info').forEach(info => info.remove());
-
         const whitePlayerInfo = document.createElement('div');
         whitePlayerInfo.className = 'player-info';
         whitePlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 1 (White)`;
         whiteCapturedPanel.appendChild(whitePlayerInfo);
-
         const blackPlayerInfo = document.createElement('div');
         blackPlayerInfo.className = 'player-info';
         blackPlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 2 (Black)`;
@@ -137,10 +136,18 @@ const UI = (() => {
         statusDisplay.textContent = status;
     }
 
-    function updateMoveHistory(move) {
-        const moveElement = document.createElement('div');
-        moveElement.textContent = move;
-        moveHistoryPanel.appendChild(moveElement);
+    function updateMoveHistory(moveNumber, moveNotation, isWhiteTurn) {
+        if (isWhiteTurn) {
+            const moveEntry = document.createElement('div');
+            moveEntry.className = 'move-entry';
+            moveEntry.innerHTML = `<span class="move-number">${moveNumber}.</span> <span class="move-white">${moveNotation}</span>`;
+            moveHistoryPanel.appendChild(moveEntry);
+        } else {
+            const lastMoveEntry = moveHistoryPanel.lastElementChild;
+            if (lastMoveEntry) {
+                lastMoveEntry.innerHTML += ` <span class="move-black">${moveNotation}</span>`;
+            }
+        }
         moveHistoryPanel.scrollTop = moveHistoryPanel.scrollHeight;
     }
 
@@ -201,6 +208,8 @@ const UI = (() => {
     function playSound(type) {
         if (type === 'capture') captureSound.play();
         else if (type === 'check') checkSound.play();
+        else if (type === 'game-end') gameEndSound.play();
+        else if (type === 'draw') drawSound.play();
         else moveSound.play();
     }
 

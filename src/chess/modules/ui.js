@@ -16,6 +16,16 @@ const UI = (() => {
     const gameEndSound = document.getElementById('game-end-sound');
     const drawSound = document.getElementById('draw-sound');
 
+    let currentPieceSet = 'unicode';
+
+    function setPieceSet(setName) {
+        currentPieceSet = setName;
+    }
+
+    function applyTheme(themeName) {
+        document.body.className = `theme-${themeName}`;
+    }
+
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
@@ -50,9 +60,17 @@ const UI = (() => {
 
                 const piece = board[row][col];
                 if (piece) {
-                    const pieceElement = document.createElement('span');
+                    const pieceElement = document.createElement('div');
                     pieceElement.classList.add('piece');
-                    pieceElement.textContent = Game.pieceUnicode[piece];
+                    
+                    if (currentPieceSet === 'unicode') {
+                        pieceElement.textContent = Game.pieceUnicode[piece];
+                    } else {
+                        const pieceImg = document.createElement('img');
+                        pieceImg.src = PIECES[currentPieceSet][piece];
+                        pieceElement.appendChild(pieceImg);
+                    }
+                    
                     pieceElement.dataset.piece = piece;
                     pieceElement.draggable = true;
                     square.appendChild(pieceElement);
@@ -103,15 +121,27 @@ const UI = (() => {
         whiteCapturedPanel.innerHTML = '';
         blackCapturedPanel.innerHTML = '';
         whiteCaptured.forEach(piece => {
-            const pieceElement = document.createElement('span');
+            const pieceElement = document.createElement('div');
             pieceElement.classList.add('piece');
-            pieceElement.textContent = Game.pieceUnicode[piece];
+            if (currentPieceSet === 'unicode') {
+                pieceElement.textContent = Game.pieceUnicode[piece];
+            } else {
+                const pieceImg = document.createElement('img');
+                pieceImg.src = PIECES[currentPieceSet][piece];
+                pieceElement.appendChild(pieceImg);
+            }
             whiteCapturedPanel.appendChild(pieceElement);
         });
         blackCaptured.forEach(piece => {
-            const pieceElement = document.createElement('span');
+            const pieceElement = document.createElement('div');
             pieceElement.classList.add('piece');
-            pieceElement.textContent = Game.pieceUnicode[piece];
+            if (currentPieceSet === 'unicode') {
+                pieceElement.textContent = Game.pieceUnicode[piece];
+            } else {
+                const pieceImg = document.createElement('img');
+                pieceImg.src = PIECES[currentPieceSet][piece];
+                pieceElement.appendChild(pieceImg);
+            }
             blackCapturedPanel.appendChild(pieceElement);
         });
     }
@@ -190,10 +220,18 @@ const UI = (() => {
 
         const pieces = ['q', 'r', 'b', 'n'];
         pieces.forEach(piece => {
-            const choice = document.createElement('span');
+            const choice = document.createElement('div');
             choice.className = 'promotion-choice';
             choice.dataset.piece = piece;
-            choice.textContent = Game.pieceUnicode[isWhite ? piece.toUpperCase() : piece];
+            
+            if (currentPieceSet === 'unicode') {
+                choice.textContent = Game.pieceUnicode[isWhite ? piece.toUpperCase() : piece];
+            } else {
+                const pieceImg = document.createElement('img');
+                pieceImg.src = PIECES[currentPieceSet][isWhite ? piece.toUpperCase() : piece];
+                choice.appendChild(pieceImg);
+            }
+
             choice.onclick = () => {
                 callback(piece);
                 promotionOverlay.style.display = 'none';
@@ -222,6 +260,8 @@ const UI = (() => {
         updateMoveHistory,
         animateMove,
         playSound,
-        showPromotionChoices
+        showPromotionChoices,
+        setPieceSet,
+        applyTheme
     };
 })();

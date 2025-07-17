@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverModal = document.getElementById('game-over-modal');
     const gameOverMessage = document.getElementById('game-over-message');
     const newGameOverButton = document.getElementById('new-game-over-button');
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsButton = document.getElementById('settings-button');
+    const saveSettingsButton = document.getElementById('save-settings-button');
+    const themeSelect = document.getElementById('theme-select');
+    const pieceSetSelect = document.getElementById('piece-set-select');
 
     let selectedPiece = null;
     let selectedSquare = null;
@@ -24,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerIsWhite = true;
     let confirmAction = null;
     let moveNumber = 1;
+    let userSettings = {
+        theme: 'classic',
+        pieceSet: 'unicode'
+    };
 
     function showConfirmation(message, action) {
         confirmationMessage.textContent = message;
@@ -36,16 +45,25 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmAction = null;
     }
 
-    function saveGame() {
+    function saveState() {
         const gameState = Game.getState();
         const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite, moveNumber };
         localStorage.setItem('chessGameState', JSON.stringify(gameState));
         localStorage.setItem('chessSessionState', JSON.stringify(sessionState));
+        localStorage.setItem('chessUserSettings', JSON.stringify(userSettings));
     }
 
-    function loadGame() {
+    function loadState() {
         const savedGameState = localStorage.getItem('chessGameState');
         const savedSessionState = localStorage.getItem('chessSessionState');
+        const savedUserSettings = localStorage.getItem('chessUserSettings');
+        
+        if (savedUserSettings) {
+            userSettings = JSON.parse(savedUserSettings);
+            UI.applyTheme(userSettings.theme);
+            UI.setPieceSet(userSettings.pieceSet);
+        }
+
         if (savedGameState && savedSessionState) {
             Game.setState(JSON.parse(savedGameState));
             const session = JSON.parse(savedSessionState);
@@ -107,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function finishMove() {
         updateGameStatus();
         UI.createBoard(Game.getState());
-        saveGame();
+        saveState();
         checkAIMove();
     }
 
@@ -231,13 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Game.getState().whiteTurn) whiteTime--;
             else blackTime--;
             UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
-            saveGame();
-            if (whiteTime === 0 || blackTime === 0) {
-                clearInterval(timerInterval);
-                const winner = whiteTime === 0 ? "Black" : "White";
-                UI.updateStatus(`Time's up! ${winner} wins.`);
-                updateGameStatus();
-            }
+            saveState();
         }, 1000);
     }
 
@@ -286,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         aiDifficulty = document.getElementById('ai-difficulty').value;
         const selectedColor = document.querySelector('.color-button.selected').dataset.color;
         playerIsWhite = selectedColor === 'white';
-        saveGame();
+        saveState();
         initializeGame(false);
     });
 
@@ -306,6 +318,22 @@ document.addEventListener('DOMContentLoaded', () => {
         chessboard.classList.toggle('flipped');
     });
 
+    settingsButton.addEventListener('click', () => {
+        themeSelect.value = userSettings.theme;
+        pieceSetSelect.value = userSettings.pieceSet;
+        settingsModal.style.display = 'flex';
+    });
+
+    saveSettingsButton.addEventListener('click', () => {
+        userSettings.theme = themeSelect.value;
+        userSettings.pieceSet = pieceSetSelect.value;
+        UI.applyTheme(userSettings.theme);
+        UI.setPieceSet(userSettings.pieceSet);
+        UI.createBoard(Game.getState()); // Re-render board with new settings
+        saveState();
+        settingsModal.style.display = 'none';
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();
@@ -318,9 +346,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Initial Load ---
-    if (!loadGame()) {
-        initializeGame(true); // Show setup for new game
+    if (!loadState()) {
+        initializeGame(true);
     } else {
-        initializeGame(false); // Load existing game
+        initializeGame(false);
     }
 });

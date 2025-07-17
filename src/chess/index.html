@@ -42,62 +42,43 @@
             <button id="resign-button">Resign</button>
             <button id="claim-draw-button" disabled>Claim Draw</button>
             <button id="hint-button">Hint</button>
+            <button id="settings-button">Settings</button>
             <button id="help-button">Help</button>
         </div>
         <div id="white-captured" class="captured-panel"></div>
-        <div id="board-container">
-            <div id="chessboard"></div>
-        </div>
-        <div id="game-container">
-            <div id="status-panel">
-                <div id="status">White's turn</div>
-                <div id="timers">
-                    <div id="white-timer-box" class="timer-box">White: <span id="white-timer">10:00</span></div>
-                    <div id="black-timer-box" class="timer-box">Black: <span id="black-timer">10:00</span></div>
-                </div>
+...
             </div>
         </div>
-        <div id="black-captured" class="captured-panel"></div>
-        <div id="move-history" class="move-history-panel"></div>
-        <div id="ai-thinking-indicator" style="display: none;">AI is thinking...</div>
     </div>
 
-    <div id="promotion-overlay" class="modal" style="display: none;">
-        <div id="promotion-choices">
-            <!-- Choices will be inserted here by JS -->
-        </div>
-    </div>
-
-    <div id="game-over-modal" class="modal" style="display: none;">
+    <div id="settings-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <h2 id="game-over-message"></h2>
+            <h2>Settings</h2>
+            <div class="setting-group">
+                <h3>Board Theme</h3>
+                <select id="theme-select">
+                    <option value="classic">Classic</option>
+                    <option value="forest">Forest</option>
+                    <option value="ocean">Ocean</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <h3>Piece Set</h3>
+                <select id="piece-set-select">
+                    <option value="unicode">Unicode</option>
+                    <option value="modern">Modern</option>
+                </select>
+            </div>
             <div class="modal-buttons">
-                <button id="new-game-over-button">New Game</button>
+                <button id="save-settings-button">Save</button>
             </div>
-        </div>
-    </div>
-
-    <div id="help-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>How to Play</h2>
-            <p>This is a standard game of chess. The goal is to checkmate your opponent's king.</p>
-            <h3>Controls:</h3>
-            <ul>
-                <li>Click on a piece to select it, then click on a valid square to move it.</li>
-                <li>Alternatively, you can drag and drop pieces to their destination.</li>
-                <li>Use the buttons below the board to start a new game, take back a move, resign, or get help.</li>
-            </ul>
         </div>
     </div>
 
     <div id="confirmation-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <h2 id="confirmation-message">Are you sure?</h2>
-            <div class="modal-buttons">
-                <button id="confirm-yes">Yes</button>
-                <button id="confirm-no">No</button>
-            </div>
+...
         </div>
     </div>
 
@@ -107,6 +88,7 @@
     <audio id="game-end-sound" src="win.mp3"></audio>
     <audio id="draw-sound" src="quantum-music.mp3"></audio>
 
+    <script src="modules/pieces.js"></script>
     <script src="modules/game.js"></script>
     <script src="modules/ai.js"></script>
     <script src="modules/ui.js"></script>

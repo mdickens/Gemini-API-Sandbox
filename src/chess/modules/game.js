@@ -353,6 +353,7 @@ const Game = (() => {
         toAlgebraic,
         getPieces,
         isKingInCheck,
+        findKing,
         pieceUnicode
     };
 })();

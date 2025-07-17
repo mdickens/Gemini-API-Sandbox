@@ -149,6 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDragStart(event) {
+        const state = Game.getState();
+        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
+            event.preventDefault();
+            return;
+        }
         draggedPiece = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.piece);
         setTimeout(() => {
@@ -240,10 +245,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             gameSetupModal.style.display = 'none';
             mainLayout.style.display = 'flex';
+            if (!playerIsWhite) {
+                chessboard.classList.add('flipped');
+            }
             UI.createBoard(Game.getState());
             UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
             updateGameStatus();
             startTimer();
+            checkAIMove(); // Check if AI should make the first move
         }
     }
 
@@ -262,10 +271,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.querySelectorAll('.color-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+        });
+    });
+
     document.getElementById('start-game-button').addEventListener('click', () => {
         localStorage.clear();
         aiDifficulty = document.getElementById('ai-difficulty').value;
-        playerIsWhite = true; // Player is always white for now
+        const selectedColor = document.querySelector('.color-button.selected').dataset.color;
+        playerIsWhite = selectedColor === 'white';
         saveGame();
         initializeGame(false);
     });

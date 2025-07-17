@@ -257,7 +257,9 @@ body {
     z-index: 1001;
 }
 
-#game-mode-selection button.selected {
+
+#game-mode-selection button.selected,
+#color-selection button.selected {
     background-color: #3a5a78;
 }
 

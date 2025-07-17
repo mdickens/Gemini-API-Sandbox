@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let whiteTime = 600;
     let blackTime = 600;
     let timerInterval;
-    let gameMode = 'pvp'; // pvp or pva
+    let gameMode = 'pvp';
     let aiDifficulty = 'easy';
     let playerIsWhite = true;
     let confirmAction = null;
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showConfirmation(message, action) {
         confirmationMessage.textContent = message;
         confirmAction = action;
-        confirmationModal.style.display = 'block';
+        confirmationModal.style.display = 'flex';
     }
 
     function hideConfirmation() {
@@ -37,16 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveGame() {
         const gameState = Game.getState();
-        const timerState = { whiteTime, blackTime };
+        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite };
         localStorage.setItem('chessGameState', JSON.stringify(gameState));
-        localStorage.setItem('chessTimerState', JSON.stringify(timerState));
+        localStorage.setItem('chessSessionState', JSON.stringify(sessionState));
     }
 
     function loadGame() {
         const savedGameState = localStorage.getItem('chessGameState');
-        const savedTimerState = localStorage.getItem('chessTimerState');
-        if (savedGameState) {
+        const savedSessionState = localStorage.getItem('chessSessionState');
+        if (savedGameState && savedSessionState) {
             Game.setState(JSON.parse(savedGameState));
+            const session = JSON.parse(savedSessionState);
+            whiteTime = session.whiteTime;
+            blackTime = session.blackTime;
+            gameMode = session.gameMode;
+            aiDifficulty = session.aiDifficulty;
+            playerIsWhite = session.playerIsWhite;
             return true;
         }
         return false;
@@ -57,43 +63,50 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const bestMove = AI.getBestMove(Game.getState(), aiDifficulty);
             if (bestMove) {
-                const { startRow, startCol, endRow, endCol } = bestMove;
-                handleMove(startRow, startCol, endRow, endCol);
+                handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
             }
             aiThinkingIndicator.style.display = 'none';
-        }, 500); // Simulate thinking time
+        }, 500);
     }
 
     function handleMove(startRow, startCol, endRow, endCol) {
+        const piece = Game.getState().board[startRow][startCol];
         const capturedPiece = Game.getState().board[endRow][endCol];
-        
+
         UI.animateMove(startRow, startCol, endRow, endCol, () => {
             Game.movePiece(startRow, startCol, endRow, endCol);
             
             if (capturedPiece) UI.playSound('capture');
             else UI.playSound('move');
 
-            const piece = Game.getState().board[endRow][endCol];
+            const state = Game.getState();
+            const isCheck = Game.isKingInCheck(state.whiteTurn);
+            const isCheckmate = Game.isCheckmate(state.whiteTurn);
+            const moveNotation = Game.toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isCheck, isCheckmate);
+            UI.updateMoveHistory(moveNotation);
+
             if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
                 const isWhite = Game.isWhite(piece);
                 UI.showPromotionChoices(endRow, endCol, isWhite, (newPiece) => {
                     Game.promotePawn(endRow, endCol, newPiece);
-                    updateGameStatus();
-                    UI.createBoard(Game.getState());
-                    saveGame();
-                    checkAIMove();
+                    finishMove();
                 });
             } else {
-                updateGameStatus();
-                UI.createBoard(Game.getState());
-                saveGame();
-                checkAIMove();
+                finishMove();
             }
         });
     }
+    
+    function finishMove() {
+        updateGameStatus();
+        UI.createBoard(Game.getState());
+        saveGame();
+        checkAIMove();
+    }
 
     function checkAIMove() {
-        if (gameMode === 'pva' && !Game.getState().whiteTurn === !playerIsWhite) {
+        const state = Game.getState();
+        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
             makeAIMove();
         }
     }
@@ -102,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const square = event.target.closest('.square');
         if (!square) return;
 
-        const { whiteTurn } = Game.getState();
-        if (gameMode === 'pva' && !playerIsWhite === whiteTurn) {
-            return; // Not player's turn
+        const state = Game.getState();
+        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
+            return;
         }
 
         const row = parseInt(square.dataset.row);
@@ -125,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pieceElement = square.querySelector('.piece');
             if (pieceElement) {
                 const piece = pieceElement.dataset.piece;
-                if ((whiteTurn && Game.isWhite(piece)) || (!whiteTurn && !Game.isWhite(piece))) {
+                if ((state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
                     square.classList.add('selected');
@@ -139,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         draggedPiece = event.target;
         event.dataTransfer.setData('text/plain', event.target.dataset.piece);
         setTimeout(() => {
-            event.target.style.display = 'none';
+            event.target.classList.add('dragging');
         }, 0);
     }
 
@@ -149,9 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleDrop(event) {
         event.preventDefault();
+        if (!draggedPiece) return;
+
         const targetSquare = event.target.closest('.square');
+        
+        draggedPiece.classList.remove('dragging');
+
         if (!targetSquare) {
-            draggedPiece.style.display = ''; // Revert display style
             draggedPiece = null;
             return;
         };
@@ -163,8 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
             handleMove(startRow, startCol, endRow, endCol);
-        } else {
-            draggedPiece.style.display = ''; // Revert display style
         }
         draggedPiece = null;
     }
@@ -200,8 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
             gameOverModal.style.display = 'flex';
             chessboard.removeEventListener('click', handleSquareClick);
             chessboard.removeEventListener('dragstart', handleDragStart);
-            chessboard.removeEventListener('dragover', handleDragOver);
-            chessboard.removeEventListener('drop', handleDrop);
         }
     }
 
@@ -220,19 +233,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    function initializeGame() {
-        mainLayout.style.display = 'flex';
-        gameSetupModal.style.display = 'none';
-        
-        const gameLoaded = loadGame();
-        
-        UI.createBoard(Game.getState());
-        UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
-        updateGameStatus();
-        startTimer();
+    function initializeGame(isNewGame) {
+        if (isNewGame) {
+            gameSetupModal.style.display = 'flex';
+            mainLayout.style.display = 'none';
+        } else {
+            gameSetupModal.style.display = 'none';
+            mainLayout.style.display = 'flex';
+            UI.createBoard(Game.getState());
+            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
+            updateGameStatus();
+            startTimer();
+        }
     }
 
-    // Event Listeners
+    // --- Event Listeners ---
     chessboard.addEventListener('click', handleSquareClick);
     chessboard.addEventListener('dragstart', handleDragStart);
     chessboard.addEventListener('dragover', handleDragOver);
@@ -250,7 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('start-game-button').addEventListener('click', () => {
         localStorage.clear();
         aiDifficulty = document.getElementById('ai-difficulty').value;
-        initializeGame();
+        playerIsWhite = true; // Player is always white for now
+        saveGame();
+        initializeGame(false);
     });
 
     document.getElementById('new-game-button').addEventListener('click', () => {
@@ -272,10 +289,18 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();
+            hideConfirmation();
         }
     });
 
     confirmNoButton.addEventListener('click', () => {
         hideConfirmation();
     });
+
+    // --- Initial Load ---
+    if (!loadGame()) {
+        initializeGame(true); // Show setup for new game
+    } else {
+        initializeGame(false); // Load existing game
+    }
 });

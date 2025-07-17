@@ -324,7 +324,7 @@ const Game = (() => {
         return repetitions >= 2;
     }
 
-    function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isGameOver) {
+    function toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isCheck, isCheckmate) {
         let notation;
         if (piece.toLowerCase() === 'k' && Math.abs(startCol - endCol) === 2) {
             notation = endCol === 6 ? 'O-O' : 'O-O-O';
@@ -334,8 +334,8 @@ const Game = (() => {
             const captureSymbol = capturedPiece ? 'x' : '';
             notation = `${pieceSymbol}${files[startCol]}${8-startRow}${captureSymbol}${files[endCol]}${8-endRow}`;
         }
-        if (isGameOver && isCheckmate(whiteTurn)) notation += '#';
-        else if (isKingInCheck(whiteTurn)) notation += '+';
+        if (isCheckmate) notation += '#';
+        else if (isCheck) notation += '+';
         return notation;
     }
 

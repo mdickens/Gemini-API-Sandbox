@@ -164,7 +164,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (Game.isValidMove(startRow, startCol, row, col)) {
-                handleMove(startRow, startCol, row, col);
+                if (gameMode === 'sandbox') {
+                    Game.movePiece(startRow, startCol, row, col);
+                    UI.createBoard(Game.getState());
+                } else {
+                    handleMove(startRow, startCol, row, col);
+                }
             }
             UI.clearHighlights();
             selectedPiece = null;
@@ -174,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pieceElement = square.querySelector('.piece');
             if (pieceElement) {
                 const piece = pieceElement.dataset.piece;
-                if ((state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
+                if (gameMode === 'sandbox' || (state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
                     square.classList.add('selected');
@@ -220,12 +225,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const endCol = parseInt(targetSquare.dataset.col);
 
         if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
-            handleMove(startRow, startCol, endRow, endCol);
+            if (gameMode === 'sandbox') {
+                Game.movePiece(startRow, startCol, endRow, endCol);
+                UI.createBoard(Game.getState());
+            } else {
+                handleMove(startRow, startCol, endRow, endCol);
+            }
         }
         draggedPiece = null;
     }
 
     function updateGameStatus() {
+        if (gameMode === 'sandbox') {
+            UI.updateStatus('Sandbox Mode');
+            return;
+        }
+
         const state = Game.getState();
         let status = state.whiteTurn ? "White's turn" : "Black's turn";
         let isGameOver = false;
@@ -256,6 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTimer() {
+        if (gameMode === 'sandbox') {
+            document.getElementById('timers').style.display = 'none';
+            return;
+        }
         timerInterval = setInterval(() => {
             if (Game.getState().whiteTurn) whiteTime--;
             else blackTime--;
@@ -282,12 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function generatePGN() {
-        let pgn = `[Event "Casual Game"]\n[Site "Local"]\n[Date "${new Date().toISOString().split('T')[0]}"]\n[Round "-"]\n[White "Player 1"]\n[Black "Player 2"]\n[Result "*"]\n\n`;
-        pgn += pgnMoves.join(' ') + ' *';
-        return pgn;
-    }
-
     // --- Event Listeners ---
     chessboard.addEventListener('click', handleSquareClick);
     chessboard.addEventListener('dragstart', handleDragStart);
@@ -299,7 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
             gameMode = button.dataset.mode;
-            document.getElementById('ai-difficulty-selection').style.display = gameMode === 'pva' ? 'block' : 'none';
+            const aiOptions = document.getElementById('ai-difficulty-selection');
+            if (gameMode === 'pva') {
+                aiOptions.style.display = 'block';
+            } else {
+                aiOptions.style.display = 'none';
+            }
         });
     });
 
@@ -312,9 +330,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('start-game-button').addEventListener('click', () => {
         localStorage.clear();
-        aiDifficulty = document.getElementById('ai-difficulty').value;
-        const selectedColor = document.querySelector('.color-button.selected').dataset.color;
-        playerIsWhite = selectedColor === 'white';
+        if (gameMode === 'pva') {
+            aiDifficulty = document.getElementById('ai-difficulty').value;
+            const selectedColor = document.querySelector('.color-button.selected').dataset.color;
+            playerIsWhite = selectedColor === 'white';
+        }
         saveState();
         initializeGame(false);
     });

@@ -301,126 +301,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Event Listeners ---
-    chessboard.addEventListener('click', handleSquareClick);
-    chessboard.addEventListener('dragstart', handleDragStart);
-    chessboard.addEventListener('dragover', handleDragOver);
-    chessboard.addEventListener('drop', handleDrop);
-    
-    document.querySelectorAll('.game-mode-button').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-            gameMode = button.dataset.mode;
-            const aiOptions = document.getElementById('ai-difficulty-selection');
+    function generatePGN() {
+        let pgn = `[Event "Casual Game"]\n[Site "Local"]\n[Date "${new Date().toISOString().split('T')[0]}"]\n[Round "-"]\n[White "Player 1"]\n[Black "Player 2"]\n[Result "*"]\n\n`;
+        pgn += pgnMoves.join(' ') + ' *';
+        return pgn;
+    }
+
+    function bindEventListeners() {
+        chessboard.addEventListener('click', handleSquareClick);
+        chessboard.addEventListener('dragstart', handleDragStart);
+        chessboard.addEventListener('dragover', handleDragOver);
+        chessboard.addEventListener('drop', handleDrop);
+        
+        document.querySelectorAll('.game-mode-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+                gameMode = button.dataset.mode;
+                const aiOptions = document.getElementById('ai-difficulty-selection');
+                if (gameMode === 'pva') {
+                    aiOptions.style.display = 'block';
+                } else {
+                    aiOptions.style.display = 'none';
+                }
+            });
+        });
+
+        document.querySelectorAll('.color-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+            });
+        });
+
+        document.getElementById('start-game-button').addEventListener('click', () => {
+            localStorage.clear();
             if (gameMode === 'pva') {
-                aiOptions.style.display = 'block';
-            } else {
-                aiOptions.style.display = 'none';
+                aiDifficulty = document.getElementById('ai-difficulty').value;
+                const selectedColor = document.querySelector('.color-button.selected').dataset.color;
+                playerIsWhite = selectedColor === 'white';
             }
+            saveState();
+            initializeGame(false);
         });
-    });
 
-    document.querySelectorAll('.color-button').forEach(button => {
-        button.addEventListener('click', () => {
-            document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
+        document.getElementById('new-game-button').addEventListener('click', () => {
+            showConfirmation('Are you sure you want to start a new game? This will erase your current game.', () => {
+                localStorage.clear();
+                location.reload();
+            });
         });
-    });
-
-    document.getElementById('start-game-button').addEventListener('click', () => {
-        localStorage.clear();
-        if (gameMode === 'pva') {
-            aiDifficulty = document.getElementById('ai-difficulty').value;
-            const selectedColor = document.querySelector('.color-button.selected').dataset.color;
-            playerIsWhite = selectedColor === 'white';
-        }
-        saveState();
-        initializeGame(false);
-    });
-
-    document.getElementById('new-game-button').addEventListener('click', () => {
-        showConfirmation('Are you sure you want to start a new game? This will erase your current game.', () => {
+        
+        newGameOverButton.addEventListener('click', () => {
             localStorage.clear();
             location.reload();
         });
-    });
-    
-    newGameOverButton.addEventListener('click', () => {
-        localStorage.clear();
-        location.reload();
-    });
 
-    document.getElementById('flip-board-button').addEventListener('click', () => {
-        chessboard.classList.toggle('flipped');
-    });
+        document.getElementById('flip-board-button').addEventListener('click', () => {
+            chessboard.classList.toggle('flipped');
+        });
 
-    settingsButton.addEventListener('click', () => {
-        themeSelect.value = userSettings.theme;
-        pieceSetSelect.value = userSettings.pieceSet;
-        settingsModal.style.display = 'flex';
-    });
+        settingsButton.addEventListener('click', () => {
+            themeSelect.value = userSettings.theme;
+            pieceSetSelect.value = userSettings.pieceSet;
+            settingsModal.style.display = 'flex';
+        });
 
-    saveSettingsButton.addEventListener('click', () => {
-        userSettings.theme = themeSelect.value;
-        userSettings.pieceSet = pieceSetSelect.value;
-        UI.applyTheme(userSettings.theme);
-        UI.setPieceSet(userSettings.pieceSet);
-        UI.createBoard(Game.getState());
-        saveState();
-        settingsModal.style.display = 'none';
-    });
+        saveSettingsButton.addEventListener('click', () => {
+            userSettings.theme = themeSelect.value;
+            userSettings.pieceSet = pieceSetSelect.value;
+            UI.applyTheme(userSettings.theme);
+            UI.setPieceSet(userSettings.pieceSet);
+            UI.createBoard(Game.getState());
+            saveState();
+            settingsModal.style.display = 'none';
+        });
 
-    takebackButton.addEventListener('click', () => {
-        const state = Game.getState();
-        const movesToUndo = (gameMode === 'pva' && state.moveHistory.length > 1) ? 2 : 1;
-        for (let i = 0; i < movesToUndo; i++) {
-            if (state.moveHistory.length > 0) {
-                Game.takeback();
-                if (pgnMoves.length > 0) {
-                    if (state.whiteTurn) {
-                        moveNumber--;
-                        const lastMove = pgnMoves[pgnMoves.length - 1];
-                        pgnMoves[pgnMoves.length - 1] = lastMove.split(' ')[0];
-                    } else {
-                        pgnMoves.pop();
+        takebackButton.addEventListener('click', () => {
+            const state = Game.getState();
+            const movesToUndo = (gameMode === 'pva' && state.moveHistory.length > 1) ? 2 : 1;
+            for (let i = 0; i < movesToUndo; i++) {
+                if (state.moveHistory.length > 0) {
+                    Game.takeback();
+                    if (pgnMoves.length > 0) {
+                        if (state.whiteTurn) {
+                            moveNumber--;
+                            const lastMove = pgnMoves[pgnMoves.length - 1];
+                            pgnMoves[pgnMoves.length - 1] = lastMove.split(' ')[0];
+                        } else {
+                            pgnMoves.pop();
+                        }
                     }
                 }
             }
-        }
-        UI.createBoard(Game.getState());
-        updateGameStatus();
-        saveState();
-    });
-
-    exportPgnButton.addEventListener('click', () => {
-        const pgn = generatePGN();
-        const blob = new Blob([pgn], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'game.pgn';
-        a.click();
-        URL.revokeObjectURL(url);
-    });
-
-    copyPgnButton.addEventListener('click', () => {
-        const pgn = generatePGN();
-        navigator.clipboard.writeText(pgn).then(() => {
-            alert('PGN copied to clipboard!');
+            UI.createBoard(Game.getState());
+            updateGameStatus();
+            saveState();
         });
-    });
 
-    confirmYesButton.addEventListener('click', () => {
-        if (confirmAction) {
-            confirmAction();
+        exportPgnButton.addEventListener('click', () => {
+            const pgn = generatePGN();
+            const blob = new Blob([pgn], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'game.pgn';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        copyPgnButton.addEventListener('click', () => {
+            const pgn = generatePGN();
+            navigator.clipboard.writeText(pgn).then(() => {
+                alert('PGN copied to clipboard!');
+            });
+        });
+
+        confirmYesButton.addEventListener('click', () => {
+            if (confirmAction) {
+                confirmAction();
+                hideConfirmation();
+            }
+        });
+
+        confirmNoButton.addEventListener('click', () => {
             hideConfirmation();
-        }
-    });
+        });
 
-    confirmNoButton.addEventListener('click', () => {
-        hideConfirmation();
-    });
+        window.addEventListener('beforeunload', (e) => {
+            if (Game.getState().moveHistory.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    }
 
     // --- Initial Load ---
     if (!loadState()) {
@@ -428,4 +442,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         initializeGame(false);
     }
+    bindEventListeners();
 });

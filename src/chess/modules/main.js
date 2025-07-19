@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveSettingsButton = document.getElementById('save-settings-button');
     const themeSelect = document.getElementById('theme-select');
     const pieceSetSelect = document.getElementById('piece-set-select');
+    const exportPgnButton = document.getElementById('export-pgn-button');
+    const copyPgnButton = document.getElementById('copy-pgn-button');
+    const takebackButton = document.getElementById('takeback-button');
 
     let selectedPiece = null;
     let selectedSquare = null;
@@ -29,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerIsWhite = true;
     let confirmAction = null;
     let moveNumber = 1;
+    let pgnMoves = [];
     let userSettings = {
         theme: 'classic',
         pieceSet: 'unicode'
@@ -47,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveState() {
         const gameState = Game.getState();
-        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite, moveNumber };
+        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite, moveNumber, pgnMoves };
         localStorage.setItem('chessGameState', JSON.stringify(gameState));
         localStorage.setItem('chessSessionState', JSON.stringify(sessionState));
         localStorage.setItem('chessUserSettings', JSON.stringify(userSettings));
@@ -73,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             aiDifficulty = session.aiDifficulty;
             playerIsWhite = session.playerIsWhite;
             moveNumber = session.moveNumber;
+            pgnMoves = session.pgnMoves;
             return true;
         }
         return false;
@@ -105,6 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCheckmate = Game.isCheckmate(state.whiteTurn);
             const moveNotation = Game.toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isCheck, isCheckmate);
             
+            if (wasWhiteTurn) {
+                pgnMoves.push(`${moveNumber}. ${moveNotation}`);
+            } else {
+                pgnMoves[pgnMoves.length - 1] += ` ${moveNotation}`;
+            }
+
             UI.updateMoveHistory(moveNumber, moveNotation, wasWhiteTurn);
             if (!wasWhiteTurn) {
                 moveNumber++;
@@ -271,6 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function generatePGN() {
+        let pgn = `[Event "Casual Game"]\n[Site "Local"]\n[Date "${new Date().toISOString().split('T')[0]}"]\n[Round "-"]\n[White "Player 1"]\n[Black "Player 2"]\n[Result "*"]\n\n`;
+        pgn += pgnMoves.join(' ') + ' *';
+        return pgn;
+    }
+
     // --- Event Listeners ---
     chessboard.addEventListener('click', handleSquareClick);
     chessboard.addEventListener('dragstart', handleDragStart);
@@ -329,9 +346,49 @@ document.addEventListener('DOMContentLoaded', () => {
         userSettings.pieceSet = pieceSetSelect.value;
         UI.applyTheme(userSettings.theme);
         UI.setPieceSet(userSettings.pieceSet);
-        UI.createBoard(Game.getState()); // Re-render board with new settings
+        UI.createBoard(Game.getState());
         saveState();
         settingsModal.style.display = 'none';
+    });
+
+    takebackButton.addEventListener('click', () => {
+        const state = Game.getState();
+        const movesToUndo = (gameMode === 'pva' && state.moveHistory.length > 1) ? 2 : 1;
+        for (let i = 0; i < movesToUndo; i++) {
+            if (state.moveHistory.length > 0) {
+                Game.takeback();
+                if (pgnMoves.length > 0) {
+                    if (state.whiteTurn) {
+                        moveNumber--;
+                        const lastMove = pgnMoves[pgnMoves.length - 1];
+                        pgnMoves[pgnMoves.length - 1] = lastMove.split(' ')[0];
+                    } else {
+                        pgnMoves.pop();
+                    }
+                }
+            }
+        }
+        UI.createBoard(Game.getState());
+        updateGameStatus();
+        saveState();
+    });
+
+    exportPgnButton.addEventListener('click', () => {
+        const pgn = generatePGN();
+        const blob = new Blob([pgn], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'game.pgn';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    copyPgnButton.addEventListener('click', () => {
+        const pgn = generatePGN();
+        navigator.clipboard.writeText(pgn).then(() => {
+            alert('PGN copied to clipboard!');
+        });
     });
 
     confirmYesButton.addEventListener('click', () => {

@@ -290,6 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             gameSetupModal.style.display = 'none';
             mainLayout.style.display = 'flex';
+            bindEventListeners(); // Bind listeners only when the game board is visible
             if (!playerIsWhite) {
                 chessboard.classList.add('flipped');
             }
@@ -439,8 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Initial Load ---
     if (!loadState()) {
         initializeGame(true);
+        bindEventListeners(); // Bind listeners for the setup modal
     } else {
         initializeGame(false);
     }
-    bindEventListeners();
 });

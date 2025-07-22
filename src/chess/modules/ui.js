@@ -252,37 +252,15 @@ const UI = (() => {
     }
 
     function bindEventListeners(handleSquareClick, handleDragStart, handleDrop) {
-        chessboard.addEventListener('click', (event) => {
-            const square = event.target.closest('.square');
-            if (square) {
-                const row = parseInt(square.dataset.row);
-                const col = parseInt(square.dataset.col);
-                handleSquareClick(row, col);
-            }
-        });
+        chessboard.addEventListener('click', handleSquareClick);
 
-        chessboard.addEventListener('dragstart', (event) => {
-            const square = event.target.closest('.square');
-            if (square) {
-                const row = parseInt(square.dataset.row);
-                const col = parseInt(square.dataset.col);
-                handleDragStart(row, col);
-            }
-        });
+        chessboard.addEventListener('dragstart', handleDragStart);
 
         chessboard.addEventListener('dragover', (event) => {
             event.preventDefault();
         });
 
-        chessboard.addEventListener('drop', (event) => {
-            event.preventDefault();
-            const square = event.target.closest('.square');
-            if (square) {
-                const row = parseInt(square.dataset.row);
-                const col = parseInt(square.dataset.col);
-                handleDrop(row, col);
-            }
-        });
+        chessboard.addEventListener('drop', handleDrop);
     }
 
     return {

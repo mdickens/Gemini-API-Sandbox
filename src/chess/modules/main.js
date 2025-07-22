@@ -309,10 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindEventListeners() {
-        chessboard.addEventListener('click', handleSquareClick);
-        chessboard.addEventListener('dragstart', handleDragStart);
-        chessboard.addEventListener('dragover', handleDragOver);
-        chessboard.addEventListener('drop', handleDrop);
+        UI.bindEventListeners(handleSquareClick, handleDragStart, handleDrop);
         
         document.querySelectorAll('.game-mode-button').forEach(button => {
             button.addEventListener('click', () => {

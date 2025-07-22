@@ -251,6 +251,40 @@ const UI = (() => {
         else moveSound.play();
     }
 
+    function bindEventListeners(handleSquareClick, handleDragStart, handleDrop) {
+        chessboard.addEventListener('click', (event) => {
+            const square = event.target.closest('.square');
+            if (square) {
+                const row = parseInt(square.dataset.row);
+                const col = parseInt(square.dataset.col);
+                handleSquareClick(row, col);
+            }
+        });
+
+        chessboard.addEventListener('dragstart', (event) => {
+            const square = event.target.closest('.square');
+            if (square) {
+                const row = parseInt(square.dataset.row);
+                const col = parseInt(square.dataset.col);
+                handleDragStart(row, col);
+            }
+        });
+
+        chessboard.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+
+        chessboard.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const square = event.target.closest('.square');
+            if (square) {
+                const row = parseInt(square.dataset.row);
+                const col = parseInt(square.dataset.col);
+                handleDrop(row, col);
+            }
+        });
+    }
+
     return {
         createBoard,
         updateTimers,
@@ -262,6 +296,7 @@ const UI = (() => {
         playSound,
         showPromotionChoices,
         setPieceSet,
-        applyTheme
+        applyTheme,
+        bindEventListeners
     };
 })();

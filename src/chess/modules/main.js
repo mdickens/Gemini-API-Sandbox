@@ -133,9 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    function updateBoardAndPreserveScroll() {
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        UI.createBoard(Game.getState());
+        window.scrollTo(scrollX, scrollY);
+    }
+
     function finishMove() {
         updateGameStatus();
-        UI.createBoard(Game.getState());
+        updateBoardAndPreserveScroll();
         saveState();
         checkAIMove();
     }
@@ -166,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Game.isValidMove(startRow, startCol, row, col)) {
                 if (gameMode === 'sandbox') {
                     Game.movePiece(startRow, startCol, row, col);
-                    UI.createBoard(Game.getState());
+                    updateBoardAndPreserveScroll();
                 } else {
                     handleMove(startRow, startCol, row, col);
                 }
@@ -227,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
             if (gameMode === 'sandbox') {
                 Game.movePiece(startRow, startCol, endRow, endCol);
-                UI.createBoard(Game.getState());
+                updateBoardAndPreserveScroll();
             } else {
                 handleMove(startRow, startCol, endRow, endCol);
             }
@@ -294,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!playerIsWhite) {
                 chessboard.classList.add('flipped');
             }
-            UI.createBoard(Game.getState());
+            updateBoardAndPreserveScroll();
             UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
             updateGameStatus();
             startTimer();
@@ -370,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userSettings.pieceSet = pieceSetSelect.value;
             UI.applyTheme(userSettings.theme);
             UI.setPieceSet(userSettings.pieceSet);
-            UI.createBoard(Game.getState());
+            updateBoardAndPreserveScroll();
             saveState();
             settingsModal.style.display = 'none';
         });
@@ -392,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            UI.createBoard(Game.getState());
+            updateBoardAndPreserveScroll();
             updateGameStatus();
             saveState();
         });

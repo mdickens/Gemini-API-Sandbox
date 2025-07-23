@@ -99,7 +99,10 @@ function beforeEach() {
     UI.animateMove = (startRow, startCol, endRow, endCol, callback) => callback();
     UI.playSound = () => {};
     UI.updateMoveHistory = () => {};
-    UI.showPromotionChoices = () => {};
+    // Immediately invoke promotion callback with a Queen for testing purposes
+    UI.showPromotionChoices = (endRow, endCol, isWhite, callback) => {
+        callback('q');
+    };
     UI.createBoard = () => {};
     UI.updateStatus = () => {};
     UI.updateTimers = () => {};

@@ -167,15 +167,16 @@ const UI = (() => {
     }
 
     function updateMoveHistory(moveNumber, moveNotation, isWhiteTurn) {
+        let moveIndex = Game.getState().moveHistory.length - 1;
         if (isWhiteTurn) {
             const moveEntry = document.createElement('div');
             moveEntry.className = 'move-entry';
-            moveEntry.innerHTML = `<span class="move-number">${moveNumber}.</span> <span class="move-white">${moveNotation}</span>`;
+            moveEntry.innerHTML = `<span class="move-number">${moveNumber}.</span> <span class="move-white" data-move-index="${moveIndex}">${moveNotation}</span>`;
             moveHistoryPanel.appendChild(moveEntry);
         } else {
             const lastMoveEntry = moveHistoryPanel.lastElementChild;
             if (lastMoveEntry) {
-                lastMoveEntry.innerHTML += ` <span class="move-black">${moveNotation}</span>`;
+                lastMoveEntry.innerHTML += ` <span class="move-black" data-move-index="${moveIndex}">${moveNotation}</span>`;
             }
         }
         moveHistoryPanel.scrollTop = moveHistoryPanel.scrollHeight;

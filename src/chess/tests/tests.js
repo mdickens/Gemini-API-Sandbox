@@ -599,3 +599,19 @@ runTest("Should be able to perform en passant", () => {
     assert(state.board[4][0] === 'p' && state.board[3][0] === '', "Should be able to perform en passant.");
     afterEach();
 });
+
+// --- Move History Tests ---
+
+runTest("Should be able to review previous moves", () => {
+    beforeEach();
+    setupTest();
+    handleMove(6, 4, 4, 4); // e4
+    handleMove(1, 4, 3, 4); // e5
+    reviewBoardState(0);
+    let state = Game.getState();
+    assert(state.board[4][4] === 'P' && state.board[6][4] === '', "Should show the board after the first move.");
+    reviewBoardState(1);
+    state = Game.getState();
+    assert(state.board[3][4] === 'p' && state.board[1][4] === '', "Should show the board after the second move.");
+    afterEach();
+});

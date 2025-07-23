@@ -181,10 +181,10 @@ const AI = (() => {
     function simulateMove(gameState, move) {
         const newBoard = JSON.parse(JSON.stringify(gameState.board));
         const piece = newBoard[move.startRow][move.startCol];
-        newBoard[move.endRow][move.endCol] = piece;
-        newBoard[move.startRow][move.startCol] = '';
-        return { ...gameState, board: newBoard, whiteTurn: !gameState.whiteTurn };
-    }
+    newBoard[move.endRow][move.endCol] = piece;
+    newBoard[move.startRow][move.startCol] = '';
+    return Object.assign({}, gameState, { board: newBoard, whiteTurn: !gameState.whiteTurn });
+}
 
     return {
         getBestMove

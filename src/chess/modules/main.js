@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const boardHistory = Game.getState().boardHistory;
         if (moveIndex >= 0 && moveIndex < boardHistory.length) {
             const boardState = JSON.parse(boardHistory[moveIndex]);
-            const state = { ...Game.getState(), board: boardState };
+            const state = Object.assign({}, Game.getState(), { board: boardState });
             UI.createBoard(state);
             reviewMoveIndex = moveIndex;
             isReviewing = true;

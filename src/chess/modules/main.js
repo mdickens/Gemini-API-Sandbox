@@ -151,13 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
                 button.classList.add('selected');
-...
-        if (Game.getState().moveHistory.length > 0) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
+                gameMode = button.dataset.mode;
+                const aiOptions = document.getElementById('ai-difficulty-selection');
+                if (gameMode === 'pva') {
+                    aiOptions.style.display = 'block';
+                } else {
+                    aiOptions.style.display = 'none';
+                }
+            });
         });
-    }
 
     // --- Initial Load ---
     if (!loadState()) {

@@ -101,23 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startTimer() {
-...
-        if (isNewGame) {
-            gameSetupModal.style.display = 'flex';
-            mainLayout.style.display = 'none';
-        } else {
-            gameSetupModal.style.display = 'none';
-            mainLayout.style.display = 'flex';
-            bindEventListeners(); // Bind listeners only when the game board is visible
-            if (!playerIsWhite) {
-                chessboard.classList.add('flipped');
-            }
-            updateBoardAndPreserveScroll();
-            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
-            updateGameStatus();
-            startTimer();
-            checkAIMove();
+        if (gameMode === 'sandbox') {
+            document.getElementById('timers').style.display = 'none';
+            return;
         }
+        timerInterval = setInterval(() => {
+            if (Game.getState().whiteTurn) whiteTime--;
+            else blackTime--;
+            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
+            saveState();
+        }, 1000);
     }
 
     function generatePGN() {

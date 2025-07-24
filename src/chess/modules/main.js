@@ -63,26 +63,40 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!square) return;
 
         const state = Game.getState();
-...
         if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
-            event.preventDefault();
             return;
         }
-        if (isReviewing) {
-            event.preventDefault();
-            return;
-        }
-        draggedPiece = event.target;
-        event.dataTransfer.setData('text/plain', event.target.dataset.piece);
-        setTimeout(() => {
-            event.target.classList.add('dragging');
-...
-        if (isGameOver) {
-            clearInterval(timerInterval);
-            gameOverMessage.textContent = status;
-            gameOverModal.style.display = 'flex';
-            chessboard.removeEventListener('click', handleSquareClick);
-            chessboard.removeEventListener('dragstart', handleDragStart);
+
+        const row = parseInt(square.dataset.row);
+        const col = parseInt(square.dataset.col);
+
+        if (selectedPiece) {
+            const startRow = parseInt(selectedSquare.dataset.row);
+            const startCol = parseInt(selectedSquare.dataset.col);
+
+            if (Game.isValidMove(startRow, startCol, row, col)) {
+                if (gameMode === 'sandbox') {
+                    Game.movePiece(startRow, startCol, row, col);
+                    updateBoardAndPreserveScroll();
+                } else {
+                    handleMove(startRow, startCol, row, col);
+                }
+            }
+            UI.clearHighlights();
+            selectedPiece = null;
+            selectedSquare = null;
+
+        } else {
+            const pieceElement = square.querySelector('.piece');
+            if (pieceElement) {
+                const piece = pieceElement.dataset.piece;
+                if (gameMode === 'sandbox' || (state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
+                    selectedPiece = pieceElement;
+                    selectedSquare = square;
+                    square.classList.add('selected');
+                    UI.highlightValidMoves(row, col);
+                }
+            }
         }
     }
 

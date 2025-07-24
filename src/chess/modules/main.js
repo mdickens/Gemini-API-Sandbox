@@ -44,10 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationMessage.textContent = message;
         confirmAction = action;
         confirmationModal.style.display = 'flex';
-...
-        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
-            makeAIMove();
-        }
     }
 
     function reviewBoardState(moveIndex) {

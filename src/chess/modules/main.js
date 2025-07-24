@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generatePGN() {
-...
+        let pgn = `[Event "Casual Game"]\n[Site "Local"]\n[Date "${new Date().toISOString().split('T')[0]}"]\n[Round "-"]\n[White "Player 1"]\n[Black "Player 2"]\n[Result "*"]\n\n`;
         pgn += pgnMoves.join(' ') + ' *';
         return pgn;
     }

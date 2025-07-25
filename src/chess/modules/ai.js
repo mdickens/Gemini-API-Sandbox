@@ -75,7 +75,7 @@ const AI = (() => {
         const legalMoves = getAllLegalMoves(gameState);
         if (legalMoves.length === 0) return null;
 
-        let bestMove = legalMoves[0];
+        let bestMove = null;
         const isWhitePlayer = gameState.whiteTurn;
         let bestValue = isWhitePlayer ? -Infinity : Infinity;
 

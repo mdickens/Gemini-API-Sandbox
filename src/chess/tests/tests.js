@@ -615,3 +615,45 @@ runTest("Should be able to review previous moves", () => {
     assert(state.board[3][4] === 'p' && state.board[1][4] === '', "Should show the board after the second move.");
     afterEach();
 });
+
+// --- AI Tests ---
+
+runTest("AI should return null on checkmate", () => {
+    beforeEach();
+    setupTest({
+        board: [
+            ['r', '', '', '', 'k', '', '', 'r'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', 'K', 'Q', '', ''],
+        ],
+        whiteTurn: false
+    });
+    const bestMove = AI.getBestMove(Game.getState(), 'easy');
+    assert(bestMove === null, "AI should return null on checkmate.");
+    afterEach();
+});
+
+runTest("AI should return null on stalemate", () => {
+    beforeEach();
+    setupTest({
+        board: [
+            ['', '', '', '', '', '', '', 'k'],
+            ['', '', '', '', '', '', 'P', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['K', '', '', '', '', '', '', ''],
+        ],
+        whiteTurn: false
+    });
+    const bestMove = AI.getBestMove(Game.getState(), 'easy');
+    assert(bestMove === null, "AI should return null on stalemate.");
+    afterEach();
+});

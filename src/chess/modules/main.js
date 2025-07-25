@@ -161,6 +161,115 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        document.querySelectorAll('.color-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+                button.classList.add('selected');
+            });
+        });
+
+        document.getElementById('start-game-button').addEventListener('click', () => {
+            localStorage.clear();
+            if (gameMode === 'pva') {
+                aiDifficulty = document.getElementById('ai-difficulty').value;
+                const selectedColor = document.querySelector('.color-button.selected').dataset.color;
+                playerIsWhite = selectedColor === 'white';
+            }
+            saveState();
+            initializeGame(false);
+        });
+
+        document.getElementById('new-game-button').addEventListener('click', () => {
+            showConfirmation('Are you sure you want to start a new game? This will erase your current game.', () => {
+                localStorage.clear();
+                location.reload();
+            });
+        });
+        
+        newGameOverButton.addEventListener('click', () => {
+            localStorage.clear();
+            location.reload();
+        });
+
+        document.getElementById('flip-board-button').addEventListener('click', () => {
+            chessboard.classList.toggle('flipped');
+        });
+
+        settingsButton.addEventListener('click', () => {
+            themeSelect.value = userSettings.theme;
+            pieceSetSelect.value = userSettings.pieceSet;
+            settingsModal.style.display = 'flex';
+        });
+
+        saveSettingsButton.addEventListener('click', () => {
+            userSettings.theme = themeSelect.value;
+            userSettings.pieceSet = pieceSetSelect.value;
+            UI.applyTheme(userSettings.theme);
+            UI.setPieceSet(userSettings.pieceSet);
+            updateBoardAndPreserveScroll();
+            saveState();
+            settingsModal.style.display = 'none';
+        });
+
+        takebackButton.addEventListener('click', () => {
+            const state = Game.getState();
+            const movesToUndo = (gameMode === 'pva' && state.moveHistory.length > 1) ? 2 : 1;
+            for (let i = 0; i < movesToUndo; i++) {
+                if (state.moveHistory.length > 0) {
+                    Game.takeback();
+                    if (pgnMoves.length > 0) {
+                        if (state.whiteTurn) {
+                            moveNumber--;
+                            const lastMove = pgnMoves[pgnMoves.length - 1];
+                            pgnMoves[pgnMoves.length - 1] = lastMove.split(' ')[0];
+                        } else {
+                            pgnMoves.pop();
+                        }
+                    }
+                }
+            }
+            updateBoardAndPreserveScroll();
+            updateGameStatus();
+            saveState();
+        });
+
+        exportPgnButton.addEventListener('click', () => {
+            const pgn = generatePGN();
+            const blob = new Blob([pgn], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'game.pgn';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        copyPgnButton.addEventListener('click', () => {
+            const pgn = generatePGN();
+            navigator.clipboard.writeText(pgn).then(() => {
+                alert('PGN copied to clipboard!');
+            });
+        });
+
+        confirmYesButton.addEventListener('click', () => {
+            if (confirmAction) {
+                confirmAction();
+                hideConfirmation();
+            }
+        });
+
+        confirmNoButton.addEventListener('click', () => {
+            hideConfirmation();
+        });
+
+        window.addEventListener('beforeunload', (e) => {
+            if (Game.getState().moveHistory.length > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    }
+
     // --- Initial Load ---
     if (!loadState()) {
         initializeGame(true);

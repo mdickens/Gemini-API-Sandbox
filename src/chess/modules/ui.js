@@ -157,8 +157,12 @@ const UI = (() => {
         }
     }
 
-    function clearHighlights() {
-        const highlightedSquares = document.querySelectorAll('.valid-move, .selected, .hint-highlight');
+    function clearHighlights(clearSelected = true) {
+        const selectors = ['.valid-move', '.hint-highlight'];
+        if (clearSelected) {
+            selectors.push('.selected');
+        }
+        const highlightedSquares = document.querySelectorAll(selectors.join(', '));
         highlightedSquares.forEach(square => square.classList.remove('valid-move', 'selected', 'hint-highlight'));
     }
 
@@ -252,7 +256,7 @@ const UI = (() => {
         else moveSound.play();
     }
 
-    function bindEventListeners(handleSquareClick, handleDragStart, handleDrop) {
+    function bindEventListeners(handleSquareClick, handleDragStart, handleDrop, handleMouseOver, handleMouseOut) {
         chessboard.addEventListener('click', handleSquareClick);
 
         chessboard.addEventListener('dragstart', handleDragStart);
@@ -262,6 +266,10 @@ const UI = (() => {
         });
 
         chessboard.addEventListener('drop', handleDrop);
+
+        chessboard.addEventListener('mouseover', handleMouseOver);
+
+        chessboard.addEventListener('mouseout', handleMouseOut);
     }
 
     return {

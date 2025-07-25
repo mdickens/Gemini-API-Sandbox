@@ -100,27 +100,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    }
+    }
+
+    function handleMouseOver(event) {
+        if (isReviewing || selectedPiece) return;
+        const square = event.target.closest('.square');
+        if (square) {
+            const row = parseInt(square.dataset.row);
+            const col = parseInt(square.dataset.col);
+            const pieceElement = square.querySelector('.piece');
+            if (pieceElement) {
+                UI.highlightValidMoves(row, col);
+            }
+        }
+    }
+
+    function handleMouseOut(event) {
+        if (isReviewing || selectedPiece) return;
+        UI.clearHighlights(false);
+    }
+
     function startTimer() {
         if (gameMode === 'sandbox') {
             document.getElementById('timers').style.display = 'none';
             return;
         }
-        timerInterval = setInterval(() => {
-            if (Game.getState().whiteTurn) whiteTime--;
-            else blackTime--;
-            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
-            saveState();
-        }, 1000);
-    }
-
-    function generatePGN() {
-        let pgn = `[Event "Casual Game"]\n[Site "Local"]\n[Date "${new Date().toISOString().split('T')[0]}"]\n[Round "-"]\n[White "Player 1"]\n[Black "Player 2"]\n[Result "*"]\n\n`;
+...
         pgn += pgnMoves.join(' ') + ' *';
         return pgn;
     }
 
     function bindEventListeners() {
-        UI.bindEventListeners(handleSquareClick, handleDragStart, handleDrop);
+        UI.bindEventListeners(handleSquareClick, handleDragStart, handleDrop, handleMouseOver, handleMouseOut);
         
         document.getElementById('move-history').addEventListener('click', (event) => {
             const moveElement = event.target.closest('[data-move-index]');

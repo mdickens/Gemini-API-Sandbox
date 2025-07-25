@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page with Errors</title>
+</head>
+<body>
+    <h1>Hello, Puppeteer!</h1>
+    <script>
+        console.log('This is a regular console log.');
+        console.warn('This is a warning.');
+        // Intentionally create an error
+        try {
+            undefinedFunction(); // This will throw a ReferenceError
+        } catch (e) {
+            console.error('Caught error in script:', e.message);
+        }
+        // Another type of error
+        document.getElementById('nonExistentElement').innerHTML = 'Hello';
+    </script>
+</body>
+</html>

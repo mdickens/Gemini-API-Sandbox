@@ -657,3 +657,14 @@ runTest("AI should return null on stalemate", () => {
     assert(bestMove === null, "AI should return null on stalemate.");
     afterEach();
 });
+
+// --- UI Tests ---
+
+runTest("Should highlight valid moves on hover", () => {
+    beforeEach();
+    setupTest();
+    handleMouseOver({ target: document.querySelector('[data-row="6"][data-col="4"]') });
+    const highlightedSquares = document.querySelectorAll('.valid-move');
+    assert(highlightedSquares.length === 2, "Should highlight 2 valid moves for the pawn.");
+    afterEach();
+});

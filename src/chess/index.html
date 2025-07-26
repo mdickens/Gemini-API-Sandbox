@@ -14,7 +14,6 @@
                 <h3>Choose Game Mode</h3>
                 <button class="game-mode-button" data-mode="pvp">Player vs. Player</button>
                 <button class="game-mode-button" data-mode="pva">Player vs. AI</button>
-                <button class="game-mode-button" data-mode="sandbox">Sandbox</button>
             </div>
             <div id="ai-difficulty-selection" style="display: none;">
                 <h3>Choose AI Difficulty</h3>
@@ -43,65 +42,45 @@
             <button id="resign-button">Resign</button>
             <button id="claim-draw-button" disabled>Claim Draw</button>
             <button id="hint-button">Hint</button>
-            <button id="settings-button">Settings</button>
             <button id="help-button">Help</button>
         </div>
-        <div class="action-panel">
-            <button id="export-pgn-button">Export PGN</button>
-            <button id="copy-pgn-button">Copy PGN</button>
-        </div>
         <div id="white-captured" class="captured-panel"></div>
-        <div id="black-captured" class="captured-panel"></div>
         <div id="board-container">
             <div id="chessboard"></div>
         </div>
-        <div id="timers">
-            <div id="white-timer-box" class="timer-box">
-                <span id="white-timer">10:00</span>
+        <div id="game-container">
+            <div id="status-panel">
+                <div id="status">White's turn</div>
+                <div id="timers">
+                    <div id="white-timer-box" class="timer-box">White: <span id="white-timer">10:00</span></div>
+                    <div id="black-timer-box" class="timer-box">Black: <span id="black-timer">10:00</span></div>
+                </div>
             </div>
-            <div id="black-timer-box" class="timer-box">
-                <span id="black-timer">10:00</span>
-            </div>
         </div>
-        <div id="status-panel">
-            <span id="status"></span>
-        </div>
-        <div id="move-history-panel" class="move-history-panel">
-            <div id="move-history"></div>
-        </div>
-        <div id="move-history-nav">
-            <button id="prev-move-button">Previous</button>
-            <button id="next-move-button">Next</button>
-        </div>
+        <div id="black-captured" class="captured-panel"></div>
+        <div id="move-history" class="move-history-panel"></div>
         <div id="ai-thinking-indicator" style="display: none;">AI is thinking...</div>
-        <div id="promotion-overlay" style="display: none;">
-            <div id="promotion-choices"></div>
+    </div>
+
+    <div id="promotion-overlay" class="modal" style="display: none;">
+        <div id="promotion-choices">
+            <!-- Choices will be inserted here by JS -->
         </div>
-...
+    </div>
+
+    <div id="game-over-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="game-over-message"></h2>
+            <div class="modal-buttons">
+                <button id="new-game-over-button">New Game</button>
             </div>
         </div>
     </div>
 
-    <div id="settings-modal" class="modal" style="display: none;">
+    <div id="help-modal" class="modal" style="display: none;">
         <div class="modal-content">
-            <h2>Settings</h2>
-            <div class="setting-group">
-                <h3>Board Theme</h3>
-                <select id="theme-select">
-                    <option value="classic">Classic</option>
-                    <option value="forest">Forest</option>
-                    <option value="ocean">Ocean</option>
-                </select>
-            </div>
-            <div class="setting-group">
-                <h3>Piece Set</h3>
-                <select id="piece-set-select">
-                    <option value="unicode">Unicode</option>
-                    <option value="modern">Modern</option>
-                </select>
-            </div>
-            <div class="modal-buttons">
-                <button id="save-settings-button">Save</button>
+            <span class="close-button">&times;</span>
+...
             </div>
         </div>
     </div>
@@ -116,22 +95,14 @@
         </div>
     </div>
 
-    <div id="game-over-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2 id="game-over-message"></h2>
-            <div class="modal-buttons">
-                <button id="new-game-over-button">New Game</button>
-            </div>
-        </div>
-    </div>
+    <audio id="move-sound" src="place.mp3"></audio>
+    <audio id="capture-sound" src="remove.mp3"></audio>
+    <audio id="check-sound" src="draw.mp3"></audio>
 
     <audio id="move-sound" src="place.mp3"></audio>
     <audio id="capture-sound" src="remove.mp3"></audio>
     <audio id="check-sound" src="draw.mp3"></audio>
-    <audio id="game-end-sound" src="win.mp3"></audio>
-    <audio id="draw-sound" src="draw.mp3"></audio>
 
-    <script src="modules/pieces.js"></script>
     <script src="modules/game.js"></script>
     <script src="modules/ai.js"></script>
     <script src="modules/ui.js"></script>

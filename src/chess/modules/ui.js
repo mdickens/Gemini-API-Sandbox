@@ -13,18 +13,6 @@ const UI = (() => {
     const moveSound = document.getElementById('move-sound');
     const captureSound = document.getElementById('capture-sound');
     const checkSound = document.getElementById('check-sound');
-    const gameEndSound = document.getElementById('game-end-sound');
-    const drawSound = document.getElementById('draw-sound');
-
-    let currentPieceSet = 'unicode';
-
-    function setPieceSet(setName) {
-        currentPieceSet = setName;
-    }
-
-    function applyTheme(themeName) {
-        document.body.className = `theme-${themeName}`;
-    }
 
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
@@ -60,17 +48,9 @@ const UI = (() => {
 
                 const piece = board[row][col];
                 if (piece) {
-                    const pieceElement = document.createElement('div');
+                    const pieceElement = document.createElement('span');
                     pieceElement.classList.add('piece');
-                    
-                    if (currentPieceSet === 'unicode') {
-                        pieceElement.textContent = Game.pieceUnicode[piece];
-                    } else {
-                        const pieceImg = document.createElement('img');
-                        pieceImg.src = PIECES[currentPieceSet][piece];
-                        pieceElement.appendChild(pieceImg);
-                    }
-                    
+                    pieceElement.textContent = Game.pieceUnicode[piece];
                     pieceElement.dataset.piece = piece;
                     pieceElement.draggable = true;
                     square.appendChild(pieceElement);
@@ -106,11 +86,14 @@ const UI = (() => {
     }
     
     function updatePlayerInfo() {
+        // Clear existing player info
         document.querySelectorAll('.player-info').forEach(info => info.remove());
+
         const whitePlayerInfo = document.createElement('div');
         whitePlayerInfo.className = 'player-info';
         whitePlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 1 (White)`;
         whiteCapturedPanel.appendChild(whitePlayerInfo);
+
         const blackPlayerInfo = document.createElement('div');
         blackPlayerInfo.className = 'player-info';
         blackPlayerInfo.innerHTML = `<div class="player-avatar"></div> Player 2 (Black)`;
@@ -121,27 +104,15 @@ const UI = (() => {
         whiteCapturedPanel.innerHTML = '';
         blackCapturedPanel.innerHTML = '';
         whiteCaptured.forEach(piece => {
-            const pieceElement = document.createElement('div');
+            const pieceElement = document.createElement('span');
             pieceElement.classList.add('piece');
-            if (currentPieceSet === 'unicode') {
-                pieceElement.textContent = Game.pieceUnicode[piece];
-            } else {
-                const pieceImg = document.createElement('img');
-                pieceImg.src = PIECES[currentPieceSet][piece];
-                pieceElement.appendChild(pieceImg);
-            }
+            pieceElement.textContent = Game.pieceUnicode[piece];
             whiteCapturedPanel.appendChild(pieceElement);
         });
         blackCaptured.forEach(piece => {
-            const pieceElement = document.createElement('div');
+            const pieceElement = document.createElement('span');
             pieceElement.classList.add('piece');
-            if (currentPieceSet === 'unicode') {
-                pieceElement.textContent = Game.pieceUnicode[piece];
-            } else {
-                const pieceImg = document.createElement('img');
-                pieceImg.src = PIECES[currentPieceSet][piece];
-                pieceElement.appendChild(pieceImg);
-            }
+            pieceElement.textContent = Game.pieceUnicode[piece];
             blackCapturedPanel.appendChild(pieceElement);
         });
     }
@@ -157,12 +128,8 @@ const UI = (() => {
         }
     }
 
-    function clearHighlights(clearSelected = true) {
-        const selectors = ['.valid-move', '.hint-highlight'];
-        if (clearSelected) {
-            selectors.push('.selected');
-        }
-        const highlightedSquares = document.querySelectorAll(selectors.join(', '));
+    function clearHighlights() {
+        const highlightedSquares = document.querySelectorAll('.valid-move, .selected, .hint-highlight');
         highlightedSquares.forEach(square => square.classList.remove('valid-move', 'selected', 'hint-highlight'));
     }
 
@@ -170,19 +137,10 @@ const UI = (() => {
         statusDisplay.textContent = status;
     }
 
-    function updateMoveHistory(moveNumber, moveNotation, isWhiteTurn) {
-        let moveIndex = Game.getState().moveHistory.length - 1;
-        if (isWhiteTurn) {
-            const moveEntry = document.createElement('div');
-            moveEntry.className = 'move-entry';
-            moveEntry.innerHTML = `<span class="move-number">${moveNumber}.</span> <span class="move-white" data-move-index="${moveIndex}">${moveNotation}</span>`;
-            moveHistoryPanel.appendChild(moveEntry);
-        } else {
-            const lastMoveEntry = moveHistoryPanel.lastElementChild;
-            if (lastMoveEntry) {
-                lastMoveEntry.innerHTML += ` <span class="move-black" data-move-index="${moveIndex}">${moveNotation}</span>`;
-            }
-        }
+    function updateMoveHistory(move) {
+        const moveElement = document.createElement('div');
+        moveElement.textContent = move;
+        moveHistoryPanel.appendChild(moveElement);
         moveHistoryPanel.scrollTop = moveHistoryPanel.scrollHeight;
     }
 
@@ -225,18 +183,10 @@ const UI = (() => {
 
         const pieces = ['q', 'r', 'b', 'n'];
         pieces.forEach(piece => {
-            const choice = document.createElement('div');
+            const choice = document.createElement('span');
             choice.className = 'promotion-choice';
             choice.dataset.piece = piece;
-            
-            if (currentPieceSet === 'unicode') {
-                choice.textContent = Game.pieceUnicode[isWhite ? piece.toUpperCase() : piece];
-            } else {
-                const pieceImg = document.createElement('img');
-                pieceImg.src = PIECES[currentPieceSet][isWhite ? piece.toUpperCase() : piece];
-                choice.appendChild(pieceImg);
-            }
-
+            choice.textContent = Game.pieceUnicode[isWhite ? piece.toUpperCase() : piece];
             choice.onclick = () => {
                 callback(piece);
                 promotionOverlay.style.display = 'none';
@@ -251,25 +201,7 @@ const UI = (() => {
     function playSound(type) {
         if (type === 'capture') captureSound.play();
         else if (type === 'check') checkSound.play();
-        else if (type === 'game-end') gameEndSound.play();
-        else if (type === 'draw') drawSound.play();
         else moveSound.play();
-    }
-
-    function bindEventListeners(handleSquareClick, handleDragStart, handleDrop, handleMouseOver, handleMouseOut) {
-        chessboard.addEventListener('click', handleSquareClick);
-
-        chessboard.addEventListener('dragstart', handleDragStart);
-
-        chessboard.addEventListener('dragover', (event) => {
-            event.preventDefault();
-        });
-
-        chessboard.addEventListener('drop', handleDrop);
-
-        chessboard.addEventListener('mouseover', handleMouseOver);
-
-        chessboard.addEventListener('mouseout', handleMouseOut);
     }
 
     return {
@@ -281,9 +213,6 @@ const UI = (() => {
         updateMoveHistory,
         animateMove,
         playSound,
-        showPromotionChoices,
-        setPieceSet,
-        applyTheme,
-        bindEventListeners
+        showPromotionChoices
     };
 })();

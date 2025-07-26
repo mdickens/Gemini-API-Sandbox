@@ -12,14 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverModal = document.getElementById('game-over-modal');
     const gameOverMessage = document.getElementById('game-over-message');
     const newGameOverButton = document.getElementById('new-game-over-button');
-    const settingsModal = document.getElementById('settings-modal');
-    const settingsButton = document.getElementById('settings-button');
-    const saveSettingsButton = document.getElementById('save-settings-button');
-    const themeSelect = document.getElementById('theme-select');
-    const pieceSetSelect = document.getElementById('piece-set-select');
-    const exportPgnButton = document.getElementById('export-pgn-button');
-    const copyPgnButton = document.getElementById('copy-pgn-button');
-    const takebackButton = document.getElementById('takeback-button');
 
     let selectedPiece = null;
     let selectedSquare = null;
@@ -31,14 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let aiDifficulty = 'easy';
     let playerIsWhite = true;
     let confirmAction = null;
-    let moveNumber = 1;
-    let pgnMoves = [];
-    let userSettings = {
-        theme: 'classic',
-        pieceSet: 'unicode'
-    };
-    let isReviewing = false;
-    let reviewMoveIndex = -1;
 
     function showConfirmation(message, action) {
         confirmationMessage.textContent = message;
@@ -46,19 +30,88 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmationModal.style.display = 'flex';
     }
 
-    function reviewBoardState(moveIndex) {
-        const boardHistory = Game.getState().boardHistory;
-        if (moveIndex >= 0 && moveIndex < boardHistory.length) {
-            const boardState = JSON.parse(boardHistory[moveIndex]);
-            const state = Object.assign({}, Game.getState(), { board: boardState });
-            UI.createBoard(state);
-            reviewMoveIndex = moveIndex;
-            isReviewing = true;
+    function hideConfirmation() {
+        confirmationModal.style.display = 'none';
+        confirmAction = null;
+    }
+
+    function saveGame() {
+        const gameState = Game.getState();
+        const sessionState = { whiteTime, blackTime, gameMode, aiDifficulty, playerIsWhite };
+        localStorage.setItem('chessGameState', JSON.stringify(gameState));
+        localStorage.setItem('chessSessionState', JSON.stringify(sessionState));
+    }
+
+    function loadGame() {
+        const savedGameState = localStorage.getItem('chessGameState');
+        const savedSessionState = localStorage.getItem('chessSessionState');
+        if (savedGameState && savedSessionState) {
+            Game.setState(JSON.parse(savedGameState));
+            const session = JSON.parse(savedSessionState);
+            whiteTime = session.whiteTime;
+            blackTime = session.blackTime;
+            gameMode = session.gameMode;
+            aiDifficulty = session.aiDifficulty;
+            playerIsWhite = session.playerIsWhite;
+            return true;
+        }
+        return false;
+    }
+
+    function makeAIMove() {
+        aiThinkingIndicator.style.display = 'block';
+        setTimeout(() => {
+            const bestMove = AI.getBestMove(Game.getState(), aiDifficulty);
+            if (bestMove) {
+                handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
+            }
+            aiThinkingIndicator.style.display = 'none';
+        }, 500);
+    }
+
+    function handleMove(startRow, startCol, endRow, endCol) {
+        const piece = Game.getState().board[startRow][startCol];
+        const capturedPiece = Game.getState().board[endRow][endCol];
+
+        UI.animateMove(startRow, startCol, endRow, endCol, () => {
+            Game.movePiece(startRow, startCol, endRow, endCol);
+            
+            if (capturedPiece) UI.playSound('capture');
+            else UI.playSound('move');
+
+            const state = Game.getState();
+            const isCheck = Game.isKingInCheck(state.whiteTurn);
+            const isCheckmate = Game.isCheckmate(state.whiteTurn);
+            const moveNotation = Game.toAlgebraic(piece, startRow, startCol, endRow, endCol, capturedPiece, isCheck, isCheckmate);
+            UI.updateMoveHistory(moveNotation);
+
+            if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
+                const isWhite = Game.isWhite(piece);
+                UI.showPromotionChoices(endRow, endCol, isWhite, (newPiece) => {
+                    Game.promotePawn(endRow, endCol, newPiece);
+                    finishMove();
+                });
+            } else {
+                finishMove();
+            }
+        });
+    }
+    
+    function finishMove() {
+        updateGameStatus();
+        UI.createBoard(Game.getState());
+        saveGame();
+        checkAIMove();
+    }
+
+    function checkAIMove() {
+        const state = Game.getState();
+        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
+            makeAIMove();
         }
     }
 
     function handleSquareClick(event) {
-        if (isReviewing) return;
         const square = event.target.closest('.square');
         if (!square) return;
 
@@ -75,12 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const startCol = parseInt(selectedSquare.dataset.col);
 
             if (Game.isValidMove(startRow, startCol, row, col)) {
-                if (gameMode === 'sandbox') {
-                    Game.movePiece(startRow, startCol, row, col);
-                    updateBoardAndPreserveScroll();
-                } else {
-                    handleMove(startRow, startCol, row, col);
-                }
+                handleMove(startRow, startCol, row, col);
             }
             UI.clearHighlights();
             selectedPiece = null;
@@ -90,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pieceElement = square.querySelector('.piece');
             if (pieceElement) {
                 const piece = pieceElement.dataset.piece;
-                if (gameMode === 'sandbox' || (state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
+                if ((state.whiteTurn && Game.isWhite(piece)) || (!state.whiteTurn && !Game.isWhite(piece))) {
                     selectedPiece = pieceElement;
                     selectedSquare = square;
                     square.classList.add('selected');
@@ -100,193 +148,176 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    }
-    }
-
-    function handleMouseOver(event) {
-        if (isReviewing || selectedPiece) return;
-        const square = event.target.closest('.square');
-        if (square) {
-            const row = parseInt(square.dataset.row);
-            const col = parseInt(square.dataset.col);
-            const pieceElement = square.querySelector('.piece');
-            if (pieceElement) {
-                UI.highlightValidMoves(row, col);
-            }
+    function handleDragStart(event) {
+        const state = Game.getState();
+        if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
+            event.preventDefault();
+            return;
         }
+        draggedPiece = event.target;
+        event.dataTransfer.setData('text/plain', event.target.dataset.piece);
+        setTimeout(() => {
+            event.target.classList.add('dragging');
+        }, 0);
     }
 
-    function handleMouseOut(event) {
-        if (isReviewing || selectedPiece) return;
-        UI.clearHighlights(false);
+    function handleDragOver(event) {
+        event.preventDefault();
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        if (!draggedPiece) return;
+
+        const targetSquare = event.target.closest('.square');
+        
+        draggedPiece.classList.remove('dragging');
+
+        if (!targetSquare) {
+            draggedPiece = null;
+            return;
+        };
+
+        const startRow = parseInt(draggedPiece.parentElement.dataset.row);
+        const startCol = parseInt(draggedPiece.parentElement.dataset.col);
+        const endRow = parseInt(targetSquare.dataset.row);
+        const endCol = parseInt(targetSquare.dataset.col);
+
+        if (Game.isValidMove(startRow, startCol, endRow, endCol)) {
+            handleMove(startRow, startCol, endRow, endCol);
+        }
+        draggedPiece = null;
+    }
+
+    function updateGameStatus() {
+        const state = Game.getState();
+        let status = state.whiteTurn ? "White's turn" : "Black's turn";
+        let isGameOver = false;
+
+        if (Game.isCheckmate(state.whiteTurn)) {
+            status = "Checkmate! " + (state.whiteTurn ? "Black" : "White") + " wins.";
+            isGameOver = true;
+        } else if (Game.isStalemate(state.whiteTurn)) {
+            status = "Stalemate! It's a draw.";
+            isGameOver = true;
+        } else if (Game.isInsufficientMaterial()) {
+            status = "Draw by insufficient material.";
+            isGameOver = true;
+        } else if (Game.isThreefoldRepetition()) {
+            status = "Draw by threefold repetition.";
+            isGameOver = true;
+        } else if (Game.isKingInCheck(state.whiteTurn)) {
+            status = (state.whiteTurn ? "White" : "Black") + " is in check.";
+            UI.playSound('check');
+        }
+        
+        UI.updateStatus(status);
+        document.getElementById('claim-draw-button').disabled = state.fiftyMoveRuleCounter < 100;
+
+        if (isGameOver) {
+            clearInterval(timerInterval);
+            gameOverMessage.textContent = status;
+            gameOverModal.style.display = 'flex';
+            chessboard.removeEventListener('click', handleSquareClick);
+            chessboard.removeEventListener('dragstart', handleDragStart);
+        }
     }
 
     function startTimer() {
-        if (gameMode === 'sandbox') {
-            document.getElementById('timers').style.display = 'none';
-            return;
-        }
-...
-        pgn += pgnMoves.join(' ') + ' *';
-        return pgn;
+        timerInterval = setInterval(() => {
+            if (Game.getState().whiteTurn) whiteTime--;
+            else blackTime--;
+            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
+            saveGame();
+            if (whiteTime === 0 || blackTime === 0) {
+                clearInterval(timerInterval);
+                const winner = whiteTime === 0 ? "Black" : "White";
+                UI.updateStatus(`Time's up! ${winner} wins.`);
+                updateGameStatus();
+            }
+        }, 1000);
     }
 
-    function bindEventListeners() {
-        UI.bindEventListeners(handleSquareClick, handleDragStart, handleDrop, handleMouseOver, handleMouseOut);
-        
-        document.getElementById('move-history').addEventListener('click', (event) => {
-            const moveElement = event.target.closest('[data-move-index]');
-            if (moveElement) {
-                const moveIndex = parseInt(moveElement.dataset.moveIndex);
-                reviewBoardState(moveIndex);
+    function initializeGame(isNewGame) {
+        if (isNewGame) {
+            gameSetupModal.style.display = 'flex';
+            mainLayout.style.display = 'none';
+        } else {
+            gameSetupModal.style.display = 'none';
+            mainLayout.style.display = 'flex';
+            if (!playerIsWhite) {
+                chessboard.classList.add('flipped');
             }
-        });
+            UI.createBoard(Game.getState());
+            UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
+            updateGameStatus();
+            startTimer();
+            checkAIMove(); // Check if AI should make the first move
+        }
+    }
 
-        document.getElementById('prev-move-button').addEventListener('click', () => {
-            if (reviewMoveIndex > 0) {
-                reviewBoardState(reviewMoveIndex - 1);
-            }
+    // --- Event Listeners ---
+    chessboard.addEventListener('click', handleSquareClick);
+    chessboard.addEventListener('dragstart', handleDragStart);
+    chessboard.addEventListener('dragover', handleDragOver);
+    chessboard.addEventListener('drop', handleDrop);
+    
+    document.querySelectorAll('.game-mode-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            gameMode = button.dataset.mode;
+            document.getElementById('ai-difficulty-selection').style.display = gameMode === 'pva' ? 'block' : 'none';
         });
+    });
 
-        document.getElementById('next-move-button').addEventListener('click', () => {
-            const boardHistory = Game.getState().boardHistory;
-            if (reviewMoveIndex < boardHistory.length - 1) {
-                reviewBoardState(reviewMoveIndex + 1);
-            } else if (isReviewing) {
-                isReviewing = false;
-                reviewMoveIndex = -1;
-                updateBoardAndPreserveScroll();
-            }
+    document.querySelectorAll('.color-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
         });
+    });
 
-        document.querySelectorAll('.game-mode-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.game-mode-button').forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
-                gameMode = button.dataset.mode;
-                const aiOptions = document.getElementById('ai-difficulty-selection');
-                if (gameMode === 'pva') {
-                    aiOptions.style.display = 'block';
-                } else {
-                    aiOptions.style.display = 'none';
-                }
-            });
-        });
+    document.getElementById('start-game-button').addEventListener('click', () => {
+        localStorage.clear();
+        aiDifficulty = document.getElementById('ai-difficulty').value;
+        const selectedColor = document.querySelector('.color-button.selected').dataset.color;
+        playerIsWhite = selectedColor === 'white';
+        saveGame();
+        initializeGame(false);
+    });
 
-        document.querySelectorAll('.color-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
-                button.classList.add('selected');
-            });
-        });
-
-        document.getElementById('start-game-button').addEventListener('click', () => {
-            localStorage.clear();
-            if (gameMode === 'pva') {
-                aiDifficulty = document.getElementById('ai-difficulty').value;
-                const selectedColor = document.querySelector('.color-button.selected').dataset.color;
-                playerIsWhite = selectedColor === 'white';
-            }
-            saveState();
-            initializeGame(false);
-        });
-
-        document.getElementById('new-game-button').addEventListener('click', () => {
-            showConfirmation('Are you sure you want to start a new game? This will erase your current game.', () => {
-                localStorage.clear();
-                location.reload();
-            });
-        });
-        
-        newGameOverButton.addEventListener('click', () => {
+    document.getElementById('new-game-button').addEventListener('click', () => {
+        showConfirmation('Are you sure you want to start a new game? This will erase your current game.', () => {
             localStorage.clear();
             location.reload();
         });
+    });
+    
+    newGameOverButton.addEventListener('click', () => {
+        localStorage.clear();
+        location.reload();
+    });
 
-        document.getElementById('flip-board-button').addEventListener('click', () => {
-            chessboard.classList.toggle('flipped');
-        });
+    document.getElementById('flip-board-button').addEventListener('click', () => {
+        chessboard.classList.toggle('flipped');
+    });
 
-        settingsButton.addEventListener('click', () => {
-            themeSelect.value = userSettings.theme;
-            pieceSetSelect.value = userSettings.pieceSet;
-            settingsModal.style.display = 'flex';
-        });
-
-        saveSettingsButton.addEventListener('click', () => {
-            userSettings.theme = themeSelect.value;
-            userSettings.pieceSet = pieceSetSelect.value;
-            UI.applyTheme(userSettings.theme);
-            UI.setPieceSet(userSettings.pieceSet);
-            updateBoardAndPreserveScroll();
-            saveState();
-            settingsModal.style.display = 'none';
-        });
-
-        takebackButton.addEventListener('click', () => {
-            const state = Game.getState();
-            const movesToUndo = (gameMode === 'pva' && state.moveHistory.length > 1) ? 2 : 1;
-            for (let i = 0; i < movesToUndo; i++) {
-                if (state.moveHistory.length > 0) {
-                    Game.takeback();
-                    if (pgnMoves.length > 0) {
-                        if (state.whiteTurn) {
-                            moveNumber--;
-                            const lastMove = pgnMoves[pgnMoves.length - 1];
-                            pgnMoves[pgnMoves.length - 1] = lastMove.split(' ')[0];
-                        } else {
-                            pgnMoves.pop();
-                        }
-                    }
-                }
-            }
-            updateBoardAndPreserveScroll();
-            updateGameStatus();
-            saveState();
-        });
-
-        exportPgnButton.addEventListener('click', () => {
-            const pgn = generatePGN();
-            const blob = new Blob([pgn], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'game.pgn';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        copyPgnButton.addEventListener('click', () => {
-            const pgn = generatePGN();
-            navigator.clipboard.writeText(pgn).then(() => {
-                alert('PGN copied to clipboard!');
-            });
-        });
-
-        confirmYesButton.addEventListener('click', () => {
-            if (confirmAction) {
-                confirmAction();
-                hideConfirmation();
-            }
-        });
-
-        confirmNoButton.addEventListener('click', () => {
+    confirmYesButton.addEventListener('click', () => {
+        if (confirmAction) {
+            confirmAction();
             hideConfirmation();
-        });
+        }
+    });
 
-        window.addEventListener('beforeunload', (e) => {
-            if (Game.getState().moveHistory.length > 0) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-    }
+    confirmNoButton.addEventListener('click', () => {
+        hideConfirmation();
+    });
 
     // --- Initial Load ---
-    if (!loadState()) {
-        initializeGame(true);
-        bindEventListeners(); // Bind listeners for the setup modal
+    if (!loadGame()) {
+        initializeGame(true); // Show setup for new game
     } else {
-        initializeGame(false);
+        initializeGame(false); // Load existing game
     }
 });

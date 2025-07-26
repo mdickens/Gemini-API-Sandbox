@@ -234,16 +234,6 @@ const Game = (() => {
         board[row][col] = isWhite(piece) ? newPiece.toUpperCase() : newPiece.toLowerCase();
     }
 
-    function takeback() {
-        if (moveHistory.length > 0) {
-            const lastBoard = moveHistory.pop();
-            board = lastBoard;
-            whiteTurn = !whiteTurn;
-            // This is a simplified takeback, doesn't restore all state like king/rook moved flags.
-            // For a more robust implementation, the entire game state should be stored in history.
-        }
-    }
-
     function getPieces(isWhitePlayer) {
         const pieces = [];
         for (let row = 0; row < 8; row++) {
@@ -356,7 +346,6 @@ const Game = (() => {
         isValidMove,
         movePiece,
         promotePawn,
-        takeback,
         isCheckmate,
         isStalemate,
         isInsufficientMaterial,

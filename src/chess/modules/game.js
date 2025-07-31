@@ -83,14 +83,14 @@ const Game = (() => {
         if (endCol === 2) { // Queenside
             const rookMoved = isWhitePlayer ? whiteRooksMoved[0] : blackRooksMoved[0];
             if (rookMoved || board[row][1] || board[row][2] || board[row][3]) return null;
-            if (isSquareAttacked(row, 2, !isWhitePlayer) || isSquareAttacked(row, 3, !isWhitePlayer)) return null;
+            if (isSquareAttacked(row, 4, !isWhitePlayer) || isSquareAttacked(row, 3, !isWhitePlayer) || isSquareAttacked(row, 2, !isWhitePlayer)) return null;
             return 'queenside';
         }
 
         if (endCol === 6) { // Kingside
             const rookMoved = isWhitePlayer ? whiteRooksMoved[1] : blackRooksMoved[1];
             if (rookMoved || board[row][5] || board[row][6]) return null;
-            if (isSquareAttacked(row, 5, !isWhitePlayer) || isSquareAttacked(row, 6, !isWhitePlayer)) return null;
+            if (isSquareAttacked(row, 4, !isWhitePlayer) || isSquareAttacked(row, 5, !isWhitePlayer) || isSquareAttacked(row, 6, !isWhitePlayer)) return null;
             return 'kingside';
         }
         return null;
@@ -157,6 +157,7 @@ const Game = (() => {
     function isValidMove(startRow, startCol, endRow, endCol, checkingKing = false) {
         const piece = board[startRow][startCol];
         if (!piece) return false;
+        if (isWhite(piece) !== whiteTurn && !checkingKing) return false;
         const targetPiece = board[endRow][endCol];
         if (targetPiece && (isWhite(piece) === isWhite(targetPiece))) return false;
 
@@ -189,6 +190,7 @@ const Game = (() => {
     function movePiece(startRow, startCol, endRow, endCol) {
         const piece = board[startRow][startCol];
         const capturedPiece = board[endRow][endCol];
+	console.log('movePiece')
 
         moveHistory.push(JSON.parse(JSON.stringify(board)));
         boardHistory.push(JSON.stringify(board));

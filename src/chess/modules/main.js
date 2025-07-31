@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let aiDifficulty = 'easy';
     let playerIsWhite = true;
     let confirmAction = null;
+    let isUIBlocked = false;
 
     function showConfirmation(message, action) {
         confirmationMessage.textContent = message;
@@ -62,14 +63,22 @@ document.addEventListener('DOMContentLoaded', () => {
         aiThinkingIndicator.style.display = 'block';
         setTimeout(() => {
             const bestMove = AI.getBestMove(Game.getState(), aiDifficulty);
+            aiThinkingIndicator.style.display = 'none';
             if (bestMove) {
                 handleMove(bestMove.startRow, bestMove.startCol, bestMove.endRow, bestMove.endCol);
+            } else {
+                isUIBlocked = false;
             }
-            aiThinkingIndicator.style.display = 'none';
-        }, 500);
+        }, 100);
     }
 
     function handleMove(startRow, startCol, endRow, endCol) {
+        isUIBlocked = true;
+        
+        UI.clearHighlights();
+        selectedPiece = null;
+        selectedSquare = null;
+
         const piece = Game.getState().board[startRow][startCol];
         const capturedPiece = Game.getState().board[endRow][endCol];
 
@@ -86,13 +95,12 @@ document.addEventListener('DOMContentLoaded', () => {
             UI.updateMoveHistory(moveNotation);
 
             if (piece.toLowerCase() === 'p' && (endRow === 0 || endRow === 7)) {
-                const isWhite = Game.isWhite(piece);
-                UI.showPromotionChoices(endRow, endCol, isWhite, (newPiece) => {
+                UI.showPromotionChoices(endRow, endCol, Game.isWhite(piece), (newPiece) => {
                     Game.promotePawn(endRow, endCol, newPiece);
                     finishMove();
                 });
             } else {
-                finishMove();
+                setTimeout(finishMove, 100);
             }
         });
     }
@@ -101,17 +109,22 @@ document.addEventListener('DOMContentLoaded', () => {
         updateGameStatus();
         UI.createBoard(Game.getState());
         saveGame();
-        checkAIMove();
+        checkTurn();
     }
 
-    function checkAIMove() {
+    function checkTurn() {
         const state = Game.getState();
         if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
             makeAIMove();
+        } else {
+            isUIBlocked = false;
         }
     }
 
     function handleSquareClick(event) {
+        if (isUIBlocked) {
+            return;
+        }
         const square = event.target.closest('.square');
         if (!square) return;
 
@@ -129,11 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (Game.isValidMove(startRow, startCol, row, col)) {
                 handleMove(startRow, startCol, row, col);
+            } else {
+                UI.clearHighlights();
+                selectedPiece = null;
+                selectedSquare = null;
             }
-            UI.clearHighlights();
-            selectedPiece = null;
-            selectedSquare = null;
-
         } else {
             const pieceElement = square.querySelector('.piece');
             if (pieceElement) {
@@ -149,6 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleDragStart(event) {
+        if (isUIBlocked) {
+            event.preventDefault();
+            return;
+        }
         const state = Game.getState();
         if (gameMode === 'pva' && state.whiteTurn !== playerIsWhite) {
             event.preventDefault();
@@ -170,9 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!draggedPiece) return;
 
         const targetSquare = event.target.closest('.square');
-        
         draggedPiece.classList.remove('dragging');
-
         if (!targetSquare) {
             draggedPiece = null;
             return;
@@ -252,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             UI.updateTimers(whiteTime, blackTime, Game.getState().whiteTurn);
             updateGameStatus();
             startTimer();
-            checkAIMove(); // Check if AI should make the first move
+            checkTurn();
         }
     }
 
@@ -320,4 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         initializeGame(false); // Load existing game
     }
+
+    // Expose for testing
+    window.handleSquareClick = handleSquareClick;
 });

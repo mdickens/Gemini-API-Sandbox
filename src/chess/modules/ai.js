@@ -105,7 +105,11 @@ const AI = (() => {
 
         const legalMoves = getAllLegalMoves(gameState);
         if (legalMoves.length === 0) {
-            if (Game.isCheckmate(gameState.whiteTurn)) return isMaximizingPlayer ? -Infinity : Infinity;
+            const originalState = Game.getState();
+            Game.setState(gameState);
+            const isCheck = Game.isKingInCheck(gameState.whiteTurn);
+            Game.setState(originalState);
+            if (isCheck) return isMaximizingPlayer ? -Infinity : Infinity; // Checkmate
             return 0; // Stalemate
         }
 
@@ -163,6 +167,9 @@ const AI = (() => {
     }
 
     function getAllLegalMoves(gameState) {
+        const originalState = Game.getState();
+        Game.setState(gameState);
+
         const { whiteTurn } = gameState;
         const legalMoves = [];
         const pieces = Game.getPieces(whiteTurn);
@@ -175,6 +182,8 @@ const AI = (() => {
                 }
             }
         }
+
+        Game.setState(originalState);
         return legalMoves;
     }
 

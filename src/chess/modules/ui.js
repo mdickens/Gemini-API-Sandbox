@@ -1,5 +1,7 @@
 // ui.js
 
+let isUpdatingUI = false;
+
 const UI = (() => {
     const chessboard = document.getElementById('chessboard');
     const statusDisplay = document.getElementById('status');
@@ -28,6 +30,7 @@ const UI = (() => {
     }
 
     function createBoard(state) {
+        isUpdatingUI = true;
         const { board, lastMove, whiteTurn } = state;
         chessboard.innerHTML = '';
         const boardContainer = document.getElementById('board-container');
@@ -83,6 +86,7 @@ const UI = (() => {
         }
         updateCapturedPanels(state.whiteCaptured, state.blackCaptured);
         updatePlayerInfo();
+        isUpdatingUI = false;
     }
     
     function updatePlayerInfo() {
@@ -145,34 +149,9 @@ const UI = (() => {
     }
 
     function animateMove(startRow, startCol, endRow, endCol, callback) {
-        const startSquare = chessboard.querySelector(`[data-row='${startRow}'][data-col='${startCol}']`);
-        const endSquare = chessboard.querySelector(`[data-row='${endRow}'][data-col='${endCol}']`);
-        const pieceElement = startSquare.querySelector('.piece');
-        if (!pieceElement) return;
-
-        const startRect = startSquare.getBoundingClientRect();
-        const endRect = endSquare.getBoundingClientRect();
-        const chessboardRect = chessboard.getBoundingClientRect();
-        const clone = pieceElement.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = `${startRect.left - chessboardRect.left}px`;
-        clone.style.top = `${startRect.top - chessboardRect.top}px`;
-        clone.style.zIndex = 1000;
-        chessboard.appendChild(clone);
-        pieceElement.style.opacity = 0;
-
-        requestAnimationFrame(() => {
-            const offsetX = endRect.left - startRect.left;
-            const offsetY = endRect.top - startRect.top;
-            clone.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-            clone.style.transition = 'transform 0.3s ease';
-        });
-
-        clone.addEventListener('transitionend', function handler() {
-            clone.removeEventListener('transitionend', handler);
-            clone.remove();
+        if (callback) {
             callback();
-        });
+        }
     }
 
     function showPromotionChoices(endRow, endCol, isWhite, callback) {

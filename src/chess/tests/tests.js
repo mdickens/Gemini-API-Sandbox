@@ -1,356 +1,466 @@
-const testResults = document.getElementById('test-results');
-
-function runTest(name, testFunction) {
-    try {
-        testFunction();
-        testResults.innerHTML += `<p style="color: green;">[PASS] ${name}</p>`;
-    } catch (error) {
-        testResults.innerHTML += `<p style="color: red;">[FAIL] ${name}: ${error.message}</p>`;
-        console.error(error);
-    }
-}
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || "Assertion failed");
-    }
-}
-
-function setupTest(config) {
-    const initialState = {
-        board: [
-            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
-            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
-        ],
-        whiteTurn: true,
-        whiteKingMoved: false,
-        blackKingMoved: false,
-        whiteRooksMoved: [false, false],
-        blackRooksMoved: [false, false],
-        fiftyMoveRuleCounter: 0,
-        lastMove: null,
-        moveHistory: [],
-        boardHistory: [],
-        whiteCaptured: [],
-        blackCaptured: []
-    };
-    Game.setState({ ...initialState, ...config });
-}
-
-
-// --- Pawn Movement Tests ---
-
-runTest("Pawn can move one square forward", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['P', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('Pawn Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    assert(Game.isValidMove(6, 0, 5, 0) === true, "White pawn should move one square forward");
+
+    QUnit.test("Pawn can move one square forward", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(6, 0, 5, 0), "White pawn should move one square forward");
+    });
+
+    QUnit.test("Pawn can move two squares forward on first move", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(6, 0, 4, 0), "White pawn should move two squares forward on first move");
+    });
+
+    QUnit.test("Pawn cannot move two squares forward after first move", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        // Manually set piece on non-start rank
+        const state = Game.getState();
+        state.board[5][0] = 'P';
+        state.board[6][0] = '';
+        Game.setState(state);
+        assert.notOk(Game.isValidMove(5, 0, 3, 0), "White pawn should not move two squares forward after first move");
+    });
+
+    QUnit.test("Pawn can capture diagonally", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'p', '', '', '', '', ''],
+                ['', 'P', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(5, 1, 4, 2), "White pawn should capture diagonally");
+    });
+
+    QUnit.test("Pawn cannot move forward if blocked", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['p', '', '', '', '', '', '', ''],
+                ['P', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.notOk(Game.isValidMove(6, 0, 5, 0), "White pawn should not move forward if blocked");
+    });
 });
 
-runTest("Pawn can move two squares forward on first move", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['P', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('Rook Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    assert(Game.isValidMove(6, 0, 4, 0) === true, "White pawn should move two squares forward on first move");
+
+    QUnit.test("Rook can move horizontally", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'R', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(4, 1, 4, 5), "Rook should move horizontally");
+    });
+
+    QUnit.test("Rook can move vertically", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'R', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(2, 1, 6, 1), "Rook should move vertically");
+    });
+
+    QUnit.test("Rook cannot move through pieces", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'R', 'p', 'R', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.notOk(Game.isValidMove(2, 1, 2, 3), "Rook should not move through pieces");
+    });
 });
 
-runTest("Pawn cannot move two squares forward after first move", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['P', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('Knight Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    // Manually set piece on non-start rank
-    const state = Game.getState();
-    state.board[5][0] = 'P';
-    state.board[6][0] = '';
-    Game.setState(state);
-    assert(Game.isValidMove(5, 0, 3, 0) === false, "White pawn should not move two squares forward after first move");
+
+    QUnit.test("Knight can move in an L-shape", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'N', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(2, 2, 4, 3), "Knight should move in an L-shape");
+    });
+
+    QUnit.test("Knight can jump over pieces", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'p', 'p', 'p', '', '', '', ''],
+                ['', 'p', 'N', 'p', '', '', '', ''],
+                ['', 'p', 'p', 'p', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(3, 2, 5, 3), "Knight should jump over pieces");
+    });
 });
 
-runTest("Pawn can capture diagonally", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'p', '', '', '', '', ''],
-            ['', 'P', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('Bishop Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    assert(Game.isValidMove(5, 1, 4, 2) === true, "White pawn should capture diagonally");
+
+    QUnit.test("Bishop can move diagonally", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'B', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(2, 2, 5, 5), "Bishop should move diagonally");
+    });
+
+    QUnit.test("Bishop cannot move through pieces", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'B', '', '', '', '', ''],
+                ['', '', '', 'p', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.notOk(Game.isValidMove(2, 2, 5, 5), "Bishop should not move through pieces");
+    });
 });
 
-runTest("Pawn cannot move forward if blocked", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['p', '', '', '', '', '', '', ''],
-            ['P', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('Queen Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    assert(Game.isValidMove(6, 0, 5, 0) === false, "White pawn should not move forward if blocked");
+
+    QUnit.test("Queen can move horizontally", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'Q', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(4, 1, 4, 5), "Queen should move horizontally");
+    });
+
+    QUnit.test("Queen can move vertically", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', 'Q', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(2, 1, 6, 1), "Queen should move vertically");
+    });
+
+    QUnit.test("Queen can move diagonally", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'Q', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(2, 2, 5, 5), "Queen should move diagonally");
+    });
+
+    QUnit.test("Queen cannot move through pieces", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', 'Q', '', '', '', '', ''],
+                ['', '', '', 'p', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.notOk(Game.isValidMove(2, 2, 5, 5), "Queen should not move through pieces");
+    });
 });
 
-// --- Rook Movement Tests ---
-
-runTest("Rook can move horizontally", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'R', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+QUnit.module('King Movement', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
     });
-    assert(Game.isValidMove(4, 1, 4, 5) === true, "Rook should move horizontally");
-});
 
-runTest("Rook can move vertically", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'R', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
+    QUnit.test("King can move one square in any direction", function(assert) {
+        Game.setState({
+            board: [
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', 'K', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+            ],
+            whiteTurn: true
+        });
+        assert.ok(Game.isValidMove(3, 3, 2, 2), "King should move one square diagonally");
+        assert.ok(Game.isValidMove(3, 3, 4, 4), "King should move one square diagonally");
+        assert.ok(Game.isValidMove(3, 3, 2, 3), "King should move one square vertically");
+        assert.ok(Game.isValidMove(3, 3, 4, 3), "King should move one square vertically");
+        assert.ok(Game.isValidMove(3, 3, 3, 2), "King should move one square horizontally");
+        assert.ok(Game.isValidMove(3, 3, 3, 4), "King should move one square horizontally");
     });
-    assert(Game.isValidMove(2, 1, 6, 1) === true, "Rook should move vertically");
-});
-
-runTest("Rook cannot move through pieces", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'R', 'p', 'R', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 1, 2, 3) === false, "Rook should not move through pieces");
-});
-
-// --- Bishop Movement Tests ---
-
-runTest("Bishop can move diagonally", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'B', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 2, 5, 5) === true, "Bishop should move diagonally");
-});
-
-runTest("Bishop cannot move through pieces", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'B', '', '', '', '', ''],
-            ['', '', '', 'p', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 2, 5, 5) === false, "Bishop should not move through pieces");
-});
-
-// --- Knight Movement Tests ---
-
-runTest("Knight can move in an L-shape", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'N', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 2, 4, 3) === true, "Knight should move in an L-shape");
-});
-
-runTest("Knight can jump over pieces", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'p', 'p', 'p', '', '', '', ''],
-            ['', 'p', 'N', 'p', '', '', '', ''],
-            ['', 'p', 'p', 'p', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(3, 2, 5, 3) === true, "Knight should jump over pieces");
-});
-
-// --- Queen Movement Tests ---
-
-runTest("Queen can move horizontally", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'Q', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(4, 1, 4, 5) === true, "Queen should move horizontally");
-});
-
-runTest("Queen can move vertically", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', 'Q', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 1, 6, 1) === true, "Queen should move vertically");
-});
-
-runTest("Queen can move diagonally", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'Q', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 2, 5, 5) === true, "Queen should move diagonally");
-});
-
-runTest("Queen cannot move through pieces", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', 'Q', '', '', '', '', ''],
-            ['', '', '', 'p', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(2, 2, 5, 5) === false, "Queen should not move through pieces");
-});
-
-// --- King Movement Tests ---
-
-runTest("King can move one square in any direction", () => {
-    setupTest({
-        board: [
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', 'K', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-            ['', '', '', '', '', '', '', ''],
-        ],
-        whiteTurn: true
-    });
-    assert(Game.isValidMove(3, 3, 2, 2) === true, "King should move one square diagonally");
-    assert(Game.isValidMove(3, 3, 4, 4) === true, "King should move one square diagonally");
-    assert(Game.isValidMove(3, 3, 2, 3) === true, "King should move one square vertically");
-    assert(Game.isValidMove(3, 3, 4, 3) === true, "King should move one square vertically");
-    assert(Game.isValidMove(3, 3, 3, 2) === true, "King should move one square horizontally");
-    assert(Game.isValidMove(3, 3, 3, 4) === true, "King should move one square horizontally");
 });

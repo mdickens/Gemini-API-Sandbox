@@ -43,18 +43,18 @@ QUnit.module('Check and Checkmate', hooks => {
         assert.ok(Game.isKingInCheck(true), "White king should be in check");
     });
 
-    QUnit.test("White is in checkmate (back-rank mate)", function(assert) {
+    QUnit.test("White is in checkmate (Anastasia's mate)", function(assert) {
         Game.setState({
             ...Game.getState(),
             board: [
-                ['', '', '', '', 'K', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', 'p', ''],
+                ['', '', '', '', 'n', 'p', 'K', ''],
+                ['', '', '', '', '', '', 'p', ''],
                 ['', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', 'r', '', '', '', '', '', ''],
-                ['r', '', '', '', 'k', '', '', ''],
+                ['', '', '', '', 'r', '', '', ''],
+                ['', '', '', '', 'k', '', '', ''],
             ],
             whiteTurn: true
         });

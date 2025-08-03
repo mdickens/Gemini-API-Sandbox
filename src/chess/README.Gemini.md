@@ -1,4 +1,4 @@
-Development rules for chess project:
+IMPORTANT: Development rules for the chess project. Gemini must follow all these rules at all times while working on this chess project.
 
 1. Perform a git Commit after each change with: git commit -m '<<descriptive message>>'. There is no need to run git init or anything ,just git commit -m  '<<descriptive message>>' after each change.
 
@@ -8,5 +8,6 @@ Development rules for chess project:
 
 3. Before doing a major refactoring lets stop and discuss. In other words, the goal is to make steady forward progress versus going two steps forward and ten steps backward and then five steps forward and twenty steps backward. The goal is to steadily add and refine, add and refine, small changes, small steps, small improvements, small changes, small refactoring. Take small steps.
 
-4. Be very transparent about what you are doing.
+4. Be very transparent about what you are doing at all times.
+
 

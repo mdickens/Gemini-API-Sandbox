@@ -1,4 +1,6 @@
-QUnit.log: {"module":"Pawn Movement","name":"Pawn can move one square forward","result":true,"message":"White pawn should move one square forward","actual":true,"testId":"21138c58","negative":false,"runtime":1,"todo":false,"expected":true}
+Page error: Uncaught SyntaxError: Unexpected identifier 'r'
+Stack: Error: Uncaught SyntaxError: Unexpected identifier 'r'
+QUnit.log: {"module":"Pawn Movement","name":"Pawn can move one square forward","result":true,"message":"White pawn should move one square forward","actual":true,"testId":"21138c58","negative":false,"runtime":0,"todo":false,"expected":true}
 QUnit.log: {"module":"Pawn Movement","name":"Pawn can move two squares forward on first move","result":true,"message":"White pawn should move two squares forward on first move","actual":true,"testId":"2c46d96d","negative":false,"runtime":0,"todo":false,"expected":true}
 QUnit.log: {"module":"Pawn Movement","name":"Pawn cannot move two squares forward after first move","result":true,"message":"White pawn should not move two squares forward after first move","actual":false,"testId":"3ebd4533","negative":false,"runtime":0,"todo":false,"expected":false}
 QUnit.log: {"module":"Pawn Movement","name":"Pawn can capture diagonally","result":true,"message":"White pawn should capture diagonally","actual":true,"testId":"fffca98f","negative":false,"runtime":0,"todo":false,"expected":true}
@@ -34,9 +36,5 @@ QUnit.log: {"module":"Castling","name":"White can castle queenside","result":tru
 QUnit.log: {"module":"Castling","name":"White cannot castle if king has moved","result":true,"message":"White should not be able to castle if king has moved","actual":false,"testId":"7832c67e","negative":false,"runtime":0,"todo":false,"expected":false}
 QUnit.log: {"module":"Castling","name":"White cannot castle if rook has moved","result":true,"message":"White should not be able to castle if rook has moved","actual":false,"testId":"9799e140","negative":false,"runtime":0,"todo":false,"expected":false}
 QUnit.log: {"module":"Castling","name":"White cannot castle through check","result":true,"message":"White should not be able to castle through check","actual":false,"testId":"82938024","negative":false,"runtime":0,"todo":false,"expected":false}
-QUnit.log: {"module":"Check and Checkmate","name":"White king is in check","result":true,"message":"White king should be in check","actual":true,"testId":"6b1b16a1","negative":false,"runtime":0,"todo":false,"expected":true}
-QUnit.log: {"module":"Check and Checkmate","name":"White is in checkmate (Anastasia's mate)","result":true,"message":"White should be in checkmate","actual":true,"testId":"e8b38786","negative":false,"runtime":0,"todo":false,"expected":true}
-QUnit.log: {"module":"Check and Checkmate","name":"Black king is in check","result":true,"message":"Black king should be in check","actual":true,"testId":"4a92b98b","negative":false,"runtime":0,"todo":false,"expected":true}
-QUnit.log: {"module":"Check and Checkmate","name":"Black is in checkmate (back-rank mate)","result":true,"message":"Black should be in checkmate","actual":true,"testId":"9cd14177","negative":false,"runtime":0,"todo":false,"expected":true}
 
-Tests finished. Passed: 36, Failed: 0, Total: 36, Runtime: 512ms
+Tests finished. Passed: 32, Failed: 1, Total: 33, Runtime: 511ms

@@ -10,8 +10,9 @@ async function processHtmlAndLogErrors(htmlFilePath, logFilePath) {
 
         const logStream = fs.createWriteStream(logFilePath, { flags: 'w' });
 
-        page.on('console', msg => {
-            const text = msg.text();
+        page.on('console', async (msg) => {
+            const args = await Promise.all(msg.args().map(arg => arg.jsonValue()));
+            const text = args.join(' ');
             logStream.write(text + '\n');
             console.log(text);
         });

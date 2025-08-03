@@ -24,9 +24,9 @@ QUnit.log: {"module":"King Movement","name":"King can move one square in any dir
 QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square horizontally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
 Before move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
 After move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece should still be at e7","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":true}
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece at e7 is still a black pawn","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":"p"}
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"No piece should be at e6","actual":"","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":false}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece should still be at e7","actual":"p","testId":"5149bf7e","negative":false,"runtime":506,"todo":false,"expected":true}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece at e7 is still a black pawn","actual":"p","testId":"5149bf7e","negative":false,"runtime":506,"todo":false,"expected":"p"}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"No piece should be at e6","actual":"","testId":"5149bf7e","negative":false,"runtime":506,"todo":false,"expected":false}
 movePiece
 QUnit.log: {"module":"Pawn Promotion","name":"White pawn can be promoted","result":true,"message":"White pawn should be promoted to a queen","actual":"Q","testId":"3fc65ee1","negative":false,"runtime":1,"todo":false,"expected":"Q"}
 movePiece
@@ -37,4 +37,4 @@ QUnit.log: {"module":"Castling","name":"White cannot castle if king has moved","
 QUnit.log: {"module":"Castling","name":"White cannot castle if rook has moved","result":true,"message":"White should not be able to castle if rook has moved","actual":false,"testId":"9799e140","negative":false,"runtime":0,"todo":false,"expected":false}
 QUnit.log: {"module":"Castling","name":"White cannot castle through check","result":true,"message":"White should not be able to castle through check","actual":false,"testId":"82938024","negative":false,"runtime":0,"todo":false,"expected":false}
 
-Tests finished. Passed: 32, Failed: 1, Total: 33, Runtime: 511ms
+Tests finished. Passed: 32, Failed: 1, Total: 33, Runtime: 513ms

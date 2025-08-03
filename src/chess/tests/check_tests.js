@@ -2,7 +2,7 @@ QUnit.module('Check and Checkmate', hooks => {
     hooks.beforeEach(function() {
         Game.setState({
             board: [
-                ['r', 'n', 'b', 'q', 'k', 'b', 'n, 'r'],
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
                 ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
                 ['', '', '', '', '', '', '', ''],
                 ['', '', '', '', '', '', '', ''],

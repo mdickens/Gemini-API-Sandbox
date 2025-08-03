@@ -26,74 +26,94 @@ QUnit.module('Check and Checkmate', hooks => {
     });
 
     QUnit.test("White king is in check", function(assert) {
-        Game.setState({
-            ...Game.getState(),
-            board: [
-                ['', '', '', '', 'k', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', 'r', '', '', ''], // Black rook checks White king
-                ['', '', '', '', 'K', '', '', ''],
-            ],
-            whiteTurn: true
-        });
-        assert.ok(Game.isKingInCheck(true), "White king should be in check");
+        try {
+            Game.setState({
+                ...Game.getState(),
+                board: [
+                    ['', '', '', '', 'k', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', 'r', '', '', ''], // Black rook checks White king
+                    ['', '', '', '', 'K', '', '', ''],
+                ],
+                whiteTurn: true
+            });
+            assert.ok(Game.isKingInCheck(true), "White king should be in check");
+        } catch (e) {
+            console.error("Error in 'White king is in check'", e);
+            assert.ok(false, "Error in 'White king is in check'");
+        }
     });
 
     QUnit.test("White is in checkmate (Anastasia's mate)", function(assert) {
-        Game.setState({
-            ...Game.getState(),
-            board: [
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', 'p', ''],
-                ['', '', '', '', 'n', 'p', 'K', ''],
-                ['', '', '', '', '', '', 'p', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', 'r', '', '', ''],
-                ['', '', '', '', 'k', '', '', ''],
-            ],
-            whiteTurn: true
-        });
-        assert.ok(Game.isCheckmate(true), "White should be in checkmate");
+        try {
+            Game.setState({
+                ...Game.getState(),
+                board: [
+                    ['', '', '', '', '', 'R', '', 'K'],
+                    ['', '', '', '', 'n, 'P', 'P', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', 'r'],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', 'k', '', '', ''],
+                ],
+                whiteTurn: true
+            });
+            assert.ok(Game.isCheckmate(true), "White should be in checkmate");
+        } catch (e) {
+            console.error("Error in 'White is in checkmate (Anastasia's mate)'", e);
+            assert.ok(false, "Error in 'White is in checkmate (Anastasia's mate)'");
+        }
     });
 
     QUnit.test("Black king is in check", function(assert) {
-        Game.setState({
-            ...Game.getState(),
-            board: [
-                ['', '', '', '', 'k', '', '', ''],
-                ['', '', '', '', 'R', '', '', ''], // White rook checks Black king
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', 'K', '', '', ''],
-            ],
-            whiteTurn: false
-        });
-        assert.ok(Game.isKingInCheck(false), "Black king should be in check");
+        try {
+            Game.setState({
+                ...Game.getState(),
+                board: [
+                    ['', '', '', '', 'k', '', '', ''],
+                    ['', '', '', '', 'R', '', '', ''], // White rook checks Black king
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', 'K', '', '', ''],
+                ],
+                whiteTurn: false
+            });
+            assert.ok(Game.isKingInCheck(false), "Black king should be in check");
+        } catch (e) {
+            console.error("Error in 'Black king is in check'", e);
+            assert.ok(false, "Error in 'Black king is in check'");
+        }
     });
 
     QUnit.test("Black is in checkmate (back-rank mate)", function(assert) {
-        Game.setState({
-            ...Game.getState(),
-            board: [
-                ['R', '', '', '', 'k', '', '', ''],
-                ['', 'R', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', '', '', '', ''],
-                ['', '', '', '', 'K', '', '', ''],
-            ],
-            whiteTurn: false
-        });
-        assert.ok(Game.isCheckmate(false), "Black should be in checkmate");
+        try {
+            Game.setState({
+                ...Game.getState(),
+                board: [
+                    ['R', '', '', '', 'k', '', '', ''],
+                    ['', 'R', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', '', '', '', ''],
+                    ['', '', '', '', 'K', '', '', ''],
+                ],
+                whiteTurn: false
+            });
+            assert.ok(Game.isCheckmate(false), "Black should be in checkmate");
+        } catch (e) {
+            console.error("Error in 'Black is in checkmate (back-rank mate)'", e);
+            assert.ok(false, "Error in 'Black is in checkmate (back-rank mate)'");
+        }
     });
 });

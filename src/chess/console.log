@@ -1,31 +1,42 @@
+QUnit.log: {"module":"Pawn Movement","name":"Pawn can move one square forward","result":true,"message":"White pawn should move one square forward","actual":true,"testId":"21138c58","negative":false,"runtime":1,"todo":false,"expected":true}
+QUnit.log: {"module":"Pawn Movement","name":"Pawn can move two squares forward on first move","result":true,"message":"White pawn should move two squares forward on first move","actual":true,"testId":"2c46d96d","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Pawn Movement","name":"Pawn cannot move two squares forward after first move","result":true,"message":"White pawn should not move two squares forward after first move","actual":false,"testId":"3ebd4533","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Pawn Movement","name":"Pawn can capture diagonally","result":true,"message":"White pawn should capture diagonally","actual":true,"testId":"fffca98f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Pawn Movement","name":"Pawn cannot move forward if blocked","result":true,"message":"White pawn should not move forward if blocked","actual":false,"testId":"48ee3959","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Rook Movement","name":"Rook can move horizontally","result":true,"message":"Rook should move horizontally","actual":true,"testId":"0c2b97af","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Rook Movement","name":"Rook can move vertically","result":true,"message":"Rook should move vertically","actual":true,"testId":"31f68e01","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Rook Movement","name":"Rook cannot move through pieces","result":true,"message":"Rook should not move through pieces","actual":false,"testId":"57751a93","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Knight Movement","name":"Knight can move in an L-shape","result":true,"message":"Knight should move in an L-shape","actual":true,"testId":"e0f1f1a2","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Knight Movement","name":"Knight can jump over pieces","result":true,"message":"Knight should jump over pieces","actual":true,"testId":"6ae22548","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Bishop Movement","name":"Bishop can move diagonally","result":true,"message":"Bishop should move diagonally","actual":true,"testId":"52981f48","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Bishop Movement","name":"Bishop cannot move through pieces","result":true,"message":"Bishop should not move through pieces","actual":false,"testId":"735d094b","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Queen Movement","name":"Queen can move horizontally","result":true,"message":"Queen should move horizontally","actual":true,"testId":"55fb95c3","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Queen Movement","name":"Queen can move vertically","result":true,"message":"Queen should move vertically","actual":true,"testId":"02170115","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Queen Movement","name":"Queen can move diagonally","result":true,"message":"Queen should move diagonally","actual":true,"testId":"9b31e214","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Queen Movement","name":"Queen cannot move through pieces","result":true,"message":"Queen should not move through pieces","actual":false,"testId":"6814c8ff","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square diagonally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square diagonally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square vertically","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square vertically","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square horizontally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square horizontally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
 Before move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
 After move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece should still be at e7","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":true}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece at e7 is still a black pawn","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":"p"}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"No piece should be at e6","actual":"","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":false}
 movePiece
+QUnit.log: {"module":"Pawn Promotion","name":"White pawn can be promoted","result":true,"message":"White pawn should be promoted to a queen","actual":"Q","testId":"3fc65ee1","negative":false,"runtime":1,"todo":false,"expected":"Q"}
 movePiece
-QUnit.testFailed
-  Module: Castling
-  Test: White cannot castle through check
-  Message: White should not be able to castle through check
-  Source:     at Object.<anonymous> (file:///Users/mdickens/workspace/Gemini-API-Sandbox/src/chess/tests/castling_tests.js:125:16)
-QUnit.testFailed
-  Module: Check and Checkmate
-  Test: White king is in check
-  Message: White king should be in check
-  Source:     at Object.<anonymous> (file:///Users/mdickens/workspace/Gemini-API-Sandbox/src/chess/tests/check_tests.js:43:16)
-QUnit.testFailed
-  Module: Check and Checkmate
-  Test: White is in checkmate
-  Message: White is in checkmate
-  Source:     at Object.<anonymous> (file:///Users/mdickens/workspace/Gemini-API-Sandbox/src/chess/tests/check_tests.js:61:16)
-QUnit.testFailed
-  Module: Check and Checkmate
-  Test: Black king is in check
-  Message: Black king should be in check
-  Source:     at Object.<anonymous> (file:///Users/mdickens/workspace/Gemini-API-Sandbox/src/chess/tests/check_tests.js:79:16)
-QUnit.testFailed
-  Module: Check and Checkmate
-  Test: Black is in checkmate
-  Message: Black is in checkmate
-  Source:     at Object.<anonymous> (file:///Users/mdickens/workspace/Gemini-API-Sandbox/src/chess/tests/check_tests.js:97:16)
+QUnit.log: {"module":"Pawn Promotion","name":"Black pawn can be promoted","result":true,"message":"Black pawn should be promoted to a queen","actual":"q","testId":"837e7ccb","negative":false,"runtime":0,"todo":false,"expected":"q"}
+QUnit.log: {"module":"Castling","name":"White can castle kingside","result":true,"message":"White should be able to castle kingside","actual":true,"testId":"585ebba8","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Castling","name":"White can castle queenside","result":true,"message":"White should be able to castle queenside","actual":true,"testId":"2bddd087","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Castling","name":"White cannot castle if king has moved","result":true,"message":"White should not be able to castle if king has moved","actual":false,"testId":"7832c67e","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Castling","name":"White cannot castle if rook has moved","result":true,"message":"White should not be able to castle if rook has moved","actual":false,"testId":"9799e140","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Castling","name":"White cannot castle through check","result":true,"message":"White should not be able to castle through check","actual":false,"testId":"82938024","negative":false,"runtime":0,"todo":false,"expected":false}
+QUnit.log: {"module":"Check and Checkmate","name":"White king is in check","result":true,"message":"White king should be in check","actual":true,"testId":"6b1b16a1","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Check and Checkmate","name":"White is in checkmate (Anastasia's mate)","result":true,"message":"White should be in checkmate","actual":true,"testId":"e8b38786","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Check and Checkmate","name":"Black king is in check","result":true,"message":"Black king should be in check","actual":true,"testId":"4a92b98b","negative":false,"runtime":0,"todo":false,"expected":true}
+QUnit.log: {"module":"Check and Checkmate","name":"Black is in checkmate (back-rank mate)","result":true,"message":"Black should be in checkmate","actual":true,"testId":"9cd14177","negative":false,"runtime":0,"todo":false,"expected":true}
 
-Tests finished. Passed: 31, Failed: 5, Total: 36, Runtime: 510ms
+Tests finished. Passed: 36, Failed: 0, Total: 36, Runtime: 512ms

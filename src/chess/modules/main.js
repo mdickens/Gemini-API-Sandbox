@@ -329,6 +329,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    document.getElementById('takeback-button').addEventListener('click', () => {
+        Game.takeback();
+        UI.createBoard(Game.getState());
+        updateGameStatus();
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();

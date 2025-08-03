@@ -318,6 +318,17 @@ document.addEventListener('DOMContentLoaded', () => {
         chessboard.classList.toggle('flipped');
     });
 
+    document.getElementById('hint-button').addEventListener('click', () => {
+        const bestMove = AI.getBestMove(Game.getState(), 'medium');
+        if (bestMove) {
+            UI.clearHighlights();
+            const startSquare = chessboard.querySelector(`[data-row='${bestMove.startRow}'][data-col='${bestMove.startCol}']`);
+            const endSquare = chessboard.querySelector(`[data-row='${bestMove.endRow}'][data-col='${bestMove.endCol}']`);
+            if (startSquare) startSquare.classList.add('hint-highlight');
+            if (endSquare) endSquare.classList.add('hint-highlight');
+        }
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();

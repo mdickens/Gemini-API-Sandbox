@@ -17,10 +17,36 @@ async function processHtmlAndLogErrors(htmlFilePath, logFilePath) {
             console.log(text);
         });
 
+        page.on('error', (err) => {
+            console.error('Page error:', err);
+            logStream.write(`Page error: ${err.toString()}\n`);
+        });
+
+        await page.exposeFunction('onQUnitLog', (result) => {
+            let logMessage = `QUnit.log: ${JSON.stringify(result)}\n`;
+            console.log(logMessage);
+            logStream.write(logMessage);
+        });
+
+        await page.exposeFunction('onQUnitDone', (details) => {
+            const summary = `\nTests finished. Passed: ${details.passed}, Failed: ${details.failed}, Total: ${details.total}, Runtime: ${details.runtime}ms\n`;
+            console.log(summary);
+            logStream.write(summary);
+        });
+
         const fileUrl = `file://${path.resolve(htmlFilePath)}`;
         console.log(`Navigating to: ${fileUrl}`);
 
         await page.goto(fileUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+        await page.evaluate(() => {
+            QUnit.log(result => {
+                window.onQUnitLog(result);
+            });
+            QUnit.done(details => {
+                window.onQUnitDone(details);
+            });
+        });
 
         await new Promise(resolve => setTimeout(resolve, 10000));
 

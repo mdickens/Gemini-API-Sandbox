@@ -341,6 +341,16 @@ const Game = (() => {
         return notation;
     }
 
+    function takeback() {
+        if (moveHistory.length > 0) {
+            const lastBoard = moveHistory.pop();
+            board = JSON.parse(JSON.stringify(lastBoard));
+            whiteTurn = !whiteTurn;
+            // This is a simplified takeback, it does not restore king/rook moved status, etc.
+            // For a full implementation, more state would need to be saved in the history.
+        }
+    }
+
     return {
         getState,
         setState,
@@ -356,6 +366,7 @@ const Game = (() => {
         getPieces,
         isKingInCheck,
         findKing,
-        pieceUnicode
+        pieceUnicode,
+        takeback
     };
 })();

@@ -43,7 +43,7 @@ QUnit.module('Check and Checkmate', hooks => {
         assert.ok(Game.isKingInCheck(true), "White king should be in check");
     });
 
-    QUnit.test("White is in checkmate (Anastasia's mate)", function(assert) {
+    QUnit.test("White is in checkmate (Anastasia's mate) fixed", function(assert) {
         Game.setState({
             ...Game.getState(),
             board: [

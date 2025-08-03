@@ -263,6 +263,10 @@ body {
     background-color: #3a5a78;
 }
 
+#chessboard.flipped {
+    transform: rotate(180deg);
+}
+
 #chessboard.flipped .piece {
     transform: rotate(180deg);
 }

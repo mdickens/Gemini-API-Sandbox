@@ -18,17 +18,9 @@ async function processHtmlAndLogErrors(htmlFilePath, logFilePath) {
         });
 
         await page.exposeFunction('onQUnitLog', (result) => {
-            if (!result.result) {
-                let logMessage = `QUnit.testFailed\n`;
-                logMessage += `  Module: ${result.module}\n`;
-                logMessage += `  Test: ${result.name}\n`;
-                logMessage += `  Message: ${result.message}\n`;
-                if(result.source) {
-                    logMessage += `  Source: ${result.source}\n`;
-                }
-                console.log(logMessage);
-                logStream.write(logMessage);
-            }
+            let logMessage = `QUnit.log: ${JSON.stringify(result)}\n`;
+            console.log(logMessage);
+            logStream.write(logMessage);
         });
 
         await page.exposeFunction('onQUnitDone', (details) => {

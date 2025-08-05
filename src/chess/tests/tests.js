@@ -114,6 +114,40 @@ QUnit.module('Pawn Movement', hooks => {
         });
         assert.notOk(Game.isValidMove(6, 0, 5, 0), "White pawn should not move forward if blocked");
     });
+
+    QUnit.test("White pawn cannot jump over its own piece", function(assert) {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', 'B', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+        });
+        assert.notOk(Game.isValidMove(6, 4, 4, 4), "White pawn should not jump over its own bishop");
+    });
+
+    QUnit.test("Black pawn cannot jump over its own piece", function(assert) {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', 'b', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: false,
+        });
+        assert.notOk(Game.isValidMove(1, 4, 3, 4), "Black pawn should not jump over its own bishop");
+    });
 });
 
 QUnit.module('Rook Movement', hooks => {

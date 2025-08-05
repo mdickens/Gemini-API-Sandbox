@@ -148,7 +148,12 @@ const Game = (() => {
         const direction = isWhite(piece) ? -1 : 1;
         const startRank = isWhite(piece) ? 6 : 1;
         if (startCol === endCol && board[endRow][endCol] === '' && endRow === startRow + direction) return true;
-        if (startCol === endCol && board[endRow][endCol] === '' && startRow === startRank && endRow === startRow + 2 * direction) return true;
+        if (startCol === endCol && board[endRow][endCol] === '' && startRow === startRank && endRow === startRow + 2 * direction) {
+            const middleRow = startRow + direction;
+            if (board[middleRow][startCol] === '') {
+                return true;
+            }
+        }
         if (Math.abs(startCol - endCol) === 1 && endRow === startRow + direction && board[endRow][endCol] !== '') return true;
         if (Math.abs(startCol - endCol) === 1 && endRow === startRow + direction && board[endRow][endCol] === '' && lastMove && lastMove.piece.toLowerCase() === 'p' && Math.abs(lastMove.startRow - lastMove.endRow) === 2 && lastMove.endRow === startRow && lastMove.endCol === endCol) return true;
         return false;

@@ -335,6 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateGameStatus();
     });
 
+    document.getElementById('resign-button').addEventListener('click', () => {
+        showConfirmation('Are you sure you want to resign?', () => {
+            const winner = Game.getState().whiteTurn ? 'Black' : 'White';
+            const resignMessage = `${Game.getState().whiteTurn ? 'White' : 'Black'} resigned. ${winner} wins.`;
+            gameOverMessage.textContent = resignMessage;
+            UI.updateStatus(resignMessage);
+            gameOverModal.style.display = 'flex';
+            clearInterval(timerInterval);
+            chessboard.removeEventListener('click', handleSquareClick);
+            chessboard.removeEventListener('dragstart', handleDragStart);
+        });
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();

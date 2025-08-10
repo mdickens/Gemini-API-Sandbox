@@ -5,11 +5,11 @@ Feature/bug list
 
 2. 8.3.2025: add tests for all buttons and ensure that if new buttons are added or changed that tests are updated , added, or changed appropriately.
 
-3. Bug if using Takeback button a Draw by threefold repetition happens if the user takes back moves twice . Here is the failing sequence:  e2e3 -> Takeback ->e2e3 ->Takeback -> Unexpected: Game ends with "Draw by threefold repetition."
+3. 8.10.25 Bug if using Takeback button a Draw by threefold repetition happens if the user takes back moves twice . Here is the failing sequence:  e2e3 -> Takeback ->e2e3 ->Takeback -> Unexpected: Game ends with "Draw by threefold repetition."
 
-4. Resign button does not work. Debug and fix Resign button. Start with adding a test case to confirm resign button does not work. Then fix it. Then use test case to verify it was fixed. 
+4. 8.10.25 Resign button does not work. Debug and fix Resign button. Start with adding a test case to confirm resign button does not work. Then fix it. Then use test case to verify it was fixed. 
 
-5. Help button does not work. Debug and fix Help butto Start with adding a test case to confirm Help button does not work. Then fix it. Then use test case to verify it was fixed.
+5. 8.10.25 Help button does not work. Debug and fix Help butto Start with adding a test case to confirm Help button does not work. Then fix it. Then use test case to verify it was fixed.
 
 6. CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue
 

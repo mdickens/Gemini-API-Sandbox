@@ -348,6 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.getElementById('help-button').addEventListener('click', () => {
+        const helpModal = document.getElementById('help-modal');
+        helpModal.style.display = 'flex';
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();

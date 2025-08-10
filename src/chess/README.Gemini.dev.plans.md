@@ -11,5 +11,11 @@ Feature/bug list
 
 5. 8.10.25 Help button does not work. Debug and fix Help butto Start with adding a test case to confirm Help button does not work. Then fix it. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
 
-6. CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue.   Debug and fix . If possible write a test case to check for overlapping layouts.  Then fix this specific layout issue. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
+6. started 8.10.25 CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue.   Debug and fix . If possible write a test case to check for overlapping layouts.  Then fix this specific layout issue. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
+
+7. Help modal cannot be closed once the button is pressed. There is also no help information there in the window so help information that is informative and usefulalso needs to be added to the modal.  Start with adding a test case to confirm Help button launches a window that can be closed. Then fix it. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
+
+8a. When time runs out nothing happens . the game still can be played.  Start with adding a test case to confirm time running out does not work or have any effect on the game play. Then fix it. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.  
+
+8.b chess clock can also go negative : it was observed : "White: -1:0-48" . A negative value on chess clock is an error.
 

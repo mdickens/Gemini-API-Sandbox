@@ -35,14 +35,20 @@
     </div>
 
     <div id="main-layout" style="display: none;">
-        <div id="buttons">
-            <button id="new-game-button">New Game</button>
-            <button id="flip-board-button">Flip Board</button>
-            <button id="takeback-button">Takeback</button>
-            <button id="resign-button">Resign</button>
-            <button id="claim-draw-button" disabled>Claim Draw</button>
-            <button id="hint-button">Hint</button>
-            <button id="help-button">Help</button>
+        <div id="top-bar">
+            <div id="buttons">
+                <button id="new-game-button">New Game</button>
+                <button id="flip-board-button">Flip Board</button>
+                <button id="takeback-button">Takeback</button>
+                <button id="resign-button">Resign</button>
+                <button id="claim-draw-button" disabled>Claim Draw</button>
+                <button id="hint-button">Hint</button>
+                <button id="help-button">Help</button>
+            </div>
+            <div id="timers">
+                <div id="white-timer-box" class="timer-box">White: <span id="white-timer">10:00</span></div>
+                <div id="black-timer-box" class="timer-box">Black: <span id="black-timer">10:00</span></div>
+            </div>
         </div>
         <div id="white-captured" class="captured-panel"></div>
         <div id="board-container">
@@ -51,10 +57,6 @@
         <div id="game-container">
             <div id="status-panel">
                 <div id="status">White's turn</div>
-                <div id="timers">
-                    <div id="white-timer-box" class="timer-box">White: <span id="white-timer">10:00</span></div>
-                    <div id="black-timer-box" class="timer-box">Black: <span id="black-timer">10:00</span></div>
-                </div>
             </div>
         </div>
         <div id="black-captured" class="captured-panel"></div>

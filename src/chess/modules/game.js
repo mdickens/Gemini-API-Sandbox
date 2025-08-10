@@ -349,6 +349,7 @@ const Game = (() => {
     function takeback() {
         if (moveHistory.length > 0) {
             const lastBoard = moveHistory.pop();
+            boardHistory.pop();
             board = JSON.parse(JSON.stringify(lastBoard));
             whiteTurn = !whiteTurn;
             // This is a simplified takeback, it does not restore king/rook moved status, etc.

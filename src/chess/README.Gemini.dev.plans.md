@@ -7,4 +7,9 @@ Feature/bug list
 
 3. Bug if using Takeback button a Draw by threefold repetition happens if the user takes back moves twice . Here is the failing sequence:  e2e3 -> Takeback ->e2e3 ->Takeback -> Unexpected: Game ends with "Draw by threefold repetition."
 
+4. Resign button does not work. Debug and fix Resign button
+
+5. Help button does not work. Debug and fix Help button
+
+6. CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue
 

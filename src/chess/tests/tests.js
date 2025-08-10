@@ -498,3 +498,46 @@ QUnit.module('King Movement', hooks => {
         assert.ok(Game.isValidMove(3, 3, 3, 4), "King should move one square horizontally");
     });
 });
+
+QUnit.module('Game State', hooks => {
+    hooks.beforeEach(function() {
+        Game.setState({
+            board: [
+                ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+                ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+            ],
+            whiteTurn: true,
+            whiteKingMoved: false,
+            blackKingMoved: false,
+            whiteRooksMoved: [false, false],
+            blackRooksMoved: [false, false],
+            fiftyMoveRuleCounter: 0,
+            lastMove: null,
+            moveHistory: [],
+            boardHistory: [],
+            whiteCaptured: [],
+            blackCaptured: []
+        });
+    });
+
+    QUnit.test("Takeback does not cause incorrect threefold repetition", function(assert) {
+        // e2e3
+        Game.movePiece(6, 4, 5, 4);
+        // takeback
+        Game.takeback();
+        // e2e3
+        Game.movePiece(6, 4, 5, 4);
+        // takeback
+        Game.takeback();
+        // e2e3
+        Game.movePiece(6, 4, 5, 4);
+
+        assert.notOk(Game.isThreefoldRepetition(), "Game should not be a draw by threefold repetition");
+    });
+});

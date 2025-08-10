@@ -22,11 +22,15 @@ QUnit.log: {"module":"King Movement","name":"King can move one square in any dir
 QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square vertically","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
 QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square horizontally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
 QUnit.log: {"module":"King Movement","name":"King can move one square in any direction","result":true,"message":"King should move one square horizontally","actual":true,"testId":"5d17b13f","negative":false,"runtime":0,"todo":false,"expected":true}
+movePiece
+movePiece
+movePiece
+QUnit.log: {"module":"Game State","name":"Takeback does not cause incorrect threefold repetition","result":true,"message":"Game should not be a draw by threefold repetition","actual":false,"testId":"79e4d1ff","negative":false,"runtime":0,"todo":false,"expected":false}
 Before move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
 After move: [["r","n","b","q","k","b","n","r"],["p","p","p","p","p","p","p","p"],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["","","","","","","",""],["P","P","P","P","P","P","P","P"],["R","N","B","Q","K","B","N","R"]]
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece should still be at e7","actual":"p","testId":"5149bf7e","negative":false,"runtime":503,"todo":false,"expected":true}
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece at e7 is still a black pawn","actual":"p","testId":"5149bf7e","negative":false,"runtime":503,"todo":false,"expected":"p"}
-QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"No piece should be at e6","actual":"","testId":"5149bf7e","negative":false,"runtime":503,"todo":false,"expected":false}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece should still be at e7","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":true}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"Piece at e7 is still a black pawn","actual":"p","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":"p"}
+QUnit.log: {"module":"Player vs. Player","name":"Black piece cannot move first","result":true,"message":"No piece should be at e6","actual":"","testId":"5149bf7e","negative":false,"runtime":504,"todo":false,"expected":false}
 movePiece
 QUnit.log: {"module":"Pawn Promotion","name":"White pawn can be promoted","result":true,"message":"White pawn should be promoted to a queen","actual":"Q","testId":"3fc65ee1","negative":false,"runtime":1,"todo":false,"expected":"Q"}
 movePiece
@@ -69,4 +73,4 @@ QUnit.log: {"module":"En Passant","name":"Black can capture en passant - 26","re
 QUnit.log: {"module":"En Passant","name":"Black can capture en passant - 27","result":true,"message":"Black pawn can capture en passant on H4","actual":true,"testId":"3d915451","negative":false,"runtime":0,"todo":false,"expected":true}
 QUnit.log: {"module":"En Passant","name":"Black can capture en passant - 28","result":true,"message":"Black pawn can capture en passant on G4","actual":true,"testId":"3d915452","negative":false,"runtime":0,"todo":false,"expected":true}
 
-Tests finished. Passed: 66, Failed: 0, Total: 66, Runtime: 515ms
+Tests finished. Passed: 67, Failed: 0, Total: 67, Runtime: 518ms

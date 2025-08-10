@@ -9,7 +9,7 @@ Feature/bug list
 
 4. 8.10.25 Resign button does not work. Debug and fix Resign button. Start with adding a test case to confirm resign button does not work. Then fix it. Then use test case to verify it was fixed. 
 
-5. 8.10.25 Help button does not work. Debug and fix Help butto Start with adding a test case to confirm Help button does not work. Then fix it. Then use test case to verify it was fixed.
+5. 8.10.25 Help button does not work. Debug and fix Help butto Start with adding a test case to confirm Help button does not work. Then fix it. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
 
-6. CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue
+6. CSS/Layout issue: "Player 1 (White)" overlaps "New Game" and "Flip Board" buttons. resolve layeout issue.   Debug and fix . If possible write a test case to check for overlapping layouts.  Then fix this specific layout issue. Then use test case to verify it was fixed. Make sure to add any newly created files to be tracked by git and commit them as well as any changed files.
 

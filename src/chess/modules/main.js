@@ -353,6 +353,11 @@ document.addEventListener('DOMContentLoaded', () => {
         helpModal.style.display = 'flex';
     });
 
+    document.querySelector('#help-modal .close-button').addEventListener('click', () => {
+        const helpModal = document.getElementById('help-modal');
+        helpModal.style.display = 'none';
+    });
+
     confirmYesButton.addEventListener('click', () => {
         if (confirmAction) {
             confirmAction();

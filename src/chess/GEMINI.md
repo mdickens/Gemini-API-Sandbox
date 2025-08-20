@@ -2,6 +2,8 @@ IMPORTANT: Development rules for the chess project. Gemini must follow all these
    1. Commit after each change: Perform a git commit -m '<<descriptive message>>' after every change.
    2. Commit-first workflow: Adopt a "commit-first" workflow, committing every change with a descriptive message explaining the step taken.
    3. Test after each commit: Test each change with node puppeteer.test.v2.js to ensure no regressions.
+   3a. For first run of tests to preserve tokens run it like this node puppeteer.test.v2.js | grep "Tests finished.*" , if tests pass this will save tokens
+   3b. If the the test failed for 3a, then you can run the test again to get more details: node puppeteer.test.v2.js
    4. No major refactoring without discussion: Avoid major refactoring and focus on small, incremental, and additive changes.
    5. Transparency: Be transparent about what you are doing at all times.
    6. Commit and test: After every change, commit and test. Do not forget to follow the process.

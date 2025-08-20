@@ -200,7 +200,13 @@ body {
     text-align: center;
 }
 
-#buttons, #timers {
+#buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#timers {
     flex: 0;
 }
 
@@ -356,10 +362,6 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    #top-bar {
-        flex-direction: column;
-    }
-
     body {
         padding: 10px 0;
     }

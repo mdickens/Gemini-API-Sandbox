@@ -73,6 +73,10 @@ async function processHtmlAndLogErrors(htmlFilePath, logFilePath) {
 
         await page.goto(fileUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
+        await page.waitForSelector('#start-game-button', { visible: true });
+        await page.click('#start-game-button');
+        await page.waitForSelector('#main-layout', { visible: true });
+
         await page.evaluate(() => {
             QUnit.log(result => {
                 window.onQUnitLog(result);
